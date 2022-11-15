@@ -1,16 +1,9 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
-android {
-    namespace 'com.woory.model'
-    compileSdk 33
-
-    defaultConfig {
-        minSdk 23
-        targetSdk 33
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
-
-dependencies {}
