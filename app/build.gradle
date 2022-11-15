@@ -24,16 +24,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        dataBinding = true
     }
 }
 
 dependencies {
+    // Modules
+    implementation project(':data')
+
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
@@ -45,9 +54,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
 
-    // tMap SDK 설정
-    implementation files("libs/tmap-sdk-1.1.aar")
-    implementation files("libs/vsm-tmap-sdk-v2-android-1.6.60.aar")
+    // T map
+    implementation files('libs/tmap-sdk-1.1.aar')
+    implementation files('libs/vsm-tmap-sdk-v2-android-1.6.60.aar')
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
