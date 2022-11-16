@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
-            android:text="가는중"
+            android:text="@string/join_promise"
             android:textColor="@color/black"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -53,7 +53,7 @@
             android:id="@+id/tv_join_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="약속 참여"
+            android:text="@string/join_promise_hint"
             app:layout_constraintStart_toStartOf="@id/tv_join_text"
             app:layout_constraintTop_toBottomOf="@id/tv_join_text" />
 
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="20dp"
-            android:text="만날래"
+            android:text="@string/set_promise"
             android:textColor="@color/black"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -74,7 +74,7 @@
             android:id="@+id/tv_create_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="약속 생성"
+            android:text="@string/set_promise_hint"
             app:layout_constraintEnd_toEndOf="@id/tv_create_promise_text"
             app:layout_constraintTop_toBottomOf="@id/tv_create_promise_text" />
 
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
-            android:text="언제야"
+            android:text="@string/promise_history"
             android:textColor="@color/black"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -95,7 +95,7 @@
             android:id="@+id/tv_find_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="약속 보기"
+            android:text="@string/promise_history_hint"
             app:layout_constraintStart_toStartOf="@id/tv_find_promise_text"
             app:layout_constraintTop_toBottomOf="@id/tv_find_promise_text" />
 

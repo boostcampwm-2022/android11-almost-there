@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="60dp"
-            android:text="끝났어"
+            android:text="@string/past_promise"
             android:textColor="@color/black"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -45,7 +45,7 @@
             android:id="@+id/tv_ended_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="끝난 약속"
+            android:text="@string/past_promise_hint"
             app:layout_constraintStart_toStartOf="@id/tv_ended_text"
             app:layout_constraintTop_toBottomOf="@id/tv_ended_text" />
 
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
             android:layout_marginEnd="20dp"
-            android:text="곧이야"
+            android:text="@string/future_promise"
             android:textColor="@color/black"
             android:textSize="40sp"
             android:textStyle="bold"
@@ -66,7 +66,7 @@
             android:id="@+id/tv_soon_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="예정인 약속"
+            android:text="@string/future_promise_hint"
             app:layout_constraintEnd_toEndOf="@id/tv_soon_text"
             app:layout_constraintTop_toBottomOf="@id/tv_soon_text" />
 
