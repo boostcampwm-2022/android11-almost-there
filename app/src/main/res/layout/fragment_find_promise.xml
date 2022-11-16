@@ -30,14 +30,8 @@
 
         <TextView
             android:id="@+id/tv_ended_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="60dp"
+            style="@style/AlmostThere.Clickable.Left.Specific"
             android:text="@string/past_promise"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/container_ended_promise"
             app:layout_constraintTop_toTopOf="@id/container_ended_promise" />
 
@@ -51,14 +45,8 @@
 
         <TextView
             android:id="@+id/tv_soon_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:layout_marginEnd="20dp"
+            style="@style/AlmostThere.Clickable.Right.Specific"
             android:text="@string/future_promise"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@id/container_soon_promise"
             app:layout_constraintTop_toTopOf="@id/container_soon_promise" />
 
