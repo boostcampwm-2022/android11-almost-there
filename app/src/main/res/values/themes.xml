@@ -13,4 +13,8 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.AlmostThere.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:background">#E9F4EC</item>
+    </style>
 </resources>
