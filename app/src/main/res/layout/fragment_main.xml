@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.MainFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_join_promise"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#FDFDBD"
+            app:layout_constraintBottom_toTopOf="@id/container_create_promise"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_create_promise"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#B8E8FC"
+            app:layout_constraintBottom_toTopOf="@id/container_find_promise"
+            app:layout_constraintTop_toBottomOf="@id/container_join_promise" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container_find_promise"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#B1AFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_create_promise" />
+
+        <TextView
+            android:id="@+id/tv_join_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:text="가는중"
+            android:textColor="@color/black"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/container_join_promise"
+            app:layout_constraintTop_toTopOf="@id/container_join_promise" />
+
+        <TextView
+            android:id="@+id/tv_join_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="약속 참여"
+            app:layout_constraintStart_toStartOf="@id/tv_join_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_join_text" />
+
+        <TextView
+            android:id="@+id/tv_create_promise_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:text="만날래"
+            android:textColor="@color/black"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/container_create_promise"
+            app:layout_constraintTop_toTopOf="@id/container_create_promise" />
+
+        <TextView
+            android:id="@+id/tv_create_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="약속 생성"
+            app:layout_constraintEnd_toEndOf="@id/tv_create_promise_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_create_promise_text" />
+
+        <TextView
+            android:id="@+id/tv_find_promise_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:text="언제야"
+            android:textColor="@color/black"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/container_find_promise"
+            app:layout_constraintTop_toTopOf="@id/container_find_promise" />
+
+        <TextView
+            android:id="@+id/tv_find_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="약속 보기"
+            app:layout_constraintStart_toStartOf="@id/tv_find_promise_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_find_promise_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
