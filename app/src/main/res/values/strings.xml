@@ -12,4 +12,24 @@
     <string name="set_promise_hint"><![CDATA[약속 생성 >]]></string>
     <string name="promise_history">언제야</string>
     <string name="promise_history_hint"><![CDATA[< 약속 보기]]></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="setting_promise">약속 설정</string>
+    <string name="hint_select_game_start_time">게임 시작 시간을 선택하세요.</string>
+    <string name="hint_select_promise_date">약속 날짜를 선택하세요.</string>
+    <string name="hint_select_promise_time">약속 시간을 선택하세요.</string>
+    <string name="hint_select_promise_location">약속 장소를 선택하세요.</string>
+    <string name="promise_location">약속 장소</string>
+    <string name="promise_date">약속 날짜</string>
+    <string name="promise_time">약속 시간</string>
+    <string name="game_start_time">게임 시작 시간</string>
+    <string name="date">%d년 %d월 %d일</string>
+    <string name="time">%d시 %d분</string>
+    <string name="before_time">%d시간 %d분 전</string>
+    <string name="game_start">게임 시작</string>
+    <string name="create">생성</string>
+    <string name="hour">시간</string>
+    <string name="before_minute">분 전</string>
+    <string name="cancel">취소</string>
+    <string name="ok">확인</string>
+    <string name="search_location">목적지 찾기</string>
 </resources>

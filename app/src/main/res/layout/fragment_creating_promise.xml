@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_promise_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="36dp"
+            android:text="@string/promise_location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_promise_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:autofillHints="string"
+            android:ellipsize="end"
+            android:enabled="false"
+            android:maxLines="1"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_location"
+            app:layout_constraintEnd_toStartOf="@id/ib_promise_location"
+            app:layout_constraintStart_toEndOf="@+id/tv_promise_location"
+            tools:ignore="LabelFor,TextFields" />
+
+        <ImageButton
+            android:id="@+id/ib_promise_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/ic_location"
+            android:contentDescription="@string/promise_location"
+            app:layout_constraintBottom_toBottomOf="@+id/et_promise_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_promise_location"
+            app:layout_constraintTop_toTopOf="@+id/et_promise_location" />
+
+        <TextView
+            android:id="@+id/tv_promise_date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="48dp"
+            android:text="@string/promise_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_promise_location" />
+
+        <EditText
+            android:id="@+id/et_promise_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:ellipsize="end"
+            android:enabled="false"
+            android:importantForAutofill="no"
+            android:maxLines="1"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_date_title"
+            app:layout_constraintEnd_toStartOf="@+id/ib_promise_date"
+            app:layout_constraintStart_toEndOf="@+id/tv_promise_date_title"
+            tools:ignore="LabelFor,TextFields" />
+
+        <ImageButton
+            android:id="@+id/ib_promise_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/ic_calendar"
+            android:contentDescription="@string/promise_date"
+            app:layout_constraintBottom_toBottomOf="@+id/et_promise_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_promise_date"
+            app:layout_constraintTop_toTopOf="@+id/et_promise_date" />
+
+        <TextView
+            android:id="@+id/tv_promise_time_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="48dp"
+            android:text="@string/promise_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_promise_date_title" />
+
+        <EditText
+            android:id="@+id/et_promise_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:ellipsize="end"
+            android:enabled="false"
+            android:importantForAutofill="no"
+            android:maxLines="1"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_time_title"
+            app:layout_constraintEnd_toStartOf="@+id/ib_promise_time"
+            app:layout_constraintStart_toEndOf="@+id/tv_promise_time_title"
+            tools:ignore="LabelFor,TextFields" />
+
+        <ImageButton
+            android:id="@+id/ib_promise_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/ic_time"
+            android:contentDescription="@string/promise_time"
+            app:layout_constraintBottom_toBottomOf="@+id/et_promise_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_promise_time"
+            app:layout_constraintTop_toTopOf="@+id/et_promise_time" />
+
+        <TextView
+            android:id="@+id/tv_game_time_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="48dp"
+            android:text="@string/game_start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_promise_time_title" />
+
+        <EditText
+            android:id="@+id/et_game_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:ellipsize="end"
+            android:enabled="false"
+            android:importantForAutofill="no"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_game_time_title"
+            app:layout_constraintEnd_toStartOf="@+id/ib_game_time"
+            app:layout_constraintStart_toEndOf="@+id/tv_game_time_title"
+            tools:ignore="LabelFor,TextFields" />
+
+        <ImageButton
+            android:id="@+id/ib_game_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/ic_hourglass"
+            android:contentDescription="@string/game_start_time"
+            app:layout_constraintBottom_toBottomOf="@+id/et_game_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_game_time"
+            app:layout_constraintTop_toTopOf="@+id/et_game_time" />
+
+        <Button
+            android:id="@+id/btn_promise_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/create"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_game_time"
+            app:layout_constraintVertical_bias="0.1" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
