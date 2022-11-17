@@ -12,25 +12,31 @@
         android:layout_height="match_parent"
         tools:context=".ui.MainFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <View
             android:id="@+id/container_join_promise"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_height="0dp"
             android:background="#FDFDBD"
             app:layout_constraintBottom_toTopOf="@id/container_create_promise"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <View
             android:id="@+id/container_create_promise"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_height="0dp"
             android:background="#B8E8FC"
             app:layout_constraintBottom_toTopOf="@id/container_find_promise"
             app:layout_constraintTop_toBottomOf="@id/container_join_promise" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <View
             android:id="@+id/container_find_promise"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_height="0dp"
             android:background="#B1AFFF"
             app:layout_constraintBottom_toBottomOf="parent"

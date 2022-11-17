@@ -15,7 +15,7 @@
     </style>
 
     <style name="Theme.AlmostThere.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:background">#E9F4EC</item>
+        <item name="android:background">@color/splash_background</item>
     </style>
 
     <style name="AlmostThere"/>
