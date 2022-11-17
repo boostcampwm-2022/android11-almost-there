@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.MainFragment">
+
+        <View
+            android:id="@+id/container_join_promise"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            android:background="#FDFDBD"
+            app:layout_constraintBottom_toTopOf="@id/container_create_promise"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/container_create_promise"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            android:background="#B8E8FC"
+            app:layout_constraintBottom_toTopOf="@id/container_find_promise"
+            app:layout_constraintTop_toBottomOf="@id/container_join_promise" />
+
+        <View
+            android:id="@+id/container_find_promise"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            android:background="#B1AFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_create_promise" />
+
+        <TextView
+            android:id="@+id/tv_join_text"
+            style="@style/AlmostThere.Clickable.Left.Main"
+            android:text="@string/join_promise"
+            app:layout_constraintStart_toStartOf="@id/container_join_promise"
+            app:layout_constraintTop_toTopOf="@id/container_join_promise" />
+
+        <TextView
+            android:id="@+id/tv_join_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/join_promise_hint"
+            app:layout_constraintStart_toStartOf="@id/tv_join_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_join_text" />
+
+        <TextView
+            android:id="@+id/tv_create_promise_text"
+            style="@style/AlmostThere.Clickable.Right.Main"
+            android:text="@string/set_promise"
+            app:layout_constraintEnd_toEndOf="@id/container_create_promise"
+            app:layout_constraintTop_toTopOf="@id/container_create_promise" />
+
+        <TextView
+            android:id="@+id/tv_create_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_promise_hint"
+            app:layout_constraintEnd_toEndOf="@id/tv_create_promise_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_create_promise_text" />
+
+        <TextView
+            android:id="@+id/tv_find_promise_text"
+            style="@style/AlmostThere.Clickable.Left.Main"
+            android:text="@string/promise_history"
+            app:layout_constraintStart_toStartOf="@id/container_find_promise"
+            app:layout_constraintTop_toTopOf="@id/container_find_promise" />
+
+        <TextView
+            android:id="@+id/tv_find_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/promise_history_hint"
+            app:layout_constraintStart_toStartOf="@id/tv_find_promise_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_find_promise_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

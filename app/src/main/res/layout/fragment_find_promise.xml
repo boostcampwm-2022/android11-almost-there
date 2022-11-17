@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.FindPromiseFragment">
+
+        <View
+            android:id="@+id/container_ended_promise"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            android:background="#FCAFAF"
+            app:layout_constraintBottom_toTopOf="@id/container_soon_promise"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/container_soon_promise"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            android:background="#824141"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_ended_promise" />
+
+        <TextView
+            android:id="@+id/tv_ended_text"
+            style="@style/AlmostThere.Clickable.Left.Specific"
+            android:text="@string/past_promise"
+            app:layout_constraintStart_toStartOf="@id/container_ended_promise"
+            app:layout_constraintTop_toTopOf="@id/container_ended_promise" />
+
+        <TextView
+            android:id="@+id/tv_ended_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/past_promise_hint"
+            app:layout_constraintStart_toStartOf="@id/tv_ended_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_ended_text" />
+
+        <TextView
+            android:id="@+id/tv_soon_text"
+            style="@style/AlmostThere.Clickable.Right.Specific"
+            android:text="@string/future_promise"
+            app:layout_constraintEnd_toEndOf="@id/container_soon_promise"
+            app:layout_constraintTop_toTopOf="@id/container_soon_promise" />
+
+        <TextView
+            android:id="@+id/tv_soon_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/future_promise_hint"
+            app:layout_constraintEnd_toEndOf="@id/tv_soon_text"
+            app:layout_constraintTop_toBottomOf="@id/tv_soon_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

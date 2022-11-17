@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">AlmostThere</string>
+    <string name="splash_app_title">거의\n다왔어</string>
+    <string name="splash_touch">약속을 잡으려면 터치</string>
+    <string name="past_promise">끝났어</string>
+    <string name="past_promise_hint"><![CDATA[< 끝난 약속]]></string>
+    <string name="future_promise">곧이야</string>
+    <string name="future_promise_hint"><![CDATA[예정인 약속 >]]></string>
+    <string name="join_promise">가는중</string>
+    <string name="join_promise_hint"><![CDATA[< 약속 참여]]></string>
+    <string name="set_promise">만날래</string>
+    <string name="set_promise_hint"><![CDATA[약속 생성 >]]></string>
+    <string name="promise_history">언제야</string>
+    <string name="promise_history_hint"><![CDATA[< 약속 보기]]></string>
 </resources>
