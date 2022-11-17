@@ -20,10 +20,10 @@
         android:name="com.woory.almostthere.ui.dummy.DummyJoinFragment"
         tools:layout="@layout/fragment_dummy_join" />
 
-    <fragment
+    <activity
         android:id="@+id/nav_dummy_create_frag"
-        android:name="com.woory.almostthere.ui.dummy.DummyCreatePromiseFragment"
-        tools:layout="@layout/fragment_dummy_create_promise" />
+        android:name="com.woory.almostthere.ui.creatingpromise.CreatingPromiseActivity"
+        tools:layout="@layout/fragment_creating_promise" />
 
     <fragment
         android:id="@+id/nav_dummy_ended_frag"
