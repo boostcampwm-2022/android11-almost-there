@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.woory.almostthere.R
@@ -28,12 +26,12 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed({
             binding.tvNext.visibility = View.VISIBLE
             binding.tvNext.startAnimation(textScaleAnimation)
-        }, 2000)
 
-        binding.tvNext.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+            binding.root.setOnClickListener {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }, 2000)
     }
 }
