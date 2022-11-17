@@ -25,6 +25,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.creatingpromise.CreatingPromiseActivity"
+            android:exported="false">
+        </activity>
+        <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AlmostThere.Splash">
