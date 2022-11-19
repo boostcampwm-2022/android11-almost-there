@@ -16,12 +16,6 @@ android {
 }
 
 dependencies {
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:31.0.3"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-messaging-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-
     // di
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
