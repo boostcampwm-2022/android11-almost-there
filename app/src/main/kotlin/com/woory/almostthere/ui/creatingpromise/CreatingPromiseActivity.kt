@@ -1,7 +1,6 @@
 package com.woory.almostthere.ui.creatingpromise
 
 import android.os.Bundle
-import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.ActivityCreatingPromiseBinding
@@ -19,19 +18,14 @@ class CreatingPromiseActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpAppBar()
-        setUpBackPressedCallback()
     }
 
     private fun setUpAppBar() {
         binding.containerToolbar.toolbar.title = getString(R.string.promise_creation)
     }
 
-    private fun setUpBackPressedCallback() {
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right)
-            }
-        })
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right)
     }
-
 }
