@@ -13,8 +13,8 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "AlmostThere"
-include ':app'
-include ':data'
-include ':network'
-include ':database'
-include ':firebase'
+include(":app")
+include(":data")
+include(":network")
+include(":database")
+include(":firebase")
