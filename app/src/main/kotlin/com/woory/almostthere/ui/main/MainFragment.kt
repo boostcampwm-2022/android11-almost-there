@@ -2,20 +2,17 @@ package com.woory.almostthere.ui.main
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentMainBinding
-import com.woory.almostthere.ui.viewBinding
+import com.woory.almostthere.ui.BaseFragment
 import com.woory.almostthere.util.animLeftToRightNavOptions
 import com.woory.almostthere.util.animRightToLeftNavOption
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainFragment : Fragment() {
-
-    private val binding: FragmentMainBinding by viewBinding(FragmentMainBinding::bind)
+class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main) {
 
     private val navController: NavController by lazy {
         findNavController()
@@ -23,7 +20,6 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.containerJoinPromise.setOnClickListener {
             navController.navigate(
                 R.id.nav_dummy_join_frag,
