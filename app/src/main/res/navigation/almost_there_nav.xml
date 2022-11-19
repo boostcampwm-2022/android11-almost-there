@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/nav_main_frag"
-        android:name="com.woory.almostthere.ui.MainFragment"
+        android:name="com.woory.almostthere.ui.main.MainFragment"
         tools:layout="@layout/fragment_main" />
 
     <fragment
         android:id="@+id/nav_find_promise_frag"
-        android:name="com.woory.almostthere.ui.FindPromiseFragment"
+        android:name="com.woory.almostthere.ui.main.FindPromiseFragment"
         tools:layout="@layout/fragment_find_promise" />
 
     <activity
