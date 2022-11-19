@@ -36,4 +36,7 @@
     <string name="search_location">목적지 찾기</string>
     <string name="promise_creation">약속 생성</string>
     <string name="promise_info">약속 정보</string>
+    <string name="stubborn_shiba">산책가기 싫은 시바견</string>
+    <string name="modest_shiba">그윽하게 보는 시바견</string>
+    <string name="lying_shiba">누워있는 시바견</string>
 </resources>
