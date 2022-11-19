@@ -8,8 +8,12 @@
 
         <com.skt.tmap.TMapView
             android:id="@+id/map_promise_location_pick"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/btn_submit"
@@ -24,8 +28,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_search"
             android:contentDescription="@string/search_location"
+            android:src="@drawable/ic_search"
             app:layout_constraintBottom_toBottomOf="@id/btn_submit"
             app:layout_constraintEnd_toStartOf="@id/btn_submit"
             app:layout_constraintTop_toTopOf="parent" />
