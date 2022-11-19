@@ -12,6 +12,12 @@
         android:layout_height="match_parent"
         tools:context=".ui.promises.PromisesActivity">
 
+        <include
+            android:id="@+id/container_toolbar"
+            layout="@layout/layout_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_promises"
             android:name="com.woory.almostthere.ui.promises.PromisesFragment"
@@ -20,7 +26,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_toolbar"
             tools:layout="@layout/fragment_promises" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
