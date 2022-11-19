@@ -7,8 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class PromiseInfoModel(
     val promiseLocation: LocationModel,
     val promiseDate: DateModel,
-    val promiseTimeUiState: TimeModel,
-    val gameTimeUiState: TimeModel,
+    val promiseTime: TimeModel,
+    val gameTime: TimeModel,
     val host: UserModel,
     val users: List<UserModel>
-): Parcelable
+) : Parcelable
