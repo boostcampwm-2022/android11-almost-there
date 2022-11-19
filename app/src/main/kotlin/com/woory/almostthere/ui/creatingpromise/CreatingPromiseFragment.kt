@@ -4,12 +4,9 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.NumberPicker
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -18,13 +15,17 @@ import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
 import com.woory.almostthere.model.DateUiState
 import com.woory.almostthere.model.TimeUiState
+import com.woory.almostthere.ui.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 
+@AndroidEntryPoint
 class CreatingPromiseFragment : Fragment() {
 
-    private var _binding: FragmentCreatingPromiseBinding? = null
-    private val binding get() = _binding!!
+    private val binding: FragmentCreatingPromiseBinding by viewBinding(
+        FragmentCreatingPromiseBinding::bind
+    )
 
     private val viewModel: CreatingPromiseViewModel by lazy {
         ViewModelProvider(requireActivity())[(CreatingPromiseViewModel::class.java)]
@@ -66,14 +67,6 @@ class CreatingPromiseFragment : Fragment() {
         TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
             viewModel.setPromiseTime(TimeUiState(hourOfDay, minute))
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_creating_promise, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -185,11 +178,6 @@ class CreatingPromiseFragment : Fragment() {
 
     private fun showGameTimePickerDialog() {
         gameTimePickerDialog.show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {
