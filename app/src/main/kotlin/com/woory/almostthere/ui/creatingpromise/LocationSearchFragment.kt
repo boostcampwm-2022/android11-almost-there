@@ -2,18 +2,15 @@ package com.woory.almostthere.ui.creatingpromise
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.woory.almostthere.BuildConfig
+import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentLocationSearchBinding
-import com.woory.almostthere.ui.viewBinding
+import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LocationSearchFragment : Fragment() {
-
-    private val binding: FragmentLocationSearchBinding by viewBinding(
-        FragmentLocationSearchBinding::bind
-    )
+class LocationSearchFragment :
+    BaseFragment<FragmentLocationSearchBinding>(R.layout.fragment_location_search) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

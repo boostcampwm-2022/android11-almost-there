@@ -7,25 +7,21 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.NumberPicker
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
-import com.woory.almostthere.model.DateUiState
-import com.woory.almostthere.model.TimeUiState
-import com.woory.almostthere.ui.viewBinding
+import com.woory.almostthere.model.DateModel
+import com.woory.almostthere.model.TimeModel
+import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
 
 @AndroidEntryPoint
-class CreatingPromiseFragment : Fragment() {
-
-    private val binding: FragmentCreatingPromiseBinding by viewBinding(
-        FragmentCreatingPromiseBinding::bind
-    )
+class CreatingPromiseFragment :
+    BaseFragment<FragmentCreatingPromiseBinding>(R.layout.fragment_creating_promise) {
 
     private val viewModel: CreatingPromiseViewModel by lazy {
         ViewModelProvider(requireActivity())[(CreatingPromiseViewModel::class.java)]

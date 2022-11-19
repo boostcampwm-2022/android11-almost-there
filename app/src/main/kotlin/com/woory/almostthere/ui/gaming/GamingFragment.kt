@@ -1,12 +1,9 @@
 package com.woory.almostthere.ui.gaming
 
-import androidx.fragment.app.Fragment
+import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentGamingBinding
-import com.woory.almostthere.ui.viewBinding
+import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class GamingFragment : Fragment() {
-
-    private val binding: FragmentGamingBinding by viewBinding(FragmentGamingBinding::bind)
-}
+class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming)

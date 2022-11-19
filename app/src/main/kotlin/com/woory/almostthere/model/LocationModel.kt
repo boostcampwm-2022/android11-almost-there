@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class LocationUiState(val latitude: Double, val longitude: Double, val location: String): Parcelable
+data class LocationModel(val latitude: Double, val longitude: Double, val location: String): Parcelable

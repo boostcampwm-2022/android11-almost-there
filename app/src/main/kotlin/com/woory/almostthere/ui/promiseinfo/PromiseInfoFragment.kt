@@ -1,14 +1,9 @@
 package com.woory.almostthere.ui.promiseinfo
 
-import androidx.fragment.app.Fragment
+import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentPromiseInfoBinding
-import com.woory.almostthere.ui.viewBinding
+import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PromiseInfoFragment : Fragment() {
-
-    private val binding: FragmentPromiseInfoBinding by viewBinding(FragmentPromiseInfoBinding::bind)
-
-    private lateinit var viewModel: PromiseInfoViewModel
-}
+class PromiseInfoFragment : BaseFragment<FragmentPromiseInfoBinding>(R.layout.fragment_promise_info)
