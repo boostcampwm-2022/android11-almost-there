@@ -18,7 +18,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:defaultNavHost="true"
-            app:navGraph="@navigation/almost_there_nav" />
+            app:navGraph="@navigation/nav_main" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
