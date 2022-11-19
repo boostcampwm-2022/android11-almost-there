@@ -59,13 +59,13 @@ class CreatingPromiseFragment : Fragment() {
 
     private val promiseDateSetListener by lazy {
         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            viewModel.setPromiseDate(DateUiState(year, month, dayOfMonth))
+            viewModel.setPromiseDate(DateModel(year, month, dayOfMonth))
         }
     }
 
     private val promiseTimePickerListener by lazy {
         TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-            viewModel.setPromiseTime(TimeUiState(hourOfDay, minute))
+            viewModel.setPromiseTime(TimeModel(hourOfDay, minute))
         }
     }
 
@@ -144,7 +144,7 @@ class CreatingPromiseFragment : Fragment() {
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute)?.value
             viewModel.setGameTime(
                 if (hour != null && minute != null) {
-                    TimeUiState(hour, minute)
+                    TimeModel(hour, minute)
                 } else {
                     null
                 }

@@ -2,25 +2,25 @@ package com.woory.almostthere.ui.creatingpromise
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woory.almostthere.model.DateUiState
-import com.woory.almostthere.model.LocationUiState
-import com.woory.almostthere.model.TimeUiState
+import com.woory.almostthere.model.DateModel
+import com.woory.almostthere.model.LocationModel
+import com.woory.almostthere.model.TimeModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CreatingPromiseViewModel : ViewModel() {
 
-    private val _promiseLocation: MutableSharedFlow<LocationUiState?> = MutableSharedFlow()
-    val promiseLocation: SharedFlow<LocationUiState?> = _promiseLocation.asSharedFlow()
+    private val _promiseLocation: MutableSharedFlow<LocationModel?> = MutableSharedFlow()
+    val promiseLocation: SharedFlow<LocationModel?> = _promiseLocation.asSharedFlow()
 
-    private val _promiseDate: MutableSharedFlow<DateUiState?> = MutableSharedFlow()
-    val promiseDate: SharedFlow<DateUiState?> = _promiseDate.asSharedFlow()
+    private val _promiseDate: MutableSharedFlow<DateModel?> = MutableSharedFlow()
+    val promiseDate: SharedFlow<DateModel?> = _promiseDate.asSharedFlow()
 
-    private val _promiseTime: MutableSharedFlow<TimeUiState?> = MutableSharedFlow()
-    val promiseTime: SharedFlow<TimeUiState?> = _promiseTime.asSharedFlow()
+    private val _promiseTime: MutableSharedFlow<TimeModel?> = MutableSharedFlow()
+    val promiseTime: SharedFlow<TimeModel?> = _promiseTime.asSharedFlow()
 
-    private val _gameTime: MutableSharedFlow<TimeUiState?> = MutableSharedFlow()
-    val gameTime: SharedFlow<TimeUiState?> = _gameTime.asSharedFlow()
+    private val _gameTime: MutableSharedFlow<TimeModel?> = MutableSharedFlow()
+    val gameTime: SharedFlow<TimeModel?> = _gameTime.asSharedFlow()
 
     val isEnabled: Flow<Boolean> = combine(
         _promiseLocation,
@@ -31,25 +31,25 @@ class CreatingPromiseViewModel : ViewModel() {
         (_promiseLocation != null) && (_promiseDate != null) && (_promiseTime != null) && (_gameTime != null)
     }
 
-    fun setPromiseLocation(value: LocationUiState?) {
+    fun setPromiseLocation(value: LocationModel?) {
         viewModelScope.launch {
             _promiseLocation.emit(value)
         }
     }
 
-    fun setPromiseDate(value: DateUiState?) {
+    fun setPromiseDate(value: DateModel?) {
         viewModelScope.launch {
             _promiseDate.emit(value)
         }
     }
 
-    fun setPromiseTime(value: TimeUiState?) {
+    fun setPromiseTime(value: TimeModel?) {
         viewModelScope.launch {
             _promiseTime.emit(value)
         }
     }
 
-    fun setGameTime(value: TimeUiState?) {
+    fun setGameTime(value: TimeModel?) {
         viewModelScope.launch {
             _gameTime.emit(value)
         }
