@@ -7,5 +7,10 @@
         android:layout_height="match_parent"
         tools:context=".ui.promiseinfo.PromiseInfoActivity">
 
+        <include
+            android:id="@+id/container_toolbar"
+            layout="@layout/layout_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

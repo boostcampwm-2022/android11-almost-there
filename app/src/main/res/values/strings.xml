@@ -32,4 +32,6 @@
     <string name="cancel">취소</string>
     <string name="ok">확인</string>
     <string name="search_location">목적지 찾기</string>
+    <string name="promise_creation">약속 생성</string>
+    <string name="promise_info">약속 정보</string>
 </resources>
