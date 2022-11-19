@@ -11,9 +11,13 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_creating_promise"
             android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:defaultNavHost="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/nav_creating_promise" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
