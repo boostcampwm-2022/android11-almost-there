@@ -9,6 +9,14 @@
     <color name="grey4">#FFF5F5F7</color>
     <color name="black">#FF010101</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="almost_there_primary">#E9F4EC</color>          <!-- Point -->
+    <color name="almost_there_primary_dark">#BAC3BC</color>     <!-- Press, Active, etc -->
+    <color name="almost_there_primary_light">#F1F8F3</color>    <!-- Disable, Label, etc -->
+    <color name="almost_there_black">#010101</color>            <!-- Title -->
+    <color name="almost_there_grey01">#4F4F4F</color>           <!-- Body Bold -->
+    <color name="almost_there_grey02">#828282</color>           <!-- Body Regular -->
+    <color name="almost_there_grey03">#E0E0E0</color>           <!-- Line -->
+    <color name="almost_there_grey04">#F5F5F7</color>           <!-- Background -->
+    <color name="almost_there_white">#FFFFFF</color>            <!-- Disable, Label, etc -->
     <color name="splash_background">#E9F4EC</color>
 </resources>
