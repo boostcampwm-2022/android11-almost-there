@@ -4,12 +4,15 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.ItemPromiseEndBinding
 import com.woory.almostthere.model.PromiseInfoModel
 import com.woory.almostthere.ui.BaseViewHolder
 
-class PromisesAdapter :
+class PromisesAdapter(
+    private val onClickEnd: (PromiseInfoModel?) -> Unit
+) :
     ListAdapter<PromiseInfoModel, BaseViewHolder<PromiseInfoModel, ItemPromiseEndBinding>>(
         PromiseInfoModelDiff()
     ) {
@@ -18,10 +21,19 @@ class PromisesAdapter :
 
     class PromiseEndViewHolder(
         viewGroup: ViewGroup,
+        onClickEnd: (PromiseInfoModel?) -> Unit,
         @LayoutRes itemPromise: Int,
     ) : BaseViewHolder<PromiseInfoModel, ItemPromiseEndBinding>(viewGroup, itemPromise) {
 
         override val binding: ItemPromiseEndBinding = ItemPromiseEndBinding.bind(itemView)
+
+        init {
+            binding.root.setOnClickListener {
+                binding.item?.let {
+                    onClickEnd(binding.item)
+                }
+            }
+        }
 
         override fun bind(item: PromiseInfoModel) {
             binding.item = item
@@ -32,7 +44,7 @@ class PromisesAdapter :
         parent: ViewGroup,
         @LayoutRes viewType: Int
     ): BaseViewHolder<PromiseInfoModel, ItemPromiseEndBinding> {
-        return PromiseEndViewHolder(parent, R.layout.item_promise_end)
+        return PromiseEndViewHolder(parent, onClickEnd, R.layout.item_promise_end)
     }
 
     override fun onBindViewHolder(
