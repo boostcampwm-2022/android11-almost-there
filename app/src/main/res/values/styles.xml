@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--  Text Style  -->
+    <style name="Text32">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="Text32.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text32.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text24" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text24.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text24.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text18">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Text18.White">
+        <item name="android:textColor">@color/almost_there_white</item>
+    </style>
+
+    <style name="Text18.Grey2">
+        <item name="android:textColor">@color/almost_there_grey02</item>
+    </style>
+
+    <style name="Text18.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text18.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text16" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text16.Grey02">
+        <item name="android:textColor">@color/almost_there_grey02</item>
+    </style>
+
+    <style name="Text16.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text16.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text14" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text14.Grey2">
+        <item name="android:textColor">@color/almost_there_grey02</item>
+    </style>
+
+    <style name="Text14.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text14.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text12" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text12.Primary">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Text12.Grey2">
+        <item name="android:textColor">@color/almost_there_grey02</item>
+    </style>
+
+    <style name="Text12.Secondary">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Text12.PrimaryLight">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Text12.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text12.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text10" parent="TextAppearance.MaterialComponents.Overline">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text10.Grey2">
+        <item name="android:textColor">@color/almost_there_grey02</item>
+    </style>
+
+</resources>
