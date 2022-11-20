@@ -19,7 +19,7 @@ class HPBar : View {
     private var _textVisible: Boolean = false
     private var _backgroundVisible: Boolean = false
     private val _color: Int
-        get() = when (_value / (_maxValue - _minValue) * 100) {
+        get() = when ((_value.toFloat() / (_maxValue - _minValue) * 100).toInt()) {
             in 80 .. 100 -> Color.GREEN
             in 0 .. 20 -> Color.RED
             else -> Color.YELLOW
