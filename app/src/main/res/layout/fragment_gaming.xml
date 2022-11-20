@@ -70,8 +70,8 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
-            android:id="@+id/bottomsheet_touch_character_marker"
-            layout="@layout/bottomsheet_touch_character_marker" />
+            android:id="@+id/layout_bottom_sheet"
+            layout="@layout/bottomsheet_gaming" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
