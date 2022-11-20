@@ -123,4 +123,11 @@
         <item name="android:textColor">@color/almost_there_grey02</item>
     </style>
 
+    <style name="Text10.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text10.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
