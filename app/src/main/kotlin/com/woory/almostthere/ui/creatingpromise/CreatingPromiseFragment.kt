@@ -135,6 +135,7 @@ class CreatingPromiseFragment :
         gameTimePickerDialog.findViewById<Button>(R.id.btn_cancel)?.setOnClickListener {
             gameTimePickerDialog.cancel()
         }
+
         gameTimePickerDialog.findViewById<Button>(R.id.btn_submit)?.setOnClickListener {
             val hour =
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour)?.value
@@ -149,32 +150,47 @@ class CreatingPromiseFragment :
             )
             gameTimePickerDialog.cancel()
         }
+
+        binding.btnPromiseCreate.setOnClickListener {
+            viewModel.createPromise()
+        }
     }
 
     private fun showPromiseDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        val calendar = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_MONTH, 1)
+        }
 
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        viewModel.promiseDate.value.let {
+            val year = it?.year ?: calendar.get(Calendar.YEAR)
+            val month = it?.monthValue ?: calendar.get(Calendar.MONTH)
+            val dayOfMonth = it?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH)
 
-        promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
-        promiseDatePickerDialog.datePicker.minDate = calendar.timeInMillis
-        promiseDatePickerDialog.show()
+            promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
+            promiseDatePickerDialog.datePicker.minDate = calendar.timeInMillis
+            promiseDatePickerDialog.show()
+        }
+
     }
 
     private fun showPromiseTimePickerDialog() {
         val calendar = Calendar.getInstance()
 
-        val hour = calendar.get(Calendar.HOUR)
-        val minute = calendar.get(Calendar.MINUTE)
+        viewModel.promiseTime.value.let {
+            val hour = it?.hour ?: calendar.get(Calendar.HOUR)
+            val minute = it?.minute ?: calendar.get(Calendar.MINUTE)
 
-        promiseTimePickerDialog.updateTime(hour, minute)
-        promiseTimePickerDialog.show()
+            promiseTimePickerDialog.updateTime(hour, minute)
+            promiseTimePickerDialog.show()
+        }
     }
 
     private fun showGameTimePickerDialog() {
+        viewModel.gameTime.value?.let {
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value = it.toHours().toInt()
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value = (it.toMinutes() % 60).toInt()
+        }
+
         gameTimePickerDialog.show()
     }
 
