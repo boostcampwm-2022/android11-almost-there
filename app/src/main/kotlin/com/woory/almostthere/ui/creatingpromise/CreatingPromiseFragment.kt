@@ -14,6 +14,7 @@ import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
 import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
@@ -75,25 +76,25 @@ class CreatingPromiseFragment :
     private fun setUpCollector() {
         viewLifecycleOwner.lifecycleScope.launch {
             launch {
-                viewModel.promiseLocation.collect {
+                viewModel.promiseLocation.collectLatest {
                     binding.etPromiseLocation.setText(it?.location ?: "")
                 }
             }
 
             launch {
-                viewModel.promiseDate.collect {
+                viewModel.promiseDate.collectLatest {
                     binding.etPromiseDate.setText(it?.toString() ?: "")
                 }
             }
 
             launch {
-                viewModel.promiseTime.collect {
+                viewModel.promiseTime.collectLatest {
                     binding.etPromiseTime.setText(it?.toString() ?: "")
                 }
             }
 
             launch {
-                viewModel.gameTime.collect { gameTime ->
+                viewModel.gameTime.collectLatest { gameTime ->
                     binding.etGameTime.setText(
                         if (gameTime != null) {
                             String.format(
