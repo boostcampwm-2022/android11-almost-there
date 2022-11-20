@@ -20,8 +20,8 @@ class HPBar : View {
     private var _backgroundVisible: Boolean = false
     private val _color: Int
         get() = when ((_value.toFloat() / (_maxValue - _minValue) * 100).toInt()) {
-            in 80 .. 100 -> Color.GREEN
-            in 0 .. 20 -> Color.RED
+            in HIGH_HP_BOUNDARY .. 100 -> Color.GREEN
+            in 0 .. LOW_HP_BOUNDARY -> Color.RED
             else -> Color.YELLOW
         }
 
@@ -132,5 +132,10 @@ class HPBar : View {
             textPaint.textSize = contentHeight - _textPadding
             canvas.drawText(_value.toString(), rectF.left + textPadding, rectF.bottom - textPadding, textPaint)
         }
+    }
+
+    companion object {
+        private const val HIGH_HP_BOUNDARY = 80
+        private const val LOW_HP_BOUNDARY = 20
     }
 }
