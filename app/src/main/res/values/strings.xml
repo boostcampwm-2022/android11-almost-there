@@ -40,4 +40,6 @@
     <string name="character_img">캐릭터 이미지</string>
     <string name="promises_end">끝났어</string>
     <string name="game_result_finish">종료</string>
+    <string name="gaming_hp">HP</string>
+    <string name="gaming_ranking">순위</string>
 </resources>
