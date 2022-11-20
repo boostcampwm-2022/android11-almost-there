@@ -12,11 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
-import com.woory.almostthere.model.DateModel
-import com.woory.almostthere.model.TimeModel
 import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.threeten.bp.Duration
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalTime
 import java.util.*
 
 @AndroidEntryPoint
@@ -55,13 +56,13 @@ class CreatingPromiseFragment :
 
     private val promiseDateSetListener by lazy {
         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            viewModel.setPromiseDate(DateModel(year, month, dayOfMonth))
+            viewModel.setPromiseDate(LocalDate.of(year, month, dayOfMonth))
         }
     }
 
     private val promiseTimePickerListener by lazy {
         TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-            viewModel.setPromiseTime(TimeModel(hourOfDay, minute))
+            viewModel.setPromiseTime(LocalTime.of(hourOfDay, minute))
         }
     }
 
@@ -97,8 +98,8 @@ class CreatingPromiseFragment :
                         if (gameTime != null) {
                             String.format(
                                 getString(R.string.before_time),
-                                gameTime.hour,
-                                gameTime.minute
+                                gameTime.toHours(),
+                                gameTime.toMinutes() % 60
                             )
                         } else ""
                     )
@@ -140,7 +141,7 @@ class CreatingPromiseFragment :
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute)?.value
             viewModel.setGameTime(
                 if (hour != null && minute != null) {
-                    TimeModel(hour, minute)
+                    Duration.ofMinutes(60L * hour + minute)
                 } else {
                     null
                 }
