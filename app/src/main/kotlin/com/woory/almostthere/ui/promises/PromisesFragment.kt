@@ -11,7 +11,9 @@ class PromisesFragment: BaseFragment<FragmentPromisesBinding>(R.layout.fragment_
 
     private val viewModel: PromisesViewModel by viewModels()
     private val promisesAdapter = PromisesAdapter(
-        onClickEnd = {  }
+        onClickBefore = { },
+        onClickOngoing = { },
+        onClickEnd = {  },
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
