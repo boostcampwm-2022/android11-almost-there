@@ -23,11 +23,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/btn_search_location"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
+            app:queryBackground="@color/white"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
             android:contentDescription="@string/search_location"
             android:src="@drawable/ic_search"
             app:layout_constraintBottom_toBottomOf="@id/btn_submit"

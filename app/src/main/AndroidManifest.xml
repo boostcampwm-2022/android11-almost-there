@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.woory.almostthere">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -42,7 +44,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.creatingpromise.CreatingPromiseActivity"
-            android:exported="false" />
+            android:exported="false" >
+        </activity>
     </application>
 
 </manifest>
