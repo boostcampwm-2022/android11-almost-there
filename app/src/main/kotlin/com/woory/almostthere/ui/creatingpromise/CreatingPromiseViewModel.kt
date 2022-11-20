@@ -11,23 +11,23 @@ import org.threeten.bp.LocalTime
 
 class CreatingPromiseViewModel : ViewModel() {
 
-    private val _promiseLocation: MutableSharedFlow<LocationModel?> = MutableSharedFlow()
-    val promiseLocation: SharedFlow<LocationModel?> = _promiseLocation.asSharedFlow()
+    private val _promiseLocation: MutableStateFlow<LocationModel?> =  MutableStateFlow(null)
+    val promiseLocation: StateFlow<LocationModel?> = _promiseLocation.asStateFlow()
 
-    private val _promiseDate: MutableSharedFlow<LocalDate?> = MutableSharedFlow()
-    val promiseDate: SharedFlow<LocalDate?> = _promiseDate.asSharedFlow()
+    private val _promiseDate: MutableStateFlow<LocalDate?> =  MutableStateFlow(null)
+    val promiseDate: StateFlow<LocalDate?> = _promiseDate.asStateFlow()
 
-    private val _promiseTime: MutableSharedFlow<LocalTime?> = MutableSharedFlow()
-    val promiseTime: SharedFlow<LocalTime?> = _promiseTime.asSharedFlow()
+    private val _promiseTime: MutableStateFlow<LocalTime?> = MutableStateFlow(null)
+    val promiseTime: StateFlow<LocalTime?> = _promiseTime.asStateFlow()
 
-    private val _gameTime: MutableSharedFlow<Duration?> = MutableSharedFlow()
-    val gameTime: SharedFlow<Duration?> = _gameTime.asSharedFlow()
+    private val _gameTime: MutableStateFlow<Duration?> = MutableStateFlow(null)
+    val gameTime: StateFlow<Duration?> = _gameTime.asStateFlow()
 
     val isEnabled: Flow<Boolean> = combine(
-        _promiseLocation,
-        _promiseDate,
-        _promiseTime,
-        _gameTime
+        promiseLocation,
+        promiseDate,
+        promiseTime,
+        gameTime
     ) { _promiseLocation, _promiseDate, _promiseTime, _gameTime ->
         (_promiseLocation != null) && (_promiseDate != null) && (_promiseTime != null) && (_gameTime != null)
     }
