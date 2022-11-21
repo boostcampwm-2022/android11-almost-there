@@ -75,41 +75,43 @@ class CreatingPromiseFragment :
 
     private fun setUpCollector() {
         viewLifecycleOwner.lifecycleScope.launch {
-            launch {
-                viewModel.promiseLocation.collectLatest {
-                    binding.etPromiseLocation.setText(it?.location ?: "")
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.promiseLocation.collectLatest {
+                        binding.etPromiseLocation.setText(it?.address ?: "")
+                    }
                 }
-            }
 
-            launch {
-                viewModel.promiseDate.collectLatest {
-                    binding.etPromiseDate.setText(it?.toString() ?: "")
+                launch {
+                    viewModel.promiseDate.collectLatest {
+                        binding.etPromiseDate.setText(it?.toString() ?: "")
+                    }
                 }
-            }
 
-            launch {
-                viewModel.promiseTime.collectLatest {
-                    binding.etPromiseTime.setText(it?.toString() ?: "")
+                launch {
+                    viewModel.promiseTime.collectLatest {
+                        binding.etPromiseTime.setText(it?.toString() ?: "")
+                    }
                 }
-            }
 
-            launch {
-                viewModel.gameTime.collectLatest { gameTime ->
-                    binding.etGameTime.setText(
-                        if (gameTime != null) {
-                            String.format(
-                                getString(R.string.before_time),
-                                gameTime.toHours(),
-                                gameTime.toMinutes() % 60
-                            )
-                        } else ""
-                    )
+                launch {
+                    viewModel.gameTime.collectLatest { gameTime ->
+                        binding.etGameTime.setText(
+                            if (gameTime != null) {
+                                String.format(
+                                    getString(R.string.before_time),
+                                    gameTime.toHours(),
+                                    gameTime.toMinutes() % 60
+                                )
+                            } else ""
+                        )
+                    }
                 }
-            }
 
-            launch {
-                viewModel.isEnabled.collect {
-                    binding.btnPromiseCreate.isEnabled = it
+                launch {
+                    viewModel.isEnabled.collect {
+                        binding.btnPromiseCreate.isEnabled = it
+                    }
                 }
             }
         }
