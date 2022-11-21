@@ -12,7 +12,6 @@
     <string name="set_promise_hint"><![CDATA[약속 생성 >]]></string>
     <string name="promise_history">언제야</string>
     <string name="promise_history_hint"><![CDATA[< 약속 보기]]></string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="setting_promise">약속 설정</string>
     <string name="hint_select_game_start_time">게임 시작 시간을 선택하세요.</string>
     <string name="hint_select_promise_date">약속 날짜를 선택하세요.</string>
@@ -32,4 +31,15 @@
     <string name="cancel">취소</string>
     <string name="ok">확인</string>
     <string name="search_location">목적지 찾기</string>
+    <string name="promise_creation">약속 생성</string>
+    <string name="promise_info">약속 정보</string>
+    <string name="stubborn_shiba">산책가기 싫은 시바견</string>
+    <string name="modest_shiba">그윽하게 보는 시바견</string>
+    <string name="lying_shiba">누워있는 시바견</string>
+    <string name="move_to_my_location">내 위치로 이동</string>
+    <string name="character_img">캐릭터 이미지</string>
+    <string name="promises_end">끝났어</string>
+    <string name="game_result_finish">종료</string>
+    <string name="gaming_hp">HP</string>
+    <string name="gaming_ranking">순위</string>
 </resources>

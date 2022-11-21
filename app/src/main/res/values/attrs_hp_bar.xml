@@ -1,0 +1,10 @@
+<resources>
+    <declare-styleable name="HPBar">
+        <attr name="value" format="integer" />
+        <attr name="minValue" format="integer" />
+        <attr name="maxValue" format="integer" />
+        <attr name="textVisible" format="boolean" />
+        <attr name="backgroundVisible" format="boolean" />
+        <attr name="backgroundColor" format="color" />
+    </declare-styleable>
+</resources>

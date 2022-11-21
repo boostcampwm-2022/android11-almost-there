@@ -27,7 +27,7 @@
             android:layout_marginTop="20dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/image_dog"
+            android:src="@drawable/bg_lying_shiba"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_app_name" />

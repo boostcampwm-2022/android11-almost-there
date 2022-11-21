@@ -1,16 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".GamingFragment">
+        android:layout_height="match_parent">
 
-        <TextView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment" />
+            android:layout_height="match_parent">
 
-    </FrameLayout>
+            <com.skt.tmap.TMapView
+                android:id="@+id/map_gaming"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                style="@style/Text32.Black.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="대구광역시" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                style="@style/Text32.Black.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:drawableStartCompat="@drawable/ic_baseline_timer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@id/tv_location"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1시간 20분" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_ranking"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tv_time"
+                app:layout_constraintTop_toBottomOf="@id/tv_time"
+                tools:listitem="@layout/item_real_time_ranking" />
+
+            <include
+                android:id="@+id/layout_promise_info"
+                layout="@layout/layout_map_icon_info"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="10dp"
+                app:layout_constraintBottom_toTopOf="@id/layout_my_location"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <include
+                android:id="@+id/layout_my_location"
+                layout="@layout/layout_map_icon_location"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <include
+            android:id="@+id/layout_bottom_sheet"
+            layout="@layout/bottomsheet_gaming" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

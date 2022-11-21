@@ -7,25 +7,25 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.NumberPicker
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
-import com.woory.almostthere.model.DateModel
-import com.woory.almostthere.model.TimeModel
 import com.woory.almostthere.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.threeten.bp.Duration
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalTime
 import java.util.*
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
     BaseFragment<FragmentCreatingPromiseBinding>(R.layout.fragment_creating_promise) {
 
-    private val viewModel: CreatingPromiseViewModel by lazy {
-        ViewModelProvider(requireActivity())[(CreatingPromiseViewModel::class.java)]
-    }
+    private val viewModel: CreatingPromiseViewModel by activityViewModels()
 
     private val promiseDatePickerDialog by lazy {
         DatePickerDialog(
@@ -55,13 +55,13 @@ class CreatingPromiseFragment :
 
     private val promiseDateSetListener by lazy {
         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            viewModel.setPromiseDate(DateModel(year, month, dayOfMonth))
+            viewModel.setPromiseDate(LocalDate.of(year, month, dayOfMonth))
         }
     }
 
     private val promiseTimePickerListener by lazy {
         TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-            viewModel.setPromiseTime(TimeModel(hourOfDay, minute))
+            viewModel.setPromiseTime(LocalTime.of(hourOfDay, minute))
         }
     }
 
@@ -74,31 +74,31 @@ class CreatingPromiseFragment :
     private fun setUpCollector() {
         viewLifecycleOwner.lifecycleScope.launch {
             launch {
-                viewModel.promiseLocation.collect {
+                viewModel.promiseLocation.collectLatest {
                     binding.etPromiseLocation.setText(it?.location ?: "")
                 }
             }
 
             launch {
-                viewModel.promiseDate.collect {
+                viewModel.promiseDate.collectLatest {
                     binding.etPromiseDate.setText(it?.toString() ?: "")
                 }
             }
 
             launch {
-                viewModel.promiseTime.collect {
+                viewModel.promiseTime.collectLatest {
                     binding.etPromiseTime.setText(it?.toString() ?: "")
                 }
             }
 
             launch {
-                viewModel.gameTime.collect { gameTime ->
+                viewModel.gameTime.collectLatest { gameTime ->
                     binding.etGameTime.setText(
                         if (gameTime != null) {
                             String.format(
                                 getString(R.string.before_time),
-                                gameTime.hour,
-                                gameTime.minute
+                                gameTime.toHours(),
+                                gameTime.toMinutes() % 60
                             )
                         } else ""
                     )
@@ -133,6 +133,7 @@ class CreatingPromiseFragment :
         gameTimePickerDialog.findViewById<Button>(R.id.btn_cancel)?.setOnClickListener {
             gameTimePickerDialog.cancel()
         }
+
         gameTimePickerDialog.findViewById<Button>(R.id.btn_submit)?.setOnClickListener {
             val hour =
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour)?.value
@@ -140,39 +141,54 @@ class CreatingPromiseFragment :
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute)?.value
             viewModel.setGameTime(
                 if (hour != null && minute != null) {
-                    TimeModel(hour, minute)
+                    Duration.ofMinutes(60L * hour + minute)
                 } else {
                     null
                 }
             )
             gameTimePickerDialog.cancel()
         }
+
+        binding.btnPromiseCreate.setOnClickListener {
+            viewModel.createPromise()
+        }
     }
 
     private fun showPromiseDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        val calendar = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_MONTH, 1)
+        }
 
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        viewModel.promiseDate.value.let {
+            val year = it?.year ?: calendar.get(Calendar.YEAR)
+            val month = it?.monthValue ?: calendar.get(Calendar.MONTH)
+            val dayOfMonth = it?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH)
 
-        promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
-        promiseDatePickerDialog.datePicker.minDate = calendar.timeInMillis
-        promiseDatePickerDialog.show()
+            promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
+            promiseDatePickerDialog.datePicker.minDate = calendar.timeInMillis
+            promiseDatePickerDialog.show()
+        }
+
     }
 
     private fun showPromiseTimePickerDialog() {
         val calendar = Calendar.getInstance()
 
-        val hour = calendar.get(Calendar.HOUR)
-        val minute = calendar.get(Calendar.MINUTE)
+        viewModel.promiseTime.value.let {
+            val hour = it?.hour ?: calendar.get(Calendar.HOUR)
+            val minute = it?.minute ?: calendar.get(Calendar.MINUTE)
 
-        promiseTimePickerDialog.updateTime(hour, minute)
-        promiseTimePickerDialog.show()
+            promiseTimePickerDialog.updateTime(hour, minute)
+            promiseTimePickerDialog.show()
+        }
     }
 
     private fun showGameTimePickerDialog() {
+        viewModel.gameTime.value?.let {
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value = it.toHours().toInt()
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value = (it.toMinutes() % 60).toInt()
+        }
+
         gameTimePickerDialog.show()
     }
 
