@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.NumberPicker
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
@@ -25,9 +25,7 @@ import java.util.*
 class CreatingPromiseFragment :
     BaseFragment<FragmentCreatingPromiseBinding>(R.layout.fragment_creating_promise) {
 
-    private val viewModel: CreatingPromiseViewModel by lazy {
-        ViewModelProvider(requireActivity())[(CreatingPromiseViewModel::class.java)]
-    }
+    private val viewModel: CreatingPromiseViewModel by activityViewModels()
 
     private val promiseDatePickerDialog by lazy {
         DatePickerDialog(
