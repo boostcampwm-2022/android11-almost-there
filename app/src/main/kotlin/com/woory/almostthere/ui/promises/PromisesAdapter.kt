@@ -91,12 +91,11 @@ class PromisesAdapter(
             OffsetDateTime.of(2022, 11, 20, 12, 20, 0, 0, ZoneOffset.of("+09:00"))
 
         val promise = getItem(position)
-        return if (promise.gameDateTime > dummyCurrentDate) {
-            PROMISE_BEFORE
-        } else if (promise.promiseDateTime > dummyCurrentDate) {
-            PROMISE_ONGOING
-        } else {
-            PROMISE_END
+
+        return when {
+            promise.gameDateTime > dummyCurrentDate -> PROMISE_BEFORE
+            promise.promiseDateTime > dummyCurrentDate -> PROMISE_ONGOING
+            else -> PROMISE_END
         }
     }
 
