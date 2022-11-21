@@ -1,8 +1,10 @@
+import java.util.*
+
 plugins {
-    id ("com.android.library")
-    id ("org.jetbrains.kotlin.android")
-    id ("kotlin-kapt")
-    id ("com.google.dagger.hilt.android")
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -12,6 +14,15 @@ android {
     defaultConfig {
         minSdk = 23
         targetSdk = 33
+
+        val projectProperties = readProperties(file("../local.properties"))
+        buildConfigField("String", "MAP_API_KEY", projectProperties["MAP_API_KEY"] as String)
+    }
+}
+
+fun readProperties(propertiesFile: File) = Properties().apply {
+    propertiesFile.inputStream().use { fis ->
+        load(fis)
     }
 }
 
