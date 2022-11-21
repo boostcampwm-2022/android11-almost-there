@@ -1,8 +1,9 @@
 package com.woory.almostthere.ui.promises
 
 import androidx.lifecycle.ViewModel
+import com.woory.almostthere.model.GeoPointModel
 import com.woory.almostthere.model.LocationModel
-import com.woory.almostthere.model.PromiseInfoModel
+import com.woory.almostthere.model.PromiseDataModel
 import com.woory.almostthere.model.UserModel
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneOffset
@@ -10,8 +11,8 @@ import org.threeten.bp.ZoneOffset
 class PromisesViewModel : ViewModel() {
 
     val dummyPromises = listOf(
-        PromiseInfoModel(
-            promiseLocation = LocationModel(0.0, 0.0, "경기 성남시 분당구 판교역로 166"),
+        PromiseDataModel(
+            promiseLocation = LocationModel(GeoPointModel(0.0, 0.0), "경기 성남시 분당구 판교역로 166"),
             promiseDateTime = OffsetDateTime.of(
                 2022,
                 11,
@@ -26,8 +27,8 @@ class PromisesViewModel : ViewModel() {
             host = UserModel("김또깡", "123"),
             users = listOf(UserModel("김또깡", "123")),
         ),
-        PromiseInfoModel(
-            promiseLocation = LocationModel(0.0, 0.0, "경기 성남시 분당구 판교역로 166"),
+        PromiseDataModel(
+            promiseLocation = LocationModel(GeoPointModel(0.0, 0.0), "경기 성남시 분당구 판교역로 166"),
             promiseDateTime = OffsetDateTime.of(
                 2022,
                 11,
@@ -42,8 +43,8 @@ class PromisesViewModel : ViewModel() {
             host = UserModel("김또깡", "123"),
             users = listOf(UserModel("김또깡", "123")),
         ),
-        PromiseInfoModel(
-            promiseLocation = LocationModel(0.0, 0.0, "경기 성남시 분당구 판교역로 166"),
+        PromiseDataModel(
+            promiseLocation = LocationModel(GeoPointModel(0.0, 0.0), "경기 성남시 분당구 판교역로 166"),
             promiseDateTime = OffsetDateTime.of(
                 2022,
                 11,

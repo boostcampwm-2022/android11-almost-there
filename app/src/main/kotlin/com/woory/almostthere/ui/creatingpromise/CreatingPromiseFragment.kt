@@ -8,7 +8,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.NumberPicker
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
@@ -185,8 +187,10 @@ class CreatingPromiseFragment :
 
     private fun showGameTimePickerDialog() {
         viewModel.gameTime.value?.let {
-            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value = it.toHours().toInt()
-            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value = (it.toMinutes() % 60).toInt()
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value =
+                it.toHours().toInt()
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value =
+                (it.toMinutes() % 60).toInt()
         }
 
         gameTimePickerDialog.show()

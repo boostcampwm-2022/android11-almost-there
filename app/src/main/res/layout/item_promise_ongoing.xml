@@ -8,7 +8,7 @@
 
         <variable
             name="item"
-            type="com.woory.almostthere.model.PromiseInfoModel" />
+            type="com.woory.almostthere.model.PromiseDataModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -61,7 +61,7 @@
                 style="@style/Text18.Black.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{item.promiseLocation.location}"
+                android:text="@{item.promiseLocation.address}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_promise_date"
                 tools:text="경기 성남시 분당구 판교역로 166" />

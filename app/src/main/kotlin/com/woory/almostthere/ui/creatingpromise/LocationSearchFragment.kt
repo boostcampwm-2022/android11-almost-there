@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.skt.tmap.TMapData
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentLocationSearchBinding
+import com.woory.almostthere.model.GeoPointModel
 import com.woory.almostthere.model.LocationModel
 import com.woory.almostthere.ui.BaseFragment
 import com.woory.almostthere.util.MAP_API_KEY
@@ -88,7 +89,7 @@ class LocationSearchFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 fragmentViewModel.location.collect {
                     if (it != null) {
-                        binding.mapPromiseLocationPick.setCenterPoint(it.latitude, it.longitude)
+                        binding.mapPromiseLocationPick.setCenterPoint(it.geoPoint.latitude, it.geoPoint.longitude)
                     }
                 }
             }
@@ -101,7 +102,7 @@ class LocationSearchFragment :
         binding.btnSubmit.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 fragmentViewModel.location.collect {
-                    if (it != null && it.location != "") {
+                    if (it != null && it.address != "") {
                         activityViewModel.setPromiseLocation(it)
                     }
                 }
@@ -115,8 +116,7 @@ class LocationSearchFragment :
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
             fragmentViewModel.setPromiseLocation(
                 LocationModel(
-                    it.latitude,
-                    it.longitude,
+                    GeoPointModel(it.latitude, it.longitude),
                     CURRENT_LOCATION_TEXT
                 )
             )
@@ -132,8 +132,7 @@ class LocationSearchFragment :
                         val res = queryResult[0]
                         fragmentViewModel.setPromiseLocation(
                             LocationModel(
-                                res.noorLat.toDouble(),
-                                res.noorLon.toDouble(),
+                                GeoPointModel(res.noorLat.toDouble(), res.noorLon.toDouble()),
                                 queryString
                             )
                         )

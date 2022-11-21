@@ -6,7 +6,7 @@ import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
 @Parcelize
-data class PromiseInfoModel(
+data class PromiseDataModel(
     val promiseLocation: LocationModel,
     val promiseDateTime: OffsetDateTime,
     val gameDateTime: OffsetDateTime,

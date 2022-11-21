@@ -8,25 +8,25 @@ import com.woory.almostthere.R
 import com.woory.almostthere.databinding.ItemPromiseBeforeBinding
 import com.woory.almostthere.databinding.ItemPromiseEndBinding
 import com.woory.almostthere.databinding.ItemPromiseOngoingBinding
-import com.woory.almostthere.model.PromiseInfoModel
+import com.woory.almostthere.model.PromiseDataModel
 import com.woory.almostthere.ui.BaseViewHolder
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneOffset
 
 class PromisesAdapter(
-    private val onClickBefore: (PromiseInfoModel?) -> Unit,
-    private val onClickOngoing: (PromiseInfoModel?) -> Unit,
-    private val onClickEnd: (PromiseInfoModel?) -> Unit
+    private val onClickBefore: (PromiseDataModel?) -> Unit,
+    private val onClickOngoing: (PromiseDataModel?) -> Unit,
+    private val onClickEnd: (PromiseDataModel?) -> Unit
 ) :
-    ListAdapter<PromiseInfoModel, BaseViewHolder<PromiseInfoModel, *>>(
+    ListAdapter<PromiseDataModel, BaseViewHolder<PromiseDataModel, *>>(
         PromiseInfoModelDiff()
     ) {
 
     class PromiseEndViewHolder(
         viewGroup: ViewGroup,
-        onClickEnd: (PromiseInfoModel?) -> Unit,
+        onClickEnd: (PromiseDataModel?) -> Unit,
         @LayoutRes itemPromise: Int,
-    ) : BaseViewHolder<PromiseInfoModel, ItemPromiseEndBinding>(viewGroup, itemPromise) {
+    ) : BaseViewHolder<PromiseDataModel, ItemPromiseEndBinding>(viewGroup, itemPromise) {
 
         override val binding: ItemPromiseEndBinding = ItemPromiseEndBinding.bind(itemView)
 
@@ -38,16 +38,16 @@ class PromisesAdapter(
             }
         }
 
-        override fun bind(item: PromiseInfoModel) {
+        override fun bind(item: PromiseDataModel) {
             binding.item = item
         }
     }
 
     class PromiseOngoingViewHolder(
         viewGroup: ViewGroup,
-        onClickOngoing: (PromiseInfoModel?) -> Unit,
+        onClickOngoing: (PromiseDataModel?) -> Unit,
         @LayoutRes itemPromise: Int,
-    ) : BaseViewHolder<PromiseInfoModel, ItemPromiseOngoingBinding>(viewGroup, itemPromise) {
+    ) : BaseViewHolder<PromiseDataModel, ItemPromiseOngoingBinding>(viewGroup, itemPromise) {
 
         override val binding: ItemPromiseOngoingBinding = ItemPromiseOngoingBinding.bind(itemView)
 
@@ -59,16 +59,16 @@ class PromisesAdapter(
             }
         }
 
-        override fun bind(item: PromiseInfoModel) {
+        override fun bind(item: PromiseDataModel) {
             binding.item = item
         }
     }
 
     class PromiseBeforeViewHolder(
         viewGroup: ViewGroup,
-        onClickBefore: (PromiseInfoModel?) -> Unit,
+        onClickBefore: (PromiseDataModel?) -> Unit,
         @LayoutRes itemPromise: Int,
-    ) : BaseViewHolder<PromiseInfoModel, ItemPromiseBeforeBinding>(viewGroup, itemPromise) {
+    ) : BaseViewHolder<PromiseDataModel, ItemPromiseBeforeBinding>(viewGroup, itemPromise) {
 
         override val binding: ItemPromiseBeforeBinding = ItemPromiseBeforeBinding.bind(itemView)
 
@@ -80,7 +80,7 @@ class PromisesAdapter(
             }
         }
 
-        override fun bind(item: PromiseInfoModel) {
+        override fun bind(item: PromiseDataModel) {
             binding.item = item
         }
     }
@@ -102,7 +102,7 @@ class PromisesAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<PromiseInfoModel, *> {
+    ): BaseViewHolder<PromiseDataModel, *> {
         return when (viewType) {
             PROMISE_BEFORE -> PromiseBeforeViewHolder(
                 parent,
@@ -124,7 +124,7 @@ class PromisesAdapter(
     }
 
     override fun onBindViewHolder(
-        holder: BaseViewHolder<PromiseInfoModel, *>,
+        holder: BaseViewHolder<PromiseDataModel, *>,
         position: Int
     ) {
         holder.bind(getItem(position))
@@ -138,12 +138,12 @@ class PromisesAdapter(
 
 }
 
-class PromiseInfoModelDiff : DiffUtil.ItemCallback<PromiseInfoModel>() {
-    override fun areItemsTheSame(oldItem: PromiseInfoModel, newItem: PromiseInfoModel): Boolean {
+class PromiseInfoModelDiff : DiffUtil.ItemCallback<PromiseDataModel>() {
+    override fun areItemsTheSame(oldItem: PromiseDataModel, newItem: PromiseDataModel): Boolean {
         return oldItem.promiseLocation == newItem.promiseLocation && oldItem.promiseDateTime == newItem.promiseDateTime && oldItem.gameDateTime == newItem.gameDateTime
     }
 
-    override fun areContentsTheSame(oldItem: PromiseInfoModel, newItem: PromiseInfoModel): Boolean {
+    override fun areContentsTheSame(oldItem: PromiseDataModel, newItem: PromiseDataModel): Boolean {
         return oldItem == newItem
     }
 
