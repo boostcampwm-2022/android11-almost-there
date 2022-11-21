@@ -11,8 +11,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -29,13 +30,9 @@ class LocationSearchFragment :
     BaseFragment<FragmentLocationSearchBinding>(R.layout.fragment_location_search),
     SearchView.OnQueryTextListener {
 
-    private val activityViewModel: CreatingPromiseViewModel by lazy {
-        ViewModelProvider(requireActivity())[(CreatingPromiseViewModel::class.java)]
-    }
+    private val activityViewModel: CreatingPromiseViewModel by activityViewModels()
 
-    private val fragmentViewModel: LocationSearchViewModel by lazy {
-        ViewModelProvider(this)[LocationSearchViewModel::class.java]
-    }
+    private val fragmentViewModel: LocationSearchViewModel by viewModels()
 
     private val locationManager by lazy {
         requireContext().getSystemService(LOCATION_SERVICE) as LocationManager

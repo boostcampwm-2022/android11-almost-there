@@ -1,7 +1,7 @@
 package com.woory.almostthere.ui.creatingpromise
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.ActivityCreatingPromiseBinding
 import com.woory.almostthere.ui.BaseActivity
@@ -11,9 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreatingPromiseActivity :
     BaseActivity<ActivityCreatingPromiseBinding>(R.layout.activity_creating_promise) {
 
-    private val viewModel: CreatingPromiseViewModel by lazy {
-        ViewModelProvider(this)[CreatingPromiseViewModel::class.java]
-    }
+    private val viewModel: CreatingPromiseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
