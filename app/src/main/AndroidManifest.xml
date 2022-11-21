@@ -15,14 +15,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AlmostThere"
         tools:targetApi="31">
+
+        <activity
+            android:name=".ui.join.JoinActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
+
         <activity
             android:name=".ui.splash.SplashActivity"
-            android:theme="@style/Theme.AlmostThere.Splash"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AlmostThere.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,12 +40,10 @@
             android:authorities="com.woory.almostthere.androidx-startup"
             android:exported="false"
             tools:node="merge">
-
             <meta-data
                 android:name="com.woory.almostthere.initializer.TimberInitializer"
                 android:value="androidx.startup" />
         </provider>
-
     </application>
 
 </manifest>

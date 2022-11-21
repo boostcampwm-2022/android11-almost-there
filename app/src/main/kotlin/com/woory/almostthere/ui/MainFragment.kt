@@ -35,7 +35,7 @@ class MainFragment : Fragment() {
 
         binding.containerJoinPromise.setOnClickListener {
             navController.navigate(
-                R.id.nav_dummy_join_frag,
+                R.id.nav_join_activity,
                 null,
                 animLeftToRightNavOptions
             )

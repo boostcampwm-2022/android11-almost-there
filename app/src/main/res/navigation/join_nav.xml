@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/dest_invite">
+
+    <fragment
+        android:id="@+id/dest_invite"
+        android:name="com.woory.almostthere.ui.join.InviteFragment"
+        android:label="@string/join"
+        tools:layout="@layout/fragment_invite" />
+
+    <fragment
+        android:id="@+id/dest_profile"
+        android:name="com.woory.almostthere.ui.join.ProfileFragment"
+        android:label="@string/join"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/dest_promise_detail"
+        android:name="com.woory.almostthere.ui.dummy.DummyEndedPromise"
+        android:label="@string/promise_detail"
+        tools:layout="@layout/fragment_dummy_ended_promise" />
+
+</navigation>

@@ -12,4 +12,6 @@
     <string name="set_promise_hint"><![CDATA[약속 생성 >]]></string>
     <string name="promise_history">언제야</string>
     <string name="promise_history_hint"><![CDATA[< 약속 보기]]></string>
+    <string name="join">약속 참여</string>
+    <string name="promise_detail">약속 상세 정보</string>
 </resources>
