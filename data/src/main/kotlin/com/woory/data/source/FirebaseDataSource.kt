@@ -7,15 +7,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface FirebaseDataSource {
 
-    fun getPromiseByCode(code: String): Result<PromiseDataModel>
+    suspend fun getPromiseByCode(code: String): Result<PromiseDataModel>
 
-    fun createPromise(promiseDataModel: PromiseDataModel): Result<Unit>
+    suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<Unit>
 
-    fun getUserLocationById(id: String): Flow<Result<UserLocationModel>>
+    suspend fun getUserLocationById(id: String): Flow<Result<UserLocationModel>>
 
-    fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
+    suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
 
-    fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>>
+    suspend fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>>
 
-    fun setUserHp(id: String, gameToken: String, newHp: Int): Result<Unit>
+    suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
 }
