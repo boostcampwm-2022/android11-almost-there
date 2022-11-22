@@ -19,4 +19,6 @@
     <color name="almost_there_grey04">#F5F5F7</color>           <!-- Background -->
     <color name="almost_there_white">#FFFFFF</color>            <!-- Disable, Label, etc -->
     <color name="splash_background">#E9F4EC</color>
+    <color name="join_button_background">#FF00C853</color>
+    <color name="loading_indicator_color">#FF2962FF</color>
 </resources>

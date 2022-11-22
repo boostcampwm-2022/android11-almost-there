@@ -45,4 +45,10 @@
     <string name="game_result_finish">종료</string>
     <string name="gaming_hp">HP</string>
     <string name="gaming_ranking">순위</string>
+    <string name="invalid_invite_code">유효하지 않은 초대 코드 입니다.</string>
+    <string name="valid_invite_code">유효한 초대 코드 입니다.</string>
+    <string name="label_invite_code">초대 코드 입력</string>
+    <string name="hint_invite_code">영문, 숫자 조합 7자리</string>
+    <string name="already_join">이미 참여중인 약속입니다.</string>
+    <string name="already_started">만료된 약속입니다.</string>
 </resources>
