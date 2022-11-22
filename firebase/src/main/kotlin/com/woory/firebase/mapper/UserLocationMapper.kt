@@ -6,11 +6,11 @@ import com.woory.data.model.UserLocationModel
 import com.woory.firebase.model.UserLocation
 
 internal fun UserLocation.toUserLocationModel() = UserLocationModel(
-    id = this.Id,
-    location = GeoPointModel(this.Location.latitude, this.Location.longitude)
+    id = this.id,
+    location = GeoPointModel(this.location.latitude, this.location.longitude)
 )
 
 internal fun UserLocationModel.toUserLocation() = UserLocation(
-    Id = this.id,
-    Location = GeoPoint(this.location.latitude, this.location.longitude)
+    id = this.id,
+    location = GeoPoint(this.location.latitude, this.location.longitude)
 )
