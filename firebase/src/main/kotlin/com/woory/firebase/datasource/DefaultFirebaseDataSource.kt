@@ -11,12 +11,16 @@ import com.woory.firebase.mapper.*
 import com.woory.firebase.model.PromiseData
 import com.woory.firebase.model.UserHp
 import com.woory.firebase.model.UserLocation
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
-class DefaultFirebaseDataSource @Inject constructor(private val fireStore: FirebaseFirestore) : FirebaseDataSource {
+class DefaultFirebaseDataSource @Inject constructor(
+    private val fireStore: FirebaseFirestore,
+    private val scope: CoroutineScope
+) : FirebaseDataSource {
 
     override fun getPromiseByCode(code: String): Result<PromiseDataModel> {
         val result = runCatching {
