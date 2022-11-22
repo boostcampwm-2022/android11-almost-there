@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -21,5 +22,8 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseDataSource(fireStore: FirebaseFirestore): FirebaseDataSource = DefaultFirebaseDataSource(fireStore)
+    fun provideFirebaseDataSource(
+        fireStore: FirebaseFirestore,
+        scope: CoroutineScope
+    ): FirebaseDataSource = DefaultFirebaseDataSource(fireStore, scope)
 }

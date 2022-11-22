@@ -11,88 +11,103 @@ import com.woory.firebase.mapper.*
 import com.woory.firebase.model.PromiseData
 import com.woory.firebase.model.UserHp
 import com.woory.firebase.model.UserLocation
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class DefaultFirebaseDataSource @Inject constructor(private val fireStore: FirebaseFirestore) : FirebaseDataSource {
+class DefaultFirebaseDataSource @Inject constructor(
+    private val fireStore: FirebaseFirestore,
+    private val scope: CoroutineScope
+) : FirebaseDataSource {
 
-    override fun getPromiseByCode(code: String): Result<PromiseDataModel> {
-        val result = runCatching {
-            val task = fireStore
-                .collection("Promises")
-                .document("Game1토큰")
-                .get()
-            Tasks.await(task)
-            val res = task.result
-                .toObject(PromiseData::class.java)
-                ?.toPromiseDataModel() ?: throw IllegalStateException("Unmatched State with Server")
-            res
-        }
-
-        return when (val exception = result.exceptionOrNull()) {
-            null -> result
-            else -> Result.failure(exception)
-        }
-    }
-
-    override fun createPromise(promiseDataModel: PromiseDataModel): Result<Unit> {
-        val result = kotlin.runCatching {
-            val res = fireStore
-                .collection("Promises")
-                .document("Game1토큰")
-                .set(promiseDataModel.toPromiseData())
-        }
-
-        return when (val exception = result.exceptionOrNull()) {
-            null -> result
-            else -> Result.failure(exception)
-        }
-    }
-
-    override fun getUserLocationById(id: String): Flow<Result<UserLocationModel>> = callbackFlow {
-        var documentReference: DocumentReference? = null
-
-        kotlin.runCatching {
-            documentReference = fireStore.collection("UserLocation").document(id)
-        }.onFailure {
-            trySend(Result.failure(it))
-        }
-
-        val subscription = documentReference?.addSnapshotListener { value, error ->
-            if (value == null) {
-                return@addSnapshotListener
+    override suspend fun getPromiseByCode(code: String): Result<PromiseDataModel> {
+        return withContext(scope.coroutineContext) {
+            val result = runCatching {
+                val task = fireStore
+                    .collection("Promises")
+                    .document("Game1토큰")
+                    .get()
+                Tasks.await(task)
+                val res = task.result
+                    .toObject(PromiseData::class.java)
+                    ?.toPromiseDataModel()
+                    ?: throw IllegalStateException("Unmatched State with Server")
+                res
             }
 
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
+        }
+    }
+
+    // TODO : 랜덤 Code 생성하는 로직 추가 (어디서 생성을 할지??)
+    override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<Unit> {
+        return withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val res = fireStore
+                    .collection("Promises")
+                    .document("Game1토큰")
+                    .set(promiseDataModel.toPromiseData())
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
+        }
+    }
+
+    override suspend fun getUserLocationById(id: String): Flow<Result<UserLocationModel>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
             kotlin.runCatching {
-                val result = value.toObject(UserLocation::class.java)
-                result?.let {
-                    trySend(Result.success(it.toUserLocationModel()))
-                } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
+                documentReference = fireStore.collection("UserLocation").document(id)
             }.onFailure {
                 trySend(Result.failure(it))
             }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                if (value == null) {
+                    return@addSnapshotListener
+                }
+
+                kotlin.runCatching {
+                    val result = value.toObject(UserLocation::class.java)
+                    result?.let {
+                        trySend(Result.success(it.toUserLocationModel()))
+                    } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
+                }.onFailure {
+                    trySend(Result.failure(it))
+                }
+            }
+
+            awaitClose { subscription?.remove() }
         }
 
-        awaitClose { subscription?.remove() }
+    override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> {
+        return withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val res = fireStore
+                    .collection("UserLocation")
+                    .document(userLocationModel.id)
+                    .set(userLocationModel.toUserLocation())
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
+        }
     }
 
-    override fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> {
-        val result = kotlin.runCatching {
-            val res = fireStore
-                .collection("UserLocation")
-                .document(userLocationModel.id)
-                .set(userLocationModel.toUserLocation())
-        }
-
-        return when (val exception = result.exceptionOrNull()) {
-            null -> result
-            else -> Result.failure(exception)
-        }
-    }
-
-    override fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>> = callbackFlow {
+    override suspend fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>> =
+        callbackFlow {
             var documentReference: DocumentReference? = null
 
             kotlin.runCatching {
@@ -123,19 +138,21 @@ class DefaultFirebaseDataSource @Inject constructor(private val fireStore: Fireb
             awaitClose { subscription?.remove() }
         }
 
-    override fun setUserHp(id: String, gameToken: String, newHp: Int): Result<Unit> {
-        val result = kotlin.runCatching {
-            val res = fireStore
-                .collection("UserLocation")
-                .document(gameToken)
-                .collection("Hp")
-                .document(id)
-                .set(UserHp(id, newHp))
-        }
+    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> {
+        return withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val res = fireStore
+                    .collection("UserLocation")
+                    .document(gameToken)
+                    .collection("Hp")
+                    .document(userHpModel.id)
+                    .set(userHpModel.toUserHp())
+            }
 
-        return when (val exception = result.exceptionOrNull()) {
-            null -> result
-            else -> Result.failure(exception)
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
         }
     }
 }
