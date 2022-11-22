@@ -3,13 +3,17 @@ package com.woory.almostthere.ui.creatingpromise
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.almostthere.model.LocationModel
+import com.woory.data.repository.PromiseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
+import javax.inject.Inject
 
-class CreatingPromiseViewModel : ViewModel() {
+@HiltViewModel
+class CreatingPromiseViewModel @Inject constructor(private val repository: PromiseRepository) : ViewModel() {
 
     private val _promiseLocation: MutableStateFlow<LocationModel?> =  MutableStateFlow(null)
     val promiseLocation: StateFlow<LocationModel?> = _promiseLocation.asStateFlow()
