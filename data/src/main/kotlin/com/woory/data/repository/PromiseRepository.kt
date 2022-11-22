@@ -6,13 +6,13 @@ import com.woory.data.model.UserStateModel
 
 interface PromiseRepository {
 
-    fun getAddressByPoint(geoPoint: GeoPointModel): Result<String>
+    suspend fun getAddressByPoint(geoPoint: GeoPointModel): Result<String>
 
-    fun getPromiseByCode(code: String): Result<Unit>
+    suspend fun getPromiseByCode(code: String): Result<Unit>
 
-    fun createPromise(promise: PromiseDataModel): Result<Unit>
+    suspend fun createPromise(promise: PromiseDataModel): Result<Unit>
 
-    fun setUserState(userState: UserStateModel): Result<Unit>
+    suspend fun setUserState(userState: UserStateModel): Result<Unit>
 
-    fun getUserState(id: String): Result<UserStateModel>
+    suspend fun getUserState(id: String): Result<UserStateModel>
 }
