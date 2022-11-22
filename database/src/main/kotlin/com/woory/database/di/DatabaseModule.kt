@@ -17,8 +17,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    @Provides
     @Singleton
+    @Provides
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(
             context,
@@ -31,7 +31,7 @@ object DatabaseModule {
         return database.promiseDao()
     }
 
-    @Provides
     @Singleton
+    @Provides
     fun provideDatabaseDataSource(promiseDao: PromiseDao): DatabaseDataSource = DefaultDatabaseDataSource(promiseDao)
 }

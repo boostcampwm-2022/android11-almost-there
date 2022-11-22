@@ -3,11 +3,15 @@ package com.woory.data.repository
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.UserStateModel
+import com.woory.data.source.DatabaseDataSource
+import com.woory.data.source.FirebaseDataSource
+import com.woory.data.source.NetworkDataSource
+import javax.inject.Inject
 
-class DefaultPromiseRepository (
-//    private val databaseDataSource: DatabaseDataSource,
-//    private val firebaseDataSource: FirebaseDataSource,
-//    private val networkDataSource: NetworkDataSource
+class DefaultPromiseRepository @Inject constructor(
+    private val databaseDataSource: DatabaseDataSource,
+    private val firebaseDataSource: FirebaseDataSource,
+    private val networkDataSource: NetworkDataSource
 ) : PromiseRepository {
 
     override suspend fun createPromise(promise: PromiseDataModel): Result<Unit> {

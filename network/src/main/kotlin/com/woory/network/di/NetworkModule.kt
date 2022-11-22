@@ -43,8 +43,8 @@ object NetworkModule {
         }
     }
 
-    @Provides
     @Singleton
+    @Provides
     fun provideMapService(): TMapService =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -53,8 +53,8 @@ object NetworkModule {
             .build()
             .create(TMapService::class.java)
 
-    @Provides
     @Singleton
+    @Provides
     fun provideNetworkDataSource(tMapService: TMapService): NetworkDataSource {
         return DefaultNetworkDataSource(tMapService)
     }

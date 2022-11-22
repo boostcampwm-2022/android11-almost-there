@@ -3,8 +3,6 @@ package com.woory.firebase.datasource
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
@@ -18,11 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
-class DefaultFirebaseDataSource @Inject constructor() : FirebaseDataSource {
-
-    private val fireStore: FirebaseFirestore by lazy {
-        Firebase.firestore
-    }
+class DefaultFirebaseDataSource @Inject constructor(private val fireStore: FirebaseFirestore) : FirebaseDataSource {
 
     override fun getPromiseByCode(code: String): Result<PromiseDataModel> {
         val result = runCatching {
