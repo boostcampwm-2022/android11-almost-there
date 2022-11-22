@@ -1,4 +1,4 @@
-package com.woory.network
+package com.woory.firebase
 
 import org.junit.Test
 

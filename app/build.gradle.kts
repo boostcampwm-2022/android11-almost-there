@@ -47,6 +47,10 @@ android {
         buildFeatures {
             dataBinding = true
         }
+
+        hilt {
+            enableAggregatingTask = true
+        }
     }
 }
 
