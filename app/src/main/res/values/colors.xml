@@ -11,4 +11,7 @@
     <color name="almost_there_white">#FFFFFF</color>            <!-- Disable, Label, etc -->
 
     <color name="splash_background">#E9F4EC</color>
+
+    <color name="join_button_background">#FF00C853</color>
+    <color name="loading_indicator_color">#FF2962FF</color>
 </resources>
