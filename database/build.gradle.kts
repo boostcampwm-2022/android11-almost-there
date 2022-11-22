@@ -32,6 +32,9 @@ dependencies {
     kapt("android.arch.persistence.room:compiler:1.1.1")
     testImplementation("androidx.room:room-testing:$room_version")
 
+    // ThreeTenABP
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
