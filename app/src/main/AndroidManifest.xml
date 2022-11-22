@@ -23,6 +23,9 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.join.ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.gameresult.GameResultActivity"
             android:exported="false" />
 
