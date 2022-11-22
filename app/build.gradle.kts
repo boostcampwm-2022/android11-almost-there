@@ -47,6 +47,10 @@ android {
         buildFeatures {
             dataBinding = true
         }
+
+        hilt {
+            enableAggregatingTask = true
+        }
     }
 }
 
@@ -90,6 +94,9 @@ dependencies {
 
     // ThreeTenABP
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+
+    // Timber
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")

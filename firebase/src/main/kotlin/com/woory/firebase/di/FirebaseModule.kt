@@ -26,4 +26,9 @@ object FirebaseModule {
         fireStore: FirebaseFirestore,
         scope: CoroutineScope
     ): FirebaseDataSource = DefaultFirebaseDataSource(fireStore, scope)
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataStore(): RemoteDataStore =
+        DefaultRemoteDataStore()
 }
