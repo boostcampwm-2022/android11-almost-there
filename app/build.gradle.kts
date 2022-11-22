@@ -1,4 +1,4 @@
-import java.util.Properties
+import java.util.*
 
 plugins {
     id("com.android.application")
@@ -59,6 +59,9 @@ fun readProperties(propertiesFile: File) = Properties().apply {
 dependencies {
     // Modules
     implementation(project(":data"))
+    implementation(project(":network"))
+    implementation(project(":database"))
+    implementation(project(":firebase"))
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")

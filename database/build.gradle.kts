@@ -16,6 +16,9 @@ android {
 }
 
 dependencies {
+    // Modules
+    implementation(project(":data"))
+
     // di
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
@@ -28,6 +31,9 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     kapt("android.arch.persistence.room:compiler:1.1.1")
     testImplementation("androidx.room:room-testing:$room_version")
+
+    // ThreeTenABP
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")

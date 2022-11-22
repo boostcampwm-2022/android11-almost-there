@@ -8,7 +8,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.NumberPicker
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.FragmentCreatingPromiseBinding
@@ -73,41 +75,43 @@ class CreatingPromiseFragment :
 
     private fun setUpCollector() {
         viewLifecycleOwner.lifecycleScope.launch {
-            launch {
-                viewModel.promiseLocation.collectLatest {
-                    binding.etPromiseLocation.setText(it?.location ?: "")
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.promiseLocation.collectLatest {
+                        binding.etPromiseLocation.setText(it?.address ?: "")
+                    }
                 }
-            }
 
-            launch {
-                viewModel.promiseDate.collectLatest {
-                    binding.etPromiseDate.setText(it?.toString() ?: "")
+                launch {
+                    viewModel.promiseDate.collectLatest {
+                        binding.etPromiseDate.setText(it?.toString() ?: "")
+                    }
                 }
-            }
 
-            launch {
-                viewModel.promiseTime.collectLatest {
-                    binding.etPromiseTime.setText(it?.toString() ?: "")
+                launch {
+                    viewModel.promiseTime.collectLatest {
+                        binding.etPromiseTime.setText(it?.toString() ?: "")
+                    }
                 }
-            }
 
-            launch {
-                viewModel.gameTime.collectLatest { gameTime ->
-                    binding.etGameTime.setText(
-                        if (gameTime != null) {
-                            String.format(
-                                getString(R.string.before_time),
-                                gameTime.toHours(),
-                                gameTime.toMinutes() % 60
-                            )
-                        } else ""
-                    )
+                launch {
+                    viewModel.gameTime.collectLatest { gameTime ->
+                        binding.etGameTime.setText(
+                            if (gameTime != null) {
+                                String.format(
+                                    getString(R.string.before_time),
+                                    gameTime.toHours(),
+                                    gameTime.toMinutes() % 60
+                                )
+                            } else ""
+                        )
+                    }
                 }
-            }
 
-            launch {
-                viewModel.isEnabled.collect {
-                    binding.btnPromiseCreate.isEnabled = it
+                launch {
+                    viewModel.isEnabled.collect {
+                        binding.btnPromiseCreate.isEnabled = it
+                    }
                 }
             }
         }
@@ -185,8 +189,10 @@ class CreatingPromiseFragment :
 
     private fun showGameTimePickerDialog() {
         viewModel.gameTime.value?.let {
-            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value = it.toHours().toInt()
-            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value = (it.toMinutes() % 60).toInt()
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value =
+                it.toHours().toInt()
+            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value =
+                (it.toMinutes() % 60).toInt()
         }
 
         gameTimePickerDialog.show()
