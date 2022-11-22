@@ -1,9 +1,6 @@
 package com.woory.data.repository
 
-import com.woory.data.model.GeoPointModel
-import com.woory.data.model.PromiseDataModel
-import com.woory.data.model.UserHpModel
-import com.woory.data.model.UserLocationModel
+import com.woory.data.model.*
 import kotlinx.coroutines.flow.Flow
 
 interface PromiseRepository {
@@ -21,4 +18,7 @@ interface PromiseRepository {
     suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>>
 
     suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>>
+
+    @WorkerThread
+    suspend fun fetchPromise(code: String): Result<Promise>
 }
