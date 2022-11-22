@@ -16,9 +16,16 @@ android {
 }
 
 dependencies {
+    // Modules
+    implementation(project(":network"))
+    implementation(project(":database"))
+
     // di
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
+
+    // ThreeTenABP
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")
