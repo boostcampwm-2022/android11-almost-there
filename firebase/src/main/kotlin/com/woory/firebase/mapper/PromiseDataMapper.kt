@@ -10,23 +10,23 @@ import java.util.*
 
 internal fun PromiseData.toPromiseDataModel(): PromiseDataModel {
 
-    val code = this.Code
+    val code = this.code
 
     val promiseLocation = LocationModel(
-        geoPoint = GeoPointModel(this.Destination.latitude, this.Destination.longitude),
-        address = this.Address
+        geoPoint = GeoPointModel(this.destination.latitude, this.destination.longitude),
+        address = this.address
     )
 
-    val promiseDateTime = this.PromiseTime.toDate().toOffsetDate()
-    val gameDateTime = this.GameTime.toDate().toOffsetDate()
+    val promiseDateTime = this.promiseTime.toDate().toOffsetDate()
+    val gameDateTime = this.gameTime.toDate().toOffsetDate()
 
     val host = UserModel(
-        id = this.Host.UserId,
-        name = this.Host.UserName,
-        image = UserImage(this.Host.UserImage.Color, this.Host.UserImage.ImageIdx)
+        id = this.host.userId,
+        name = this.host.userName,
+        image = UserImage(this.host.userImage.color, this.host.userImage.imageIdx)
     )
 
-    val users = this.Users.map { it.toUserModel() }
+    val users = this.users.map { it.toUserModel() }
 
     return PromiseDataModel(
         code, promiseLocation, promiseDateTime, gameDateTime, host, users
@@ -46,13 +46,13 @@ internal fun PromiseDataModel.toPromiseData(): PromiseData {
     val users = this.users.map { it.toPromiseParticipant() }
 
     return PromiseData(
-        Address = address,
-        Code = code,
-        Destination = destination,
-        Host = host,
-        GameTime = gameTime,
-        PromiseTime = promiseTime,
-        Users = users
+        address = address,
+        code = code,
+        destination = destination,
+        host = host,
+        gameTime = gameTime,
+        promiseTime = promiseTime,
+        users = users
     )
 }
 

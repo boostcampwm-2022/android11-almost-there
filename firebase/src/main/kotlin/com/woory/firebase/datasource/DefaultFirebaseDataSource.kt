@@ -1,5 +1,6 @@
 package com.woory.firebase.datasource
 
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -9,10 +10,6 @@ import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.*
-import com.woory.firebase.mapper.toPromiseDataModel
-import com.woory.firebase.mapper.toUserHpModel
-import com.woory.firebase.mapper.toUserLocation
-import com.woory.firebase.mapper.toUserLocationModel
 import com.woory.firebase.model.PromiseData
 import com.woory.firebase.model.UserHp
 import com.woory.firebase.model.UserLocation
@@ -29,10 +26,12 @@ class DefaultFirebaseDataSource @Inject constructor() : FirebaseDataSource {
 
     override fun getPromiseByCode(code: String): Result<PromiseDataModel> {
         val result = runCatching {
-            val res = fireStore
+            val task = fireStore
                 .collection("Promises")
                 .document("Game1토큰")
-                .get().result
+                .get()
+            Tasks.await(task)
+            val res = task.result
                 .toObject(PromiseData::class.java)
                 ?.toPromiseDataModel() ?: throw IllegalStateException("Unmatched State with Server")
             res

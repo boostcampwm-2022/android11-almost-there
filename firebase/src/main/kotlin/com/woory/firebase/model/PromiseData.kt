@@ -4,22 +4,22 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 
 data class PromiseData(
-    val Address: String,
-    val Code: String,
-    val Destination: GeoPoint,
-    val Host: PromiseParticipant,
-    val GameTime: Timestamp,
-    val PromiseTime: Timestamp,
-    val Users: List<PromiseParticipant>
+    val address: String = "",
+    val code: String = "",
+    val destination: GeoPoint = GeoPoint(0.0, 0.0),
+    val host: PromiseParticipant = PromiseParticipant(),
+    val gameTime: Timestamp = Timestamp(1, 1),
+    val promiseTime: Timestamp = Timestamp(1, 1),
+    val users: List<PromiseParticipant> = listOf()
 )
 
 data class PromiseParticipant(
-    val UserImage: UserImageInfo,
-    val UserName: String,
-    val UserId: String
+    val userImage: UserImageInfo = UserImageInfo(),
+    val userName: String = "",
+    val userId: String = ""
 )
 
 data class UserImageInfo(
-    val Color: String,
-    val ImageIdx: Int
+    val color: String = "",
+    val imageIdx: Int = 0
 )
