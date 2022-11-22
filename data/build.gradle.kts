@@ -16,11 +16,6 @@ android {
 }
 
 dependencies {
-    // Modules
-    implementation(project(":network"))
-    implementation(project(":database"))
-    implementation(project(":firebase"))
-
     // di
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")

@@ -27,6 +27,9 @@ fun readProperties(propertiesFile: File) = Properties().apply {
 }
 
 dependencies {
+    // modules
+    implementation(project(":data"))
+
     // di
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
