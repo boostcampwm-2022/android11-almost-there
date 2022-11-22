@@ -1,39 +1,69 @@
 package com.woory.almostthere.ui.join
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.woory.almostthere.R
 import com.woory.almostthere.databinding.ActivityJoinBinding
+import com.woory.almostthere.model.mapper.asUiState
 import com.woory.almostthere.ui.ActivityViewBindingDelegate
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class JoinActivity : AppCompatActivity() {
 
     private val binding: ActivityJoinBinding by ActivityViewBindingDelegate(R.layout.activity_join)
 
+    internal val viewModel: JoinViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initViews()
+        binding.vm = viewModel
+
+        initToolbar()
+        bindViews()
     }
 
-    private fun initViews() = with(binding) {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.container) as? NavHostFragment
-                ?: return@with
-        val navController = navHostFragment.navController
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.dest_invite, R.id.dest_profile, R.id.dest_promise_detail)
-        )
+    private fun initToolbar() = with(binding) {
+        setSupportActionBar(toolbar)
 
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowHomeEnabled(true)
+        }
+    }
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            toolbar.title = destination.label
+    private fun bindViews() = with(binding) {
+        lifecycleScope.launch {
+            viewModel.promise.collectLatest { promise ->
+                promise ?: return@collectLatest
+
+                ProfileActivity.startActivity(this@JoinActivity, promise.asUiState())
+            }
         }
 
-        setSupportActionBar(toolbar)
+        lifecycleScope.launch {
+            viewModel.errorType.collectLatest { codeState ->
+                codeState ?: return@collectLatest
+
+                Snackbar.make(
+                    binding.root,
+                    codeState.getMessage(this@JoinActivity),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    companion object {
+        fun startActivity(context: Context) =
+            context.startActivity(Intent(context, JoinActivity::class.java))
     }
 }
