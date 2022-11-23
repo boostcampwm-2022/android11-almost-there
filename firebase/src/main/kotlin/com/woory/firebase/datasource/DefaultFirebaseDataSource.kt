@@ -28,7 +28,7 @@ class DefaultFirebaseDataSource @Inject constructor(
             val result = runCatching {
                 val task = fireStore
                     .collection("Promises")
-                    .document("Game1토큰")
+                    .document(code)
                     .get()
                 Tasks.await(task)
                 val res = task.result
@@ -37,6 +37,8 @@ class DefaultFirebaseDataSource @Inject constructor(
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
             }
+
+            // TODO: 현재 요청 시점이 해당 약속의 자기장 시작 시간보다 늦으면 new exception
 
             when (val exception = result.exceptionOrNull()) {
                 null -> result
@@ -51,7 +53,7 @@ class DefaultFirebaseDataSource @Inject constructor(
             val result = kotlin.runCatching {
                 val res = fireStore
                     .collection("Promises")
-                    .document("Game1토큰")
+                    .document(promiseDataModel.code)
                     .set(promiseDataModel.toPromiseData())
             }
 
