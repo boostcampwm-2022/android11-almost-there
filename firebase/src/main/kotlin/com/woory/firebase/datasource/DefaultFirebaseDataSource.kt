@@ -11,7 +11,7 @@ import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.*
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
-import com.woory.firebase.model.UserLocation
+import com.woory.firebase.model.UserLocationDocument
 import com.woory.firebase.util.InviteCodeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -99,7 +99,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 }
 
                 kotlin.runCatching {
-                    val result = value.toObject(UserLocation::class.java)
+                    val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.toUserLocationModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
