@@ -9,8 +9,8 @@ import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.*
-import com.woory.firebase.model.Promise
-import com.woory.firebase.model.UserHp
+import com.woory.firebase.model.PromiseDocument
+import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocation
 import com.woory.firebase.util.InviteCodeUtil
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +34,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .get()
                 Tasks.await(task)
                 val res = task.result
-                    .toObject(Promise::class.java)
+                    .toObject(PromiseDocument::class.java)
                     ?.toPromiseModel()
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
@@ -147,7 +147,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 }
 
                 kotlin.runCatching {
-                    val result = value.toObject(UserHp::class.java)
+                    val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.toUserHpModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
