@@ -20,14 +20,4 @@
         android:name="com.woory.presentation.ui.join.JoinActivity"
         tools:layout="@layout/activity_join" />
 
-    <fragment
-        android:id="@+id/nav_dummy_ended_frag"
-        android:name="com.woory.presentation.ui.dummy.DummyEndedPromise"
-        tools:layout="@layout/fragment_dummy_ended_promise" />
-
-    <fragment
-        android:id="@+id/nav_dummy_almost_frag"
-        android:name="com.woory.presentation.ui.dummy.DummyAlmostPromise"
-        tools:layout="@layout/fragment_dummy_almost_promise" />
-
 </navigation>
