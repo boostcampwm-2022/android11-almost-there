@@ -1,4 +1,4 @@
-package com.woory.firebase.model.mapper
+package com.woory.firebase.mapper
 
 interface ModelMapper<Domain, Model> {
 

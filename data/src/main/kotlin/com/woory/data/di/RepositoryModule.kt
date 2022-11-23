@@ -23,16 +23,4 @@ object RepositoryModule {
         networkDataSource: NetworkDataSource
     ): PromiseRepository =
         DefaultPromiseRepository(databaseDataSource, firebaseDataSource, networkDataSource)
-
-    @Singleton
-    @Provides
-    fun provideIoDispatcher() = Dispatchers.IO
-
-    @Provides
-    @Singleton
-    fun providePromiseRepository(
-        remoteDataStore: RemoteDataStore,
-        ioDispatcher: CoroutineDispatcher
-    ): PromiseRepository =
-        DefaultPromiseRepository(remoteDataStore, ioDispatcher)
 }
