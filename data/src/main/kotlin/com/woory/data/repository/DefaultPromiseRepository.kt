@@ -1,9 +1,6 @@
 package com.woory.data.repository
 
-import com.woory.data.model.GeoPointModel
-import com.woory.data.model.PromiseDataModel
-import com.woory.data.model.UserHpModel
-import com.woory.data.model.UserLocationModel
+import com.woory.data.model.*
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -36,4 +33,11 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>> =
         firebaseDataSource.getUserHpById(userId, gameToken)
+
+    @WorkerThread
+    override suspend fun fetchPromise(code: String): Result<Promise> = with(ioDispatcher) {
+        runCatching {
+            remoteDataStore.fetchPromise(code) ?: throw NoSuchElementException()
+        }
+    }
 }
