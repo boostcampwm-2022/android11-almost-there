@@ -2,7 +2,12 @@ package com.woory.firebase.mapper
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
-import com.woory.data.model.*
+import com.woory.data.model.GeoPointModel
+import com.woory.data.model.LocationModel
+import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseModel
+import com.woory.data.model.UserImage
+import com.woory.data.model.UserModel
 import com.woory.firebase.model.PromiseDocument
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneOffset

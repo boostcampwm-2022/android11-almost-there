@@ -8,7 +8,12 @@ import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.source.FirebaseDataSource
-import com.woory.firebase.mapper.*
+import com.woory.firebase.mapper.toPromise
+import com.woory.firebase.mapper.toPromiseModel
+import com.woory.firebase.mapper.toUserHp
+import com.woory.firebase.mapper.toUserHpModel
+import com.woory.firebase.mapper.toUserLocation
+import com.woory.firebase.mapper.toUserLocationModel
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
