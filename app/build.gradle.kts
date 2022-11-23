@@ -1,9 +1,6 @@
-import java.util.*
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
@@ -20,9 +17,6 @@ android {
         versionName = "1.0"
         multiDexEnabled = true
 
-        val projectProperties = readProperties(file("../local.properties"))
-        buildConfigField("String", "MAP_API_KEY", projectProperties["MAP_API_KEY"] as String)
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildTypes {
@@ -34,66 +28,36 @@ android {
                 )
             }
         }
-
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
-
         kotlinOptions {
             jvmTarget = "1.8"
         }
-
-        buildFeatures {
-            dataBinding = true
-        }
-
         hilt {
             enableAggregatingTask = true
         }
-    }
-}
-
-fun readProperties(propertiesFile: File) = Properties().apply {
-    propertiesFile.inputStream().use { fis ->
-        load(fis)
+        buildFeatures {
+            dataBinding = true
+        }
     }
 }
 
 dependencies {
     // Modules
+    implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(project(":network"))
     implementation(project(":database"))
     implementation(project(":firebase"))
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.7.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-
-    // coroutine
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-
-    // navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
-
-    // T map
-    implementation(files("libs/tmap-sdk-1.1.aar"))
-    implementation(files("libs/vsm-tmap-sdk-v2-android-1.6.60.aar"))
-
-    // multidex
+    // Multidex
     implementation("androidx.multidex:multidex:2.0.1")
 
-    // di
+    // DI
     implementation("com.google.dagger:hilt-android:2.44")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     kapt("com.google.dagger:hilt-compiler:2.44")
-
-    // ThreeTenABP
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
 
     // Timber
     implementation("com.jakewharton.timber:timber:5.0.1")

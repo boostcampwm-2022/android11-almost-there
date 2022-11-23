@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.woory.presentation">
+
+    <application>
+        <activity
+            android:name=".ui.promises.PromisesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gameresult.GameResultActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gaming.GamingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.promiseinfo.PromiseInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AlmostThere.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.creatingpromise.CreatingPromiseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.join.ProfileActivity"
+            android:exported="false"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".ui.join.JoinActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>
