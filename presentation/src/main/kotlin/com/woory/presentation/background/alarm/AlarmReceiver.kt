@@ -3,7 +3,6 @@ package com.woory.presentation.background.alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.woory.presentation.background.alarm.AlarmFunctions
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {

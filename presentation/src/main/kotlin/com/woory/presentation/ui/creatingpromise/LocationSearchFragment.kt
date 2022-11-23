@@ -18,13 +18,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.skt.tmap.TMapData
+import com.woory.presentation.R
+import com.woory.presentation.databinding.FragmentLocationSearchBinding
+import com.woory.presentation.model.GeoPoint
+import com.woory.presentation.model.Location
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.MAP_API_KEY
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
-import com.woory.presentation.R
-import com.woory.presentation.databinding.FragmentLocationSearchBinding
-import com.woory.presentation.model.GeoPointModel
-import com.woory.presentation.model.LocationModel
 import kotlinx.coroutines.launch
 
 class LocationSearchFragment :
@@ -118,8 +118,8 @@ class LocationSearchFragment :
     private fun setCurrentLocation() {
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
             fragmentViewModel.setPromiseLocation(
-                LocationModel(
-                    GeoPointModel(it.latitude, it.longitude),
+                Location(
+                    GeoPoint(it.latitude, it.longitude),
                     CURRENT_LOCATION_TEXT
                 )
             )
@@ -134,8 +134,8 @@ class LocationSearchFragment :
                     if (queryResult.isNullOrEmpty().not() && it) {
                         val res = queryResult[0]
                         fragmentViewModel.setPromiseLocation(
-                            LocationModel(
-                                GeoPointModel(res.noorLat.toDouble(), res.noorLon.toDouble()),
+                            Location(
+                                GeoPoint(res.noorLat.toDouble(), res.noorLon.toDouble()),
                                 queryString
                             )
                         )

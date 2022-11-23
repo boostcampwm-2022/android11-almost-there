@@ -1,40 +1,41 @@
 package com.woory.database.datasource
 
-import com.woory.data.model.GameTimeInfoModel
+import com.woory.data.model.PromiseAlarmModel
+import com.woory.data.model.PromiseModel
 import com.woory.data.source.DatabaseDataSource
-import com.woory.database.PromiseDao
-import com.woory.database.mapper.toGameTimeInfoEntity
-import com.woory.database.mapper.toGameTimeInfoModels
+import com.woory.database.PromiseAlarmDao
+import com.woory.database.mapper.toPromiseAlarmEntity
+import com.woory.database.mapper.toPromiseAlarmModel
 
-class DefaultDatabaseDataSource(private val dao: PromiseDao) : DatabaseDataSource {
+class DefaultDatabaseDataSource(private val dao: PromiseAlarmDao) : DatabaseDataSource {
 
-    override suspend fun insertGameTime(gameTimeInfo: GameTimeInfoModel): Result<Unit> {
+    override suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit> {
         return runCatching {
-            dao.insertGameTime(gameTimeInfo.toGameTimeInfoEntity())
+            dao.setPromiseAlarm(promiseModel.toPromiseAlarmEntity())
         }
     }
 
-    override suspend fun updateGameTime(gameTimeInfo: GameTimeInfoModel): Result<Unit> {
+    override suspend fun getAll(): Result<List<PromiseAlarmModel>> {
         return runCatching {
-            dao.updateGameTime(gameTimeInfo.toGameTimeInfoEntity())
+            dao.getAll().toPromiseAlarmModel()
         }
     }
 
-    override suspend fun getAll(): Result<List<GameTimeInfoModel>> {
+    override suspend fun getPromiseAlarmSortedByStartTime(): Result<List<PromiseAlarmModel>> {
         return runCatching {
-            dao.getAll().toGameTimeInfoModels()
+            dao.getPromiseAlarmSortedByStartTime().toPromiseAlarmModel()
         }
     }
 
-    override suspend fun getGameTimesSortedByStartTime(): Result<List<GameTimeInfoModel>> {
+    override suspend fun getPromiseAlarmSortedByEndTime(): Result<List<PromiseAlarmModel>> {
         return runCatching {
-            dao.getPromiseTimesSortedByStartTime().toGameTimeInfoModels()
+            dao.getPromiseAlarmSortedByEndTime().toPromiseAlarmModel()
         }
     }
 
-    override suspend fun getGameTimesSortedByEndTime(): Result<List<GameTimeInfoModel>> {
+    override suspend fun getPromiseAlarmWhereCode(promiseCode: String): Result<PromiseAlarmModel> {
         return runCatching {
-            dao.getPromiseTimesSortedByEndTime().toGameTimeInfoModels()
+            dao.getPromiseAlarmWhereCode(promiseCode).toPromiseAlarmModel()
         }
     }
 }

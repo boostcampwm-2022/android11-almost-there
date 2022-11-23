@@ -9,7 +9,12 @@ import org.threeten.bp.OffsetDateTime
 
 class AlarmFunctions(private val context: Context) {
 
-    fun registerAlarm(dateTime: OffsetDateTime, alarmType: Int, alarmCode: Int, promiseCode: String) {
+    fun registerAlarm(
+        dateTime: OffsetDateTime,
+        alarmType: Int,
+        alarmCode: Int,
+        promiseCode: String
+    ) {
         val timeInMillis = dateTime.toInstant().toEpochMilli()
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager

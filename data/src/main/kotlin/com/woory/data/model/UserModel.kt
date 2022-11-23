@@ -2,11 +2,15 @@ package com.woory.data.model
 
 data class UserModel(
     val id: String,
-    val name: String,
-    val image: UserImage
+    val data: UserDataModel
 )
 
-data class UserImage(
-    val color: String,
-    val imageIdx: Int
+data class UserDataModel(
+    val name: String,
+    val profileImage: UserProfileImageModel
+)
+
+data class UserProfileImageModel(
+    val backgroundColor: String,
+    val imageIndex: Int
 )

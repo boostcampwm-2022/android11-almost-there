@@ -13,17 +13,28 @@ class DefaultPromiseRepository @Inject constructor(
     private val networkDataSource: NetworkDataSource
 ) : PromiseRepository {
 
-    override suspend fun setPromise(promise: PromiseDataModel): Result<String> =
-        firebaseDataSource.setPromise(promise)
+    override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
+        val result = firebaseDataSource.setPromise(promiseDataModel)
+            .onSuccess { code ->
+                databaseDataSource.setPromiseAlarm(PromiseModel(code, promiseDataModel))
+            }
+            .onFailure {
+                return Result.failure(it)
+            }
+        return result
+    }
 
-    override suspend fun getAddressByPoint(geoPoint: GeoPointModel): Result<String> =
-        networkDataSource.getAddressByPoint(geoPoint)
+    override suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel> =
+        databaseDataSource.getPromiseAlarmWhereCode(promiseCode)
 
-    override suspend fun getPromiseByCode(code: String): Result<PromiseModel> =
-        firebaseDataSource.getPromiseByCode(code)
+    override suspend fun getAddressByPoint(geoPointModel: GeoPointModel): Result<String> =
+        networkDataSource.getAddressByPoint(geoPointModel)
 
-    override suspend fun setUserLocation(userLocation: UserLocationModel): Result<Unit> =
-        firebaseDataSource.setUserLocation(userLocation)
+    override suspend fun getPromiseByCode(promiseCode: String): Result<PromiseModel> =
+        firebaseDataSource.getPromiseByCode(promiseCode)
+
+    override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
+        firebaseDataSource.setUserLocation(userLocationModel)
 
     override suspend fun setUserHp(gameToken: String, userHp: UserHpModel): Result<Unit> =
         firebaseDataSource.setUserHp(gameToken, userHp)

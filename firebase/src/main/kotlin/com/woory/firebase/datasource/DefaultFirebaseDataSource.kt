@@ -35,7 +35,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 Tasks.await(task)
                 val res = task.result
                     .toObject(PromiseDocument::class.java)
-                    ?.toPromiseModel()
+                    ?.asPromiseModel()
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
             }
@@ -73,7 +73,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore
                     .collection("Promises")
                     .document(generatedCode)
-                    .set(promiseDataModel.toPromise(generatedCode))
+                    .set(promiseDataModel.asPromiseDocument(generatedCode))
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -101,7 +101,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.toUserLocationModel()))
+                        trySend(Result.success(it.asUserLocationModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -117,7 +117,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection("UserLocation")
                     .document(userLocationModel.id)
-                    .set(userLocationModel.toUserLocation())
+                    .set(userLocationModel.asUserLocation())
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -149,7 +149,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.toUserHpModel()))
+                        trySend(Result.success(it.asUserHpModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -167,7 +167,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameToken)
                     .collection("Hp")
                     .document(userHpModel.id)
-                    .set(userHpModel.toUserHp())
+                    .set(userHpModel.asUserHp())
             }
 
             when (val exception = result.exceptionOrNull()) {

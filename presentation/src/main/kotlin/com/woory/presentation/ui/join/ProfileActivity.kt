@@ -7,7 +7,7 @@ import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityProfileBinding
-import com.woory.presentation.model.PromiseDataModel
+import com.woory.presentation.model.PromiseData
 import com.woory.presentation.ui.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,7 +19,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
 
         if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             binding.textView.text =
-                intent?.extras?.getParcelable(PROMISE_KEY, PromiseDataModel::class.java).toString()
+                intent?.extras?.getParcelable(PROMISE_KEY, PromiseData::class.java).toString()
         } else {
             binding.textView.text = intent?.extras?.getParcelable(PROMISE_KEY)
         }
@@ -28,7 +28,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     companion object {
         private const val PROMISE_KEY = "PROMISE_KEY"
 
-        fun startActivity(context: Context, promiseDataModel: PromiseDataModel) =
+        fun startActivity(context: Context, promiseDataModel: PromiseData) =
             context.startActivity(Intent(context, ProfileActivity::class.java).apply {
                 putExtra(PROMISE_KEY, promiseDataModel)
             })
