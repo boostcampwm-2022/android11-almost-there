@@ -4,13 +4,15 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.*
-import com.woory.firebase.model.PromiseData
+import com.woory.firebase.model.Promise
 import com.woory.firebase.model.UserHp
 import com.woory.firebase.model.UserLocation
+import com.woory.firebase.util.InviteCodeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +25,7 @@ class DefaultFirebaseDataSource @Inject constructor(
     private val scope: CoroutineScope
 ) : FirebaseDataSource {
 
-    override suspend fun getPromiseByCode(code: String): Result<PromiseDataModel> {
+    override suspend fun getPromiseByCode(code: String): Result<PromiseModel> {
         return withContext(scope.coroutineContext) {
             val result = runCatching {
                 val task = fireStore
@@ -32,8 +34,8 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .get()
                 Tasks.await(task)
                 val res = task.result
-                    .toObject(PromiseData::class.java)
-                    ?.toPromiseDataModel()
+                    .toObject(Promise::class.java)
+                    ?.toPromiseModel()
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
             }
@@ -48,17 +50,34 @@ class DefaultFirebaseDataSource @Inject constructor(
     }
 
     // TODO : 랜덤 Code 생성하는 로직 추가 (어디서 생성을 할지??)
-    override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<Unit> {
+    override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         return withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
-                val res = fireStore
+
+            var generatedCode: String? = null
+            var isDone = false
+            while (isDone.not()) {
+                generatedCode = InviteCodeUtil.getRandomInviteCode()
+                fireStore
                     .collection("Promises")
-                    .document(promiseDataModel.code)
-                    .set(promiseDataModel.toPromiseData())
+                    .document(generatedCode)
+                    .get()
+                    .addOnSuccessListener {
+                        if (it != null) {
+                            isDone = true
+                        }
+                    }
+            }
+            requireNotNull(generatedCode)
+
+            val result = kotlin.runCatching {
+                fireStore
+                    .collection("Promises")
+                    .document(generatedCode)
+                    .set(promiseDataModel.toPromise(generatedCode))
             }
 
             when (val exception = result.exceptionOrNull()) {
-                null -> result
+                null -> Result.success(generatedCode)
                 else -> Result.failure(exception)
             }
         }

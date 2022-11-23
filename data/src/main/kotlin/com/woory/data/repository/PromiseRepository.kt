@@ -1,18 +1,15 @@
 package com.woory.data.repository
 
-import com.woory.data.model.GeoPointModel
-import com.woory.data.model.PromiseDataModel
-import com.woory.data.model.UserHpModel
-import com.woory.data.model.UserLocationModel
+import com.woory.data.model.*
 import kotlinx.coroutines.flow.Flow
 
 interface PromiseRepository {
 
     suspend fun getAddressByPoint(geoPoint: GeoPointModel): Result<String>
 
-    suspend fun getPromiseByCode(code: String): Result<PromiseDataModel>
+    suspend fun getPromiseByCode(code: String): Result<PromiseModel>
 
-    suspend fun setPromise(promise: PromiseDataModel): Result<Unit>
+    suspend fun setPromise(promise: PromiseDataModel): Result<String>
 
     suspend fun setUserLocation(userLocation: UserLocationModel): Result<Unit>
 

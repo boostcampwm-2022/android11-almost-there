@@ -3,7 +3,7 @@ package com.woory.firebase.model
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 
-data class PromiseData(
+data class Promise(
     val address: String = "",
     val code: String = "",
     val destination: GeoPoint = GeoPoint(0.0, 0.0),
