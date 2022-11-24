@@ -1,7 +1,7 @@
 package com.woory.data.model
 
 data class UserModel(
-    val id: String,
+    val userId: String,
     val data: UserDataModel
 )
 
@@ -11,6 +11,6 @@ data class UserDataModel(
 )
 
 data class UserProfileImageModel(
-    val backgroundColor: String,
+    val color: String,
     val imageIndex: Int
 )

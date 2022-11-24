@@ -28,3 +28,5 @@ val textScaleAnimation = ScaleAnimation(
     duration = 1000
     repeatMode = Animation.REVERSE
 }
+
+fun getHex(value: Int): String = "%02X".format(value)

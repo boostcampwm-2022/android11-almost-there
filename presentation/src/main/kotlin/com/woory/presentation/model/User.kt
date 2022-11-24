@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class User(
-    val id: String,
+    val userId: String,
     val data: UserData
 ) : Parcelable
 
@@ -17,13 +17,13 @@ data class UserData(
 
 @Parcelize
 data class UserProfileImage(
-    val backgroundColor: String,
+    val color: String,
     val imageIndex: Int
 ) : Parcelable
 
 @Parcelize
 data class UserState(
-    val id: String,
+    val userId: String,
     val hp: Int,
     val location: Location
 ) : Parcelable

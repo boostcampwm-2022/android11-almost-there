@@ -9,20 +9,20 @@ import com.woory.firebase.model.UserImageInfoField
 internal fun UserModel.asPromiseParticipant() = PromiseParticipantField(
     userImage = this.data.profileImage.asUserImageField(),
     userName = this.data.name,
-    userId = this.id
+    userId = this.userId
 )
 
 internal fun UserProfileImageModel.asUserImageField() = UserImageInfoField(
-    color = this.backgroundColor,
+    color = this.color,
     imageIdx = this.imageIndex
 )
 
 internal fun PromiseParticipantField.asUserModel() = UserModel(
-    id = userId,
+    userId = userId,
     data = UserDataModel(userName, userImage.asUserImage())
 )
 
 internal fun UserImageInfoField.asUserImage() = UserProfileImageModel(
-    backgroundColor = this.color,
+    color = this.color,
     imageIndex = this.imageIdx
 )

@@ -8,13 +8,13 @@ object UserMapper : UiModelMapper<User, UserModel> {
 
     override fun asUiModel(domain: UserModel): User =
         User(
-            id = domain.id,
+            userId = domain.userId,
             data = domain.data.asUiModel()
         )
 
     override fun asDomain(uiModel: User): UserModel =
         UserModel(
-            id = uiModel.id,
+            userId = uiModel.userId,
             data = uiModel.data.asDomain()
         )
 }

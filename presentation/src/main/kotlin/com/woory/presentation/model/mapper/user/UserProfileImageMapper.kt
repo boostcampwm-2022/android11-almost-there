@@ -7,13 +7,13 @@ import com.woory.presentation.model.mapper.UiModelMapper
 object UserProfileImageMapper : UiModelMapper<UserProfileImage, UserProfileImageModel> {
 
     override fun asUiModel(domain: UserProfileImageModel): UserProfileImage = UserProfileImage(
-        backgroundColor = domain.backgroundColor,
+        color = domain.color,
         imageIndex = domain.imageIndex
     )
 
     override fun asDomain(uiModel: UserProfileImage): UserProfileImageModel =
         UserProfileImageModel(
-            backgroundColor = uiModel.backgroundColor,
+            color = uiModel.color,
             imageIndex = uiModel.imageIndex
         )
 }

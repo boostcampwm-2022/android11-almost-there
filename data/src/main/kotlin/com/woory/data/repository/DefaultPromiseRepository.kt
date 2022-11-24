@@ -16,7 +16,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         val result = firebaseDataSource.setPromise(promiseDataModel)
             .onSuccess { code ->
-                databaseDataSource.setPromiseAlarm(PromiseModel(code, promiseDataModel))
+                setPromiseAlarm(PromiseModel(code, promiseDataModel))
             }
             .onFailure {
                 return Result.failure(it)
@@ -27,6 +27,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel> =
         databaseDataSource.getPromiseAlarmWhereCode(promiseCode)
 
+    override suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit> =
+        databaseDataSource.setPromiseAlarm(promiseModel)
+
     override suspend fun getAddressByPoint(geoPointModel: GeoPointModel): Result<String> =
         networkDataSource.getAddressByPoint(geoPointModel)
 
@@ -36,12 +39,15 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         firebaseDataSource.setUserLocation(userLocationModel)
 
-    override suspend fun setUserHp(gameToken: String, userHp: UserHpModel): Result<Unit> =
-        firebaseDataSource.setUserHp(gameToken, userHp)
+    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
+        firebaseDataSource.setUserHp(gameToken, userHpModel)
 
     override suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>> =
         firebaseDataSource.getUserLocationById(userId)
 
     override suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>> =
         firebaseDataSource.getUserHpById(userId, gameToken)
+
+    override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
+        firebaseDataSource.addPlayer(code, user)
 }
