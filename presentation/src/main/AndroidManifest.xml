@@ -16,7 +16,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.promiseinfo.PromiseInfoActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true"
@@ -40,6 +40,8 @@
         <activity
             android:name=".ui.join.JoinActivity"
             android:exported="false" />
+
+        <receiver android:name=".background.alarm.AlarmReceiver" />
     </application>
 
 </manifest>
