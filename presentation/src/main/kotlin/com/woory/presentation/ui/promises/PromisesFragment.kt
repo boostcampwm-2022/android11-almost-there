@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentPromisesBinding
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.ui.promises.PromisesViewModel
 import com.woory.presentation.ui.gaming.GamingActivity
 
 class PromisesFragment : BaseFragment<FragmentPromisesBinding>(R.layout.fragment_promises) {

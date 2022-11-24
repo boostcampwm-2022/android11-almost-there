@@ -12,9 +12,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.R
+import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
+import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,6 +30,10 @@ class CreatingPromiseFragment :
     BaseFragment<FragmentCreatingPromiseBinding>(R.layout.fragment_creating_promise) {
 
     private val viewModel: CreatingPromiseViewModel by activityViewModels()
+
+    private val alarmFunctions by lazy {
+        AlarmFunctions(requireContext())
+    }
 
     private val promiseDatePickerDialog by lazy {
         DatePickerDialog(
@@ -95,7 +101,7 @@ class CreatingPromiseFragment :
                 }
 
                 launch {
-                    viewModel.gameTime.collectLatest { gameTime ->
+                    viewModel.readyDuration.collectLatest { gameTime ->
                         binding.etGameTime.setText(
                             if (gameTime != null) {
                                 String.format(
@@ -111,6 +117,22 @@ class CreatingPromiseFragment :
                 launch {
                     viewModel.isEnabled.collect {
                         binding.btnPromiseCreate.isEnabled = it
+                    }
+                }
+
+                launch {
+                    viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
+                         alarmFunctions.registerAlarm(
+                             dateTime = promiseAlarm.startTime.minusMinutes(5),
+                             alarmType = AlarmFunctions.PROMISE_READY,
+                             alarmCode = promiseAlarm.alarmCode,
+                             promiseCode = promiseAlarm.promiseCode
+                         )
+                        // TODO("이동 코드")
+                        PromiseInfoActivity.startActivity(
+                            requireContext(),
+                            promiseAlarm.promiseCode
+                        )
                     }
                 }
             }
@@ -143,7 +165,7 @@ class CreatingPromiseFragment :
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour)?.value
             val minute =
                 gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute)?.value
-            viewModel.setGameTime(
+            viewModel.setReadyDuration(
                 if (hour != null && minute != null) {
                     Duration.ofMinutes(60L * hour + minute)
                 } else {
@@ -154,7 +176,7 @@ class CreatingPromiseFragment :
         }
 
         binding.btnPromiseCreate.setOnClickListener {
-            viewModel.createPromise()
+            viewModel.setPromise()
         }
     }
 
@@ -188,7 +210,7 @@ class CreatingPromiseFragment :
     }
 
     private fun showGameTimePickerDialog() {
-        viewModel.gameTime.value?.let {
+        viewModel.readyDuration.value?.let {
             gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value =
                 it.toHours().toInt()
             gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value =

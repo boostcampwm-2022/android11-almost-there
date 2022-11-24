@@ -11,8 +11,8 @@ interface TMapService {
         @Query("version") version: Int = 1,
         @Query("lat") lat: String,
         @Query("lon") lon: String,
-        @Query("coordType") coordType: String="WGS84GEO",
-        @Query("addressType") addressType: String="A03",
-        @Query("newAddressExtend") newAddressExtend: String="Y"
+        @Query("coordType") coordType: String = "WGS84GEO",
+        @Query("addressType") addressType: String = "A03",
+        @Query("newAddressExtend") newAddressExtend: String = "Y"
     ): AddressInfoResponse
 }

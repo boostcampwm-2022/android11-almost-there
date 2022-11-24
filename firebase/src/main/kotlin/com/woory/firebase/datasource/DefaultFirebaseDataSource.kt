@@ -2,13 +2,20 @@ package com.woory.firebase.datasource
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
-import com.woory.firebase.mapper.*
+import com.woory.firebase.mapper.asPromiseDocument
+import com.woory.firebase.mapper.asPromiseModel
+import com.woory.firebase.mapper.asUserHp
+import com.woory.firebase.mapper.asUserHpModel
+import com.woory.firebase.mapper.asUserLocation
+import com.woory.firebase.mapper.asUserLocationModel
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
@@ -17,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,7 +43,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 Tasks.await(task)
                 val res = task.result
                     .toObject(PromiseDocument::class.java)
-                    ?.toPromiseModel()
+                    ?.asPromiseModel()
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
             }
@@ -49,23 +57,20 @@ class DefaultFirebaseDataSource @Inject constructor(
         }
     }
 
-    // TODO : 랜덤 Code 생성하는 로직 추가 (어디서 생성을 할지??)
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         return withContext(scope.coroutineContext) {
-
             var generatedCode: String? = null
             var isDone = false
             while (isDone.not()) {
                 generatedCode = InviteCodeUtil.getRandomInviteCode()
-                fireStore
+                val task = fireStore
                     .collection("Promises")
                     .document(generatedCode)
                     .get()
-                    .addOnSuccessListener {
-                        if (it != null) {
-                            isDone = true
-                        }
-                    }
+                Tasks.await(task)
+                if (task.result.data == null) {
+                    isDone = true
+                }
             }
             requireNotNull(generatedCode)
 
@@ -73,7 +78,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore
                     .collection("Promises")
                     .document(generatedCode)
-                    .set(promiseDataModel.toPromise(generatedCode))
+                    .set(promiseDataModel.asPromiseDocument(generatedCode))
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -101,7 +106,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.toUserLocationModel()))
+                        trySend(Result.success(it.asUserLocationModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -117,7 +122,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection("UserLocation")
                     .document(userLocationModel.id)
-                    .set(userLocationModel.toUserLocation())
+                    .set(userLocationModel.asUserLocation())
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -149,7 +154,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.toUserHpModel()))
+                        trySend(Result.success(it.asUserHpModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -167,7 +172,24 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameToken)
                     .collection("Hp")
                     .document(userHpModel.id)
-                    .set(userHpModel.toUserHp())
+                    .set(userHpModel.asUserHp())
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
+        }
+    }
+
+    override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> {
+        return withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val res = fireStore
+                    .collection("Promises")
+                    .document(code)
+                    .update("users", FieldValue.arrayUnion(user))
+                    .await()
             }
 
             when (val exception = result.exceptionOrNull()) {

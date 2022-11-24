@@ -2,9 +2,9 @@ package com.woory.presentation.ui.creatingpromise
 
 import android.os.Bundle
 import androidx.activity.viewModels
-import com.woory.presentation.ui.BaseActivity
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityCreatingPromiseBinding
+import com.woory.presentation.ui.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

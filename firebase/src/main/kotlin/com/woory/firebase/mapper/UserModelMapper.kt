@@ -1,28 +1,28 @@
 package com.woory.firebase.mapper
 
-import com.woory.data.model.UserImage
+import com.woory.data.model.UserDataModel
 import com.woory.data.model.UserModel
+import com.woory.data.model.UserProfileImageModel
 import com.woory.firebase.model.PromiseParticipantField
 import com.woory.firebase.model.UserImageInfoField
 
-internal fun UserModel.toPromiseParticipant() = PromiseParticipantField(
-    userImage = this.image.toUserImageInfo(),
-    userName = this.name,
-    userId = this.id
+internal fun UserModel.asPromiseParticipant() = PromiseParticipantField(
+    userImage = this.data.profileImage.asUserImageField(),
+    userName = this.data.name,
+    userId = this.userId
 )
 
-internal fun UserImage.toUserImageInfo() = UserImageInfoField(
+internal fun UserProfileImageModel.asUserImageField() = UserImageInfoField(
     color = this.color,
-    imageIdx = this.imageIdx
+    imageIdx = this.imageIndex
 )
 
-internal fun PromiseParticipantField.toUserModel() = UserModel(
-    id = this.userId,
-    name = this.userName,
-    image = this.userImage.toUserImage()
+internal fun PromiseParticipantField.asUserModel() = UserModel(
+    userId = userId,
+    data = UserDataModel(userName, userImage.asUserImage())
 )
 
-internal fun UserImageInfoField.toUserImage() = UserImage(
+internal fun UserImageInfoField.asUserImage() = UserProfileImageModel(
     color = this.color,
-    imageIdx = this.imageIdx
+    imageIndex = this.imageIdx
 )

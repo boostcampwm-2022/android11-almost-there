@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.woory.data.source.DatabaseDataSource
 import com.woory.database.AppDatabase
+import com.woory.database.PromiseAlarmDao
 import com.woory.database.datasource.DefaultDatabaseDataSource
-import com.woory.database.PromiseDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,11 +27,12 @@ object DatabaseModule {
         ).build()
 
     @Provides
-    fun providePromiseDao(database: AppDatabase): PromiseDao {
+    fun providePromiseDao(database: AppDatabase): PromiseAlarmDao {
         return database.promiseDao()
     }
 
     @Singleton
     @Provides
-    fun provideDatabaseDataSource(promiseDao: PromiseDao): DatabaseDataSource = DefaultDatabaseDataSource(promiseDao)
+    fun provideDatabaseDataSource(promiseDao: PromiseAlarmDao): DatabaseDataSource =
+        DefaultDatabaseDataSource(promiseDao)
 }
