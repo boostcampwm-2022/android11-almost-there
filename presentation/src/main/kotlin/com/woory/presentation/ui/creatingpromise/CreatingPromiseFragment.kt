@@ -128,11 +128,12 @@ class CreatingPromiseFragment :
                             alarmCode = promiseAlarm.alarmCode,
                             promiseCode = promiseAlarm.promiseCode
                         )
-                        // TODO("이동 코드")
+
                         PromiseInfoActivity.startActivity(
                             requireContext(),
                             promiseAlarm.promiseCode
                         )
+                        requireActivity().finish()
                     }
                 }
             }
