@@ -50,4 +50,7 @@
     <string name="already_join">이미 참여중인 약속입니다.</string>
     <string name="already_started">만료된 약속입니다.</string>
     <string name="join">약속 참여</string>
+    <string name="code_copy">코드 복사</string>
+    <string name="code_share">코드 공유</string>
+    <string name="participant">참여자</string>
 </resources>
