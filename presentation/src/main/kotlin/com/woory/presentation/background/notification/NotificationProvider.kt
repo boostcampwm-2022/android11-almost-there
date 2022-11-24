@@ -16,7 +16,7 @@ object NotificationProvider {
     const val PROMISE_READY_NOTIFICATION_ID = 80
     const val PROMISE_START_NOTIFICATION_ID = 81
 
-    private fun createNotificationBuilder(
+    fun createNotificationBuilder(
         context: Context,
         channelId: String,
         title: String,

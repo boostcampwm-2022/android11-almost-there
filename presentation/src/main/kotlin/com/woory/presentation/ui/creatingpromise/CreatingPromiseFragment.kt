@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
+import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
+import org.threeten.bp.OffsetDateTime
 import java.util.*
 
 @AndroidEntryPoint
@@ -122,11 +124,17 @@ class CreatingPromiseFragment :
 
                 launch {
                     viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
+//                        alarmFunctions.registerAlarm(promiseAlarm)
+
+                        // Todo :: 테스트용 코드{
                         alarmFunctions.registerAlarm(
-                            dateTime = promiseAlarm.startTime.minusMinutes(5),
-                            alarmType = AlarmFunctions.PROMISE_READY,
-                            alarmCode = promiseAlarm.alarmCode,
-                            promiseCode = promiseAlarm.promiseCode
+                            PromiseAlarm(
+                                alarmCode = promiseAlarm.alarmCode,
+                                promiseCode = promiseAlarm.promiseCode,
+                                status = promiseAlarm.status,
+                                startTime = OffsetDateTime.now().plusSeconds(10),
+                                endTime = OffsetDateTime.now().plusSeconds(30)
+                            )
                         )
 
                         PromiseInfoActivity.startActivity(

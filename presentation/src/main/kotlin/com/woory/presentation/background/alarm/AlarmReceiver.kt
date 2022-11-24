@@ -7,7 +7,9 @@ import android.os.Build
 import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.R
+import com.woory.presentation.background.service.PromiseGameService
 import com.woory.presentation.background.util.asPromiseAlarm
+import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.util.ALARM_STATUS_END
 import com.woory.presentation.util.ALARM_STATUS_READY
@@ -38,13 +40,15 @@ class AlarmReceiver : BroadcastReceiver() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationChannelProvider.providePromiseStartChannel(context)
         }
+        Intent(context, PromiseGameService::class.java).run {
+            putPromiseAlarm(promiseAlarm)
 
-        NotificationProvider.notifyPromiseStartNotification(
-            context,
-            context.getString(R.string.notification_start_title),
-            context.getString(R.string.notification_channel_promise_start_description),
-            promiseAlarm
-        )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(this)
+            } else {
+                context.startService(this)
+            }
+        }
     }
 
     private fun onReceivePromiseReady(

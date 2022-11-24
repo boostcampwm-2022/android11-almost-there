@@ -43,6 +43,12 @@
 
         <receiver android:name=".background.alarm.AlarmReceiver" />
         <receiver android:name=".background.alarm.AlarmTouchReceiver" />
+
+        <service
+            android:name=".background.service.PromiseGameService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 
 </manifest>
