@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.skt.tmap.TMapPoint
+import com.skt.tmap.TMapView
 import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.poi.TMapPOIItem
@@ -14,8 +15,13 @@ import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGamingBinding
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.MAP_API_KEY
+import com.woory.presentation.util.getActivityContext
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
+
+    private lateinit var mapView: TMapView
 
     private var marker: TMapMarkerItem? = null
 
@@ -29,9 +35,12 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpMapView()
+    }
 
-        // Todo :: 이하 코드 리펙토링 필요
-        binding.mapGaming.apply {
+    // Todo :: 이하 코드 리펙토링 필요
+    private fun setUpMapView() {
+        mapView = TMapView(getActivityContext(requireContext())).apply {
             setSKTMapApiKey(MAP_API_KEY)
             setOnMapReadyListener {
                 setMarker()
@@ -60,6 +69,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                 }
             })
         }
+
+        binding.containerMap.addView(mapView)
     }
 
     // Todo :: 테스트용 마커 생성 함수
@@ -77,7 +88,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         val curPoint = TMapPoint(lat, lon)
         requireNotNull(marker).tMapPoint = curPoint
 
-        binding.mapGaming.apply {
+        mapView.apply {
             setCenterPoint(lat, lon)
             zoomLevel = 13
             removeTMapMarkerItem("My Location")

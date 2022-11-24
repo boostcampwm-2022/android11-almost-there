@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.skt.tmap.TMapData
+import com.skt.tmap.TMapView
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchBinding
 import com.woory.presentation.model.GeoPoint
@@ -25,8 +26,11 @@ import com.woory.presentation.model.Location
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.MAP_API_KEY
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
+import com.woory.presentation.util.getActivityContext
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LocationSearchFragment :
     BaseFragment<FragmentLocationSearchBinding>(R.layout.fragment_location_search),
     SearchView.OnQueryTextListener {
@@ -39,7 +43,9 @@ class LocationSearchFragment :
         requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
     }
 
-    private val tMapData = TMapData()
+    private lateinit var mapView: TMapView
+
+    private val mapData = TMapData()
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -58,7 +64,12 @@ class LocationSearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.mapPromiseLocationPick.apply {
+        setUpMapView()
+        setUpButton()
+    }
+
+    private fun setUpMapView() {
+        mapView = TMapView(getActivityContext(requireContext())).apply {
             setSKTMapApiKey(MAP_API_KEY)
             setOnMapReadyListener {
                 fragmentViewModel.setMapReady(true)
@@ -89,7 +100,7 @@ class LocationSearchFragment :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 fragmentViewModel.location.collect {
                     if (it != null) {
-                        binding.mapPromiseLocationPick.setCenterPoint(
+                        mapView.setCenterPoint(
                             it.geoPoint.latitude,
                             it.geoPoint.longitude
                         )
@@ -98,6 +109,10 @@ class LocationSearchFragment :
             }
         }
 
+        binding.containerMapview.addView(mapView)
+    }
+
+    private fun setUpButton() {
         binding.btnSearchLocation.apply {
             setOnQueryTextListener(this@LocationSearchFragment)
         }
@@ -114,6 +129,7 @@ class LocationSearchFragment :
         }
     }
 
+
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
@@ -128,7 +144,7 @@ class LocationSearchFragment :
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         val queryString = if (query.isNullOrEmpty()) "" else query.toString()
-        tMapData.findAllPOI(queryString) { queryResult ->
+        mapData.findAllPOI(queryString) { queryResult ->
             lifecycleScope.launch {
                 fragmentViewModel.isMapReady.collect {
                     if (queryResult.isNullOrEmpty().not() && it) {
