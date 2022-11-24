@@ -1,19 +1,20 @@
-package com.woory.almostthere.background.notification
+package com.woory.presentation.background.notification
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmTouchReceiver
-import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.util.PROMISE_ALARM_KEY
 
 object NotificationProvider {
     const val PROMISE_READY_NOTIFICATION_ID = 80
+    const val PROMISE_START_NOTIFICATION_ID = 81
 
-    @SuppressLint("SuspiciousIndentation")
     private fun createNotificationBuilder(
         context: Context,
         channelId: String,
@@ -31,11 +32,7 @@ object NotificationProvider {
             setAutoCancel(true)
             this.priority = priority
 
-//            if (priority == NotificationCompat.PRIORITY_HIGH) {
-//                setFullScreenIntent(pendingIntent, true)
-//            } else {
-                setContentIntent(pendingIntent)
-//            }
+            setContentIntent(pendingIntent)
         }
     }
 
@@ -43,26 +40,36 @@ object NotificationProvider {
         context: Context,
         title: String,
         content: String,
-        promiseCode: String
+        promiseAlarm: PromiseAlarm,
     ) {
         val notificationManager = NotificationManagerCompat.from(context)
 
         val intent = Intent(context, AlarmTouchReceiver::class.java)
-        intent.putExtra("PROMISE_CODE", promiseCode)
-        intent.putExtra("ALARM_TYPE", "READY")
+        intent.putExtra(PROMISE_ALARM_KEY, promiseAlarm)
 
         val pendingIntent = PendingIntent.getBroadcast(context, PROMISE_READY_NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification = createNotificationBuilder(
             context,
-            NotificationChannelProvider.PROMISE_CHANNEL_ID,
+            NotificationChannelProvider.PROMISE_READY_CHANNEL_ID,
             title,
             content,
             NotificationCompat.PRIORITY_HIGH,
             pendingIntent,
         )
-
         notificationManager.notify(PROMISE_READY_NOTIFICATION_ID, notification.build())
     }
 
+    fun notifyPromiseStartNotification(
+        context: Context,
+        title: String,
+        content: String,
+        promiseCode: String,
+    ) {
+        val intent = Intent(context, AlarmTouchReceiver::class.java)
+        intent.putExtra("PROMISE_CODE", promiseCode)
+        intent.putExtra("ALARM_TYPE", "START")
+
+        val pendingIntent = PendingIntent.getBroadcast(context, PROMISE_START_NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE)
+    }
 }

@@ -5,41 +5,46 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.woory.presentation.background.util.putPromiseAlarm
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.util.ALARM_STATUS_END
+import com.woory.presentation.util.ALARM_STATUS_READY
+import com.woory.presentation.util.ALARM_STATUS_START
+import com.woory.presentation.util.PROMISE_ALARM_KEY
 import org.threeten.bp.OffsetDateTime
 
 class AlarmFunctions(private val context: Context) {
 
     fun registerAlarm(
-        dateTime: OffsetDateTime,
-        alarmType: Int,
-        alarmCode: Int,
-        promiseCode: String
+        promiseAlarm: PromiseAlarm
     ) {
-        val timeInMillis = dateTime.toInstant().toEpochMilli()
+        val timeInMillis = when (promiseAlarm.status) {
+//            ALARM_STATUS_READY -> promiseAlarm.startTime.minusMinutes(5)
+            // Todo :: 테스트용 코드
+            ALARM_STATUS_READY -> promiseAlarm.startTime.minusSeconds(5)
+            ALARM_STATUS_START -> promiseAlarm.startTime
+            ALARM_STATUS_END -> promiseAlarm.endTime
+            else -> return
+        }.toInstant().toEpochMilli()
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val receiverIntent = Intent(context, AlarmReceiver::class.java)
         receiverIntent.apply {
-            putExtra("ALARM_CODE", alarmCode)
-            putExtra("ALARM_TYPE", alarmType)
-            putExtra("PROMISE_CODE", promiseCode)
+            putPromiseAlarm(promiseAlarm)
         }
 
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(
-                context,
-                alarmCode,
-                receiverIntent,
-                PendingIntent.FLAG_IMMUTABLE
-            )
+        val pendingIntentFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_IMMUTABLE
         } else {
-            PendingIntent.getBroadcast(
-                context,
-                alarmCode,
-                receiverIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
+            PendingIntent.FLAG_UPDATE_CURRENT
         }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            promiseAlarm.alarmCode,
+            receiverIntent,
+            pendingIntentFlag
+        )
 
         alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -64,10 +69,5 @@ class AlarmFunctions(private val context: Context) {
         }
 
         alarmManager.cancel(pendingIntent)
-    }
-
-    companion object {
-        const val PROMISE_READY = 0
-        const val PROMISE_START = 1
     }
 }

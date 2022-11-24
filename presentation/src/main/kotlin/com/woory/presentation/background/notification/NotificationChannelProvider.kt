@@ -4,10 +4,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import androidx.annotation.RequiresApi
 import com.woory.presentation.R
 
 object NotificationChannelProvider {
-    const val PROMISE_CHANNEL_ID = "PromiseNotificationChannel"
+    const val PROMISE_READY_CHANNEL_ID = "PromiseReadyNotificationChannel"
+    const val PROMISE_START_CHANNEL_ID = "PromiseStartNotificationChannel"
 
     private fun createNotificationChannel(
         context: Context, importance: Int, showBadge: Boolean,
@@ -25,11 +27,8 @@ object NotificationChannelProvider {
         notificationManager.createNotificationChannel(channel)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun providePromiseReadyChannel(context: Context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return
-        }
-
         val name = context.getString(R.string.notification_channel_promise_ready)
         val description = context.getString(R.string.notification_channel_promise_ready_description)
 

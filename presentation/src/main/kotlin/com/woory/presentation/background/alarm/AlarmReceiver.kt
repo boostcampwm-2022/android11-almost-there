@@ -3,37 +3,50 @@ package com.woory.presentation.background.alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.woory.almostthere.background.notification.NotificationChannelProvider
-import com.woory.almostthere.background.notification.NotificationProvider
+import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.R
+import com.woory.presentation.background.util.asPromiseAlarm
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.util.ALARM_STATUS_END
+import com.woory.presentation.util.ALARM_STATUS_READY
+import com.woory.presentation.util.ALARM_STATUS_START
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        context ?: return
-        intent ?: return
+        context ?: throw IllegalArgumentException()
+        intent ?: throw IllegalArgumentException()
 
-        val alarmType = intent.extras?.getInt("ALARM_TYPE")
-        val promiseCode = intent.extras?.getString("PROMISE_CODE")
+        val promiseAlarm = intent.asPromiseAlarm()
 
-        when (alarmType) {
-            AlarmFunctions.PROMISE_READY -> {
-                if (promiseCode != null) {
-                    onReceivePromiseReady(context, promiseCode)
-                }
+        when (promiseAlarm.status) {
+            ALARM_STATUS_READY -> {
+                onReceivePromiseReady(context, promiseAlarm)
             }
-            AlarmFunctions.PROMISE_START -> {}
+            ALARM_STATUS_START -> {
+
+            }
+            ALARM_STATUS_END -> {
+
+            }
             else -> throw IllegalArgumentException(context.getString(R.string.notification_invalid_type))
         }
     }
 
-    private fun onReceivePromiseReady(context: Context, promiseCode: String) {
-        NotificationChannelProvider.providePromiseReadyChannel(context)
+    private fun onReceivePromiseReady(
+        context: Context,
+        promiseAlarm: PromiseAlarm
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            NotificationChannelProvider.providePromiseReadyChannel(context)
+        }
 
         NotificationProvider.notifyPromiseReadyNotification(
             context,
             context.getString(R.string.notification_ready_title),
             context.getString(R.string.notification_ready_content),
-            promiseCode
+            promiseAlarm
         )
     }
 }
