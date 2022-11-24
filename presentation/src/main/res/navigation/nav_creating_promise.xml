@@ -3,7 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/creating_promise"
-    app:startDestination="@id/nav_creating_promise_frag">
+    app:startDestination="@id/nav_profile_frag">
+
+    <fragment
+        android:id="@+id/nav_profile_frag"
+        android:name="com.woory.presentation.ui.creatingpromise.ProfileFragment"
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/nav_creating_promise_frag"

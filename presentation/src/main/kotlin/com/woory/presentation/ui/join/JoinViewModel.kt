@@ -3,8 +3,10 @@ package com.woory.presentation.ui.join
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
-import com.woory.presentation.model.PromiseDataModel
-import com.woory.presentation.model.mapper.asDomain
+
+
+import com.woory.presentation.model.Promise
+import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.util.InviteCodeUtil.isValidInviteCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +31,8 @@ class JoinViewModel @Inject constructor(
     private val _errorType: MutableStateFlow<CodeState?> = MutableStateFlow(null)
     val errorType: StateFlow<CodeState?> = _errorType.asStateFlow()
 
-    private val _promise: MutableStateFlow<PromiseDataModel?> = MutableStateFlow(null)
-    val promise: StateFlow<PromiseDataModel?> = _promise.asStateFlow()
+    private val _promise: MutableStateFlow<Promise?> = MutableStateFlow(null)
+    val promise: StateFlow<Promise?> = _promise.asStateFlow()
 
     fun checkInviteCodeValidation() {
         _codeState.value = if (code.value.isValidInviteCode()) {
@@ -47,7 +49,7 @@ class JoinViewModel @Inject constructor(
             promiseRepository.getPromiseByCode(code.value.uppercase())
                 .onSuccess { promise ->
                     _isLoading.value = false
-                    _promise.value = promise.asDomain()
+                    _promise.value = promise.asUiModel()
                 }
                 .onFailure { error ->
                     _isLoading.value = false

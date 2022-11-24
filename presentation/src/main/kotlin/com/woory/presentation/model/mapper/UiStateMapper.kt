@@ -1,8 +1,8 @@
 package com.woory.presentation.model.mapper
 
-interface UiStateMapper<UiState, Domain> {
+interface UiModelMapper<UiModel, Domain> {
 
-    fun asUiState(domain: Domain): UiState
+    fun asUiModel(domain: Domain): UiModel
 
-    fun asDomain(uiState: UiState): Domain
+    fun asDomain(uiModel: UiModel): Domain
 }

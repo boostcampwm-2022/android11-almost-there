@@ -4,27 +4,23 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
-import com.woory.database.entity.GameTimeInfoEntity
+import com.woory.database.entity.PromiseAlarmEntity
 
 @Dao
-interface PromiseDao {
+interface PromiseAlarmDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGameTime(gameTimeEntity: GameTimeInfoEntity)
+    suspend fun setPromiseAlarm(gameTimeEntity: PromiseAlarmEntity)
 
-    @Update
-    suspend fun updateGameTime(gameTimeEntity: GameTimeInfoEntity)
+    @Query("SELECT * FROM promise_alarm")
+    suspend fun getAll(): List<PromiseAlarmEntity>
 
-    @Query("SELECT * FROM game_time_info")
-    suspend fun getAll(): List<GameTimeInfoEntity>
+    @Query("SELECT * From promise_alarm ORDER BY datetime(start_time)")
+    suspend fun getPromiseAlarmSortedByStartTime(): List<PromiseAlarmEntity>
 
-    @Query("SELECT * From game_time_info ORDER BY datetime(start_time)")
-    suspend fun getPromiseTimesSortedByStartTime(): List<GameTimeInfoEntity>
+    @Query("SELECT * From promise_alarm ORDER BY datetime(end_time)")
+    suspend fun getPromiseAlarmSortedByEndTime(): List<PromiseAlarmEntity>
 
-    @Query("SELECT * From game_time_info ORDER BY datetime(end_time)")
-    suspend fun getPromiseTimesSortedByEndTime(): List<GameTimeInfoEntity>
-
-    @Query("SELECT * FROM game_time_info WHERE code = :code")
-    suspend fun getGameTimeByCode(code: String): GameTimeInfoEntity?
+    @Query("SELECT * FROM promise_alarm WHERE promiseCode=:promiseCode")
+    suspend fun getPromiseAlarmWhereCode(promiseCode: String): PromiseAlarmEntity
 }
