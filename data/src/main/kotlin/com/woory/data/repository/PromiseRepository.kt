@@ -24,4 +24,6 @@ interface PromiseRepository {
     suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel>
 
     suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit>
+
+    suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
 }

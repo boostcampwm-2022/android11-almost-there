@@ -2,37 +2,37 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/container_mapview"
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/sv_promise_location"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_submit_search"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btn_submit"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_submit_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ok"
+            android:text="@string/search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/btn_search_location"
-            android:layout_width="wrap_content"
-            app:queryBackground="@color/white"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search_result"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/search_location"
-            android:src="@drawable/ic_search"
-            app:layout_constraintBottom_toBottomOf="@id/btn_submit"
-            app:layout_constraintEnd_toStartOf="@id/btn_submit"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_margin="10dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/btn_submit_search" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,5 +1,8 @@
 package com.woory.presentation.ui.promiseinfo
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -9,9 +12,7 @@ import com.skt.tmap.TMapView
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentPromiseInfoBinding
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.util.MAP_API_KEY
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.internal.managers.FragmentComponentManager
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -20,6 +21,13 @@ class PromiseInfoFragment :
 
     private val viewModel: PromiseInfoViewModel by activityViewModels()
     private lateinit var tMapView: TMapView
+    private val participantAdapter by lazy {
+        PromiseUserAdapter(viewModel)
+    }
+
+    private val clipBoard by lazy {
+        requireContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,18 +35,37 @@ class PromiseInfoFragment :
         tMapView = binding.mapPromiseLocation
 
         viewModel.fetchPromiseDate()
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.vm = viewModel
-        binding.defaultString = ""
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            vm = viewModel
+            defaultString = ""
+        }
+
+        binding.rvPromiseParticipant.adapter = participantAdapter
+        participantAdapter.submitList(viewModel.dummyUsers)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.errorState.collect {
                 if (it) {
-                    Snackbar.make(binding.root, "약속 가져오기에 실패하였습니다.", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        binding.root,
+                        getString(R.string.promise_fetch_fail),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                     viewModel.setUiState(PromiseUiState.Loading)
                     viewModel.setErrorState(false)
                 }
             }
         }
+
+        binding.btnCodeCopy.setOnClickListener {
+            val clip = ClipData.newPlainText("", viewModel.gameCode.value)
+            clipBoard.setPrimaryClip(clip)
+            makeSnackBar(getString(R.string.copy_complete))
+        }
+    }
+
+    private fun makeSnackBar(text: String) {
+        Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 }
