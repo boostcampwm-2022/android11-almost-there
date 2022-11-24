@@ -1,10 +1,13 @@
 package com.woory.presentation.ui.promiseinfo
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woory.data.model.PromiseModel
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.model.Promise
+import com.woory.presentation.model.User
+import com.woory.presentation.model.UserData
+import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.model.mapper.promise.PromiseMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +21,7 @@ class PromiseInfoViewModel @Inject constructor(
     private val repository: PromiseRepository
 ) : ViewModel() {
     private val _gameCode: MutableStateFlow<String> = MutableStateFlow("")
-    private val gameCode: StateFlow<String> = _gameCode.asStateFlow()
+    val gameCode: StateFlow<String> = _gameCode.asStateFlow()
 
     private val _isMapReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isMapReady: StateFlow<Boolean> = _isMapReady.asStateFlow()
@@ -32,6 +35,16 @@ class PromiseInfoViewModel @Inject constructor(
 
     private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
     val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
+
+    private val _host: MutableStateFlow<String> = MutableStateFlow("")
+    private val host: StateFlow<String> = _host.asStateFlow()
+
+    val dummyUsers = listOf(
+        User("testCode", UserData("조재우", UserProfileImage("#FF0000", 0))),
+        User("testCode2", UserData("전도명", UserProfileImage("#00FF00", 1))),
+        User("testCode3", UserData("이수진", UserProfileImage("#0000FF", 2))),
+        User("testCode4", UserData("유호현", UserProfileImage("#FF00FF", 3)))
+    )
 
     fun setGameCode(code: String) {
         viewModelScope.launch {
@@ -51,10 +64,14 @@ class PromiseInfoViewModel @Inject constructor(
         }
     }
 
-    fun setErrorState(boolean: Boolean){
+    fun setErrorState(boolean: Boolean) {
         viewModelScope.launch {
             _errorState.emit(boolean)
         }
+    }
+
+    fun isHost(userId: String): Boolean {
+        return host.value == userId
     }
 
     fun fetchPromiseDate() {
@@ -62,8 +79,10 @@ class PromiseInfoViewModel @Inject constructor(
             val code = gameCode.value
             _uiState.emit(PromiseUiState.Loading)
             repository.getPromiseByCode(code).onSuccess {
-                _promiseModel.emit(PromiseMapper.asUiModel(it))
+                val promiseModel = PromiseMapper.asUiModel(it)
+                _promiseModel.emit(promiseModel)
                 _uiState.emit(PromiseUiState.Success)
+                _host.emit(promiseModel.data.host.userId)
             }.onFailure {
                 setErrorState(true)
             }
