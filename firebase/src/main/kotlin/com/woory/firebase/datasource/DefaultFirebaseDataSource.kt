@@ -10,7 +10,12 @@ import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
-import com.woory.firebase.mapper.*
+import com.woory.firebase.mapper.asPromiseDocument
+import com.woory.firebase.mapper.asPromiseModel
+import com.woory.firebase.mapper.asUserHp
+import com.woory.firebase.mapper.asUserHpModel
+import com.woory.firebase.mapper.asUserLocation
+import com.woory.firebase.mapper.asUserLocationModel
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
