@@ -16,6 +16,7 @@ import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -128,6 +129,10 @@ class CreatingPromiseFragment :
                              promiseCode = promiseAlarm.promiseCode
                          )
                         // TODO("이동 코드")
+                        PromiseInfoActivity.startActivity(
+                            requireContext(),
+                            promiseAlarm.promiseCode
+                        )
                     }
                 }
             }
