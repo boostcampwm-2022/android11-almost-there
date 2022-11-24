@@ -122,12 +122,12 @@ class CreatingPromiseFragment :
 
                 launch {
                     viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
-                         alarmFunctions.registerAlarm(
-                             dateTime = promiseAlarm.startTime.minusMinutes(5),
-                             alarmType = AlarmFunctions.PROMISE_READY,
-                             alarmCode = promiseAlarm.alarmCode,
-                             promiseCode = promiseAlarm.promiseCode
-                         )
+                        alarmFunctions.registerAlarm(
+                            dateTime = promiseAlarm.startTime.minusMinutes(5),
+                            alarmType = AlarmFunctions.PROMISE_READY,
+                            alarmCode = promiseAlarm.alarmCode,
+                            promiseCode = promiseAlarm.promiseCode
+                        )
                         // TODO("이동 코드")
                         PromiseInfoActivity.startActivity(
                             requireContext(),
@@ -210,13 +210,6 @@ class CreatingPromiseFragment :
     }
 
     private fun showGameTimePickerDialog() {
-        viewModel.readyDuration.value?.let {
-            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour).value =
-                it.toHours().toInt()
-            gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute).value =
-                (it.toMinutes() % 60).toInt()
-        }
-
         gameTimePickerDialog.show()
     }
 

@@ -32,6 +32,7 @@
     <string name="ok">확인</string>
     <string name="search_location">목적지 찾기</string>
     <string name="promise_creation">약속 생성</string>
+    <string name="promise_creation_with_icon">약속 생성 🤝</string>
     <string name="promise_info">약속 정보</string>
     <string name="stubborn_shiba">산책가기 싫은 시바견</string>
     <string name="modest_shiba">그윽하게 보는 시바견</string>
@@ -49,6 +50,7 @@
     <string name="already_join">이미 참여중인 약속입니다.</string>
     <string name="already_started">만료된 약속입니다.</string>
     <string name="join">약속 참여</string>
+    <string name="join_with_icon">약속 참여 🤚</string>
     <string name="code_copy">코드 복사</string>
     <string name="code_share">코드 공유</string>
     <string name="participant">참여자</string>
@@ -59,4 +61,9 @@
     <string name="nickname_hint">닉네임 입력</string>
     <string name="back_main">메인 화면으로 돌아가기</string>
     <string name="join_failure">약속에 참여할 수 없습니다.</string>
+    <string name="open_calendar">캘린더 열기</string>
+    <string name="location_selection_from_map">지도에서 선택</string>
+    <string name="promise_time_selection">약속 시간 선택</string>
+    <string name="game_time_selection">게임 시간 선택</string>
+    <string name="next_with_icon">다음 👉</string>
 </resources>

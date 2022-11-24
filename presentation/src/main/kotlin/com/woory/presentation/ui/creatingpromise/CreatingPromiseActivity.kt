@@ -19,7 +19,12 @@ class CreatingPromiseActivity :
     }
 
     private fun setUpAppBar() {
+        setSupportActionBar(binding.containerToolbar.toolbar)
         binding.containerToolbar.toolbar.title = getString(R.string.promise_creation)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowHomeEnabled(true)
+        }
     }
 
     override fun onBackPressed() {
