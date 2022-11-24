@@ -1,9 +1,11 @@
 package com.woory.data.repository
 
+import com.woory.data.model.GameTimeInfoModel
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -36,4 +38,13 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>> =
         firebaseDataSource.getUserHpById(userId, gameToken)
+
+    override suspend fun getGameTimeByCode(code: String): Result<GameTimeInfoModel> =
+        databaseDataSource.getGameTimeByCode(code)
+
+    override suspend fun insertPromise(info: GameTimeInfoModel): Result<Unit> =
+        databaseDataSource.insertGameTime(info)
+
+    override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
+        firebaseDataSource.addPlayer(code, user)
 }
