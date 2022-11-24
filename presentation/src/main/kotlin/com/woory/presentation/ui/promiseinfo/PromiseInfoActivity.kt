@@ -15,7 +15,7 @@ class PromiseInfoActivity :
     BaseActivity<ActivityPromiseInfoBinding>(R.layout.activity_promise_info) {
 
     private val gameCode by lazy {
-        intent?.getStringExtra(PROMISE_KEY) ?: throw IllegalArgumentException("참여 코드가 없습니다.")
+        intent?.getStringExtra(PROMISE_CODE_KEY) ?: throw IllegalArgumentException("참여 코드가 없습니다.")
     }
 
     private val viewModel: PromiseInfoViewModel by viewModels()
@@ -33,11 +33,11 @@ class PromiseInfoActivity :
     }
 
     companion object {
-        private const val PROMISE_KEY = "PROMISE_KEY"
+        private const val PROMISE_CODE_KEY = "PROMISE_CODE_KEY"
 
-        fun startActivity(context: Context, promiseKey: String) =
+        fun startActivity(context: Context, promiseCode: String) =
             context.startActivity(Intent(context, PromiseInfoActivity::class.java).apply {
-                putExtra(PROMISE_KEY, promiseKey)
+                putExtra(PROMISE_CODE_KEY, promiseCode)
             })
     }
 }

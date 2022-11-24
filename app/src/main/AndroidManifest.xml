@@ -28,6 +28,9 @@
             <meta-data
                 android:name="com.woory.almostthere.initializer.TimberInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.woory.almostthere.initializer.ThreeTenInitializer"
+                android:value="androidx.startup" />
         </provider>
 
     </application>

@@ -4,6 +4,7 @@ import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
 import kotlinx.coroutines.flow.Flow
 
 interface FirebaseDataSource {
@@ -19,4 +20,6 @@ interface FirebaseDataSource {
     suspend fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>>
 
     suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
+
+    suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 }

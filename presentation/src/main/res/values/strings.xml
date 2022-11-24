@@ -42,7 +42,6 @@
     <string name="game_result_finish">종료</string>
     <string name="gaming_hp">HP</string>
     <string name="gaming_ranking">순위</string>
-
     <string name="invalid_invite_code">유효하지 않은 초대 코드 입니다.</string>
     <string name="valid_invite_code">유효한 초대 코드 입니다.</string>
     <string name="label_invite_code">초대 코드 입력</string>
@@ -53,4 +52,11 @@
     <string name="code_copy">코드 복사</string>
     <string name="code_share">코드 공유</string>
     <string name="participant">참여자</string>
+    <string name="notification_channel_promise_ready">게임 시작 준비 알림 채널</string>
+    <string name="notification_channel_promise_ready_description">게임 시작 5분 전에 알람을 받습니다.</string>
+    <string name="set_profile">프로필 생성</string>
+    <string name="profile_title">프로필 설정</string>
+    <string name="nickname_hint">닉네임 입력</string>
+    <string name="back_main">메인 화면으로 돌아가기</string>
+    <string name="join_failure">약속에 참여할 수 없습니다.</string>
 </resources>

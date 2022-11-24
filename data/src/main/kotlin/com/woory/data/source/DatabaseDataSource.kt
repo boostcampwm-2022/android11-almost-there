@@ -1,15 +1,16 @@
 package com.woory.data.source
 
-import com.woory.data.model.GameTimeInfoModel
+import com.woory.data.model.PromiseAlarmModel
+import com.woory.data.model.PromiseModel
 
 interface DatabaseDataSource {
-    suspend fun insertGameTime(gameTimeInfo: GameTimeInfoModel): Result<Unit>
+    suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit>
 
-    suspend fun updateGameTime(gameTimeInfo: GameTimeInfoModel): Result<Unit>
+    suspend fun getAll(): Result<List<PromiseAlarmModel>>
 
-    suspend fun getAll(): Result<List<GameTimeInfoModel>>
+    suspend fun getPromiseAlarmSortedByStartTime(): Result<List<PromiseAlarmModel>>
 
-    suspend fun getGameTimesSortedByStartTime(): Result<List<GameTimeInfoModel>>
+    suspend fun getPromiseAlarmSortedByEndTime(): Result<List<PromiseAlarmModel>>
 
-    suspend fun getGameTimesSortedByEndTime(): Result<List<GameTimeInfoModel>>
+    suspend fun getPromiseAlarmWhereCode(promiseCode: String): Result<PromiseAlarmModel>
 }
