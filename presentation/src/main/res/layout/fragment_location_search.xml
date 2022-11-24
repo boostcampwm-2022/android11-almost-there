@@ -23,7 +23,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.SearchView
+        <ImageView
             android:id="@+id/btn_search_location"
             android:layout_width="wrap_content"
             app:queryBackground="@color/white"

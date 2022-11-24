@@ -1,6 +1,7 @@
 package com.woory.network
 
 import com.woory.network.model.AddressInfoResponse
+import com.woory.network.model.LocationSearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -15,4 +16,11 @@ interface TMapService {
         @Query("addressType") addressType: String = "A03",
         @Query("newAddressExtend") newAddressExtend: String = "Y"
     ): AddressInfoResponse
+
+    @GET("tmap/pois")
+    suspend fun getSearchedLocation(
+        @Query("version") version: Int = 1,
+        @Query("searchKeyword") searchKeyword: String,
+        @Query("count") count: Int = 20
+    ): LocationSearchResponse
 }
