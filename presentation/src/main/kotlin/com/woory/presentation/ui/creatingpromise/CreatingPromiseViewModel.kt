@@ -1,6 +1,5 @@
 package com.woory.presentation.ui.creatingpromise
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
@@ -24,7 +23,7 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
     private val _userName: MutableStateFlow<String?> = MutableStateFlow("anonymous")
     val userName: StateFlow<String?> = _userName.asStateFlow()
 
-    private val _userProfileImage: MutableStateFlow<UserProfileImage> = MutableStateFlow(
+    private val _userProfileImage: MutableStateFlow<UserProfileImage?> = MutableStateFlow(
         UserProfileImage("0xffffff", 1)
     )
     val userProfileImage: StateFlow<UserProfileImage?> = _userProfileImage.asStateFlow()
@@ -58,8 +57,6 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
 
     fun setUser() {
         viewModelScope.launch {
-            val name = _userName.value ?: return@launch
-            val profileImage = _userProfileImage.value ?: return@launch
             _userSettingEvent.emit(Unit)
         }
     }
@@ -88,7 +85,32 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
         }
     }
 
-    fun createPromise() {
-        TODO("약속 생성하여 전달")
+    fun setPromise() {
+        viewModelScope.launch {
+            val name = _userName.value ?: return@launch
+            val profileImage = _userProfileImage.value ?: return@launch
+            val promiseLocation = _promiseLocation.value ?: return@launch
+            val promiseDate = _promiseDate.value ?: return@launch
+            val promiseTime = _promiseTime.value ?: return@launch
+            val readyDuration = _readyDuration.value ?: return@launch
+
+            val zoneOffset = OffsetDateTime.now().offset
+            val promiseDateTime = OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+            val gameDateTime =
+                OffsetDateTime.of(promiseDate, promiseTime, zoneOffset).minus(readyDuration)
+
+            // TODO("User Token 처리 필요")
+            val userToken = "testCode"
+            val user = User(userToken, UserData(name, profileImage))
+
+            val promiseData =
+                PromiseData(promiseLocation, promiseDateTime, gameDateTime, user, listOf(user))
+
+            repository.setPromise(promiseData.asDomain()).onSuccess { promiseCode ->
+                repository.getPromiseAlarm(promiseCode).onSuccess { promiseAlarm ->
+                    _promiseSettingEvent.emit(promiseAlarm.asUiModel())
+                }
+            }
+        }
     }
 }

@@ -118,6 +118,18 @@ class CreatingPromiseFragment :
                         binding.btnPromiseCreate.isEnabled = it
                     }
                 }
+
+                launch {
+                    viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
+                         alarmFunctions.registerAlarm(
+                             dateTime = promiseAlarm.startTime.minusMinutes(5),
+                             alarmType = AlarmFunctions.PROMISE_READY,
+                             alarmCode = promiseAlarm.alarmCode,
+                             promiseCode = promiseAlarm.promiseCode
+                         )
+                        // TODO("이동 코드")
+                    }
+                }
             }
         }
     }

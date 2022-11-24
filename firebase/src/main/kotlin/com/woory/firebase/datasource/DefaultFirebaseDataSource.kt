@@ -49,23 +49,20 @@ class DefaultFirebaseDataSource @Inject constructor(
         }
     }
 
-    // TODO : 랜덤 Code 생성하는 로직 추가 (어디서 생성을 할지??)
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         return withContext(scope.coroutineContext) {
-
             var generatedCode: String? = null
             var isDone = false
             while (isDone.not()) {
                 generatedCode = InviteCodeUtil.getRandomInviteCode()
-                fireStore
+                val task = fireStore
                     .collection("Promises")
                     .document(generatedCode)
                     .get()
-                    .addOnSuccessListener {
-                        if (it != null) {
-                            isDone = true
-                        }
-                    }
+                Tasks.await(task)
+                if (task.result.data == null) {
+                    isDone = true
+                }
             }
             requireNotNull(generatedCode)
 
