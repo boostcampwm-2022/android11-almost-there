@@ -124,12 +124,14 @@ class LocationSearchFragment :
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-            viewModel.chooseLocation(
-                Location(
-                    GeoPoint(it.latitude, it.longitude),
-                    CURRENT_LOCATION_TEXT
+            if(viewModel.choosedLocation.value == null) {
+                viewModel.chooseLocation(
+                    Location(
+                        GeoPoint(it.latitude, it.longitude),
+                        CURRENT_LOCATION_TEXT
+                    )
                 )
-            )
+            }
         }
     }
 
