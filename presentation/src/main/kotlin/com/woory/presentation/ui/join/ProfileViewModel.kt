@@ -2,13 +2,11 @@ package com.woory.presentation.ui.join
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woory.data.model.GameTimeInfoModel
-import com.woory.data.model.UserImage
-import com.woory.data.model.UserModel
 import com.woory.data.repository.PromiseRepository
-import com.woory.presentation.model.Color
-import com.woory.presentation.model.PromiseDataModel
-import com.woory.presentation.model.mapper.asDomain
+import com.woory.presentation.model.*
+import com.woory.presentation.model.mapper.promise.asDomain
+import com.woory.presentation.model.mapper.promise.asUiModel
+import com.woory.presentation.model.mapper.user.asDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,8 +33,8 @@ class ProfileViewModel @Inject constructor(
     private val _errorType: MutableStateFlow<CodeState?> = MutableStateFlow(null)
     val errorType: StateFlow<CodeState?> = _errorType.asStateFlow()
 
-    private val _promise: MutableStateFlow<PromiseDataModel?> = MutableStateFlow(null)
-    val promise: StateFlow<PromiseDataModel?> = _promise.asStateFlow()
+    private val _promise: MutableStateFlow<Promise?> = MutableStateFlow(null)
+    val promise: StateFlow<Promise?> = _promise.asStateFlow()
 
     private val _error: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val error: StateFlow<Boolean> = _error.asStateFlow()
@@ -55,7 +53,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
 
-            promiseRepository.getGameTimeByCode(code)
+            promiseRepository.getPromiseAlarm(code)
                 .onSuccess {
                     _isLoading.value = false
                     _errorType.value = CodeState.ALREADY_JOIN
@@ -64,7 +62,7 @@ class ProfileViewModel @Inject constructor(
                     promiseRepository.getPromiseByCode(code)
                         .onSuccess { promise ->
                             _isLoading.value = false
-                            _promise.value = promise.asDomain()
+                            _promise.value = promise.asUiModel()
                         }
                         .onFailure {
                             _isLoading.value = false
@@ -74,17 +72,11 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun insertPromise(promise: PromiseDataModel) {
+    fun insertPromise(promise: Promise) {
         viewModelScope.launch {
             _isLoading.value = true
 
-            promiseRepository.insertPromise(
-                GameTimeInfoModel(
-                    code = promise.code,
-                    startTime = promise.gameDateTime,
-                    endTime = promise.promiseDateTime
-                )
-            )
+            promiseRepository.setPromiseAlarm(promise.asDomain())
                 .onSuccess {
                     addPlayer(promise.code)
                 }
@@ -96,17 +88,19 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun addPlayer(code: String) {
-        val user = UserModel(
+        val user = User(
             userId = UUID.randomUUID().toString(),
-            userName = nickname.value,
-            userImage = UserImage(
-                color = profileImageBackgroundColor.value.toString(),
-                imageIdx = profileImageIndex.value
+            data = UserData(
+                name = nickname.value,
+                profileImage = UserProfileImage(
+                    color = profileImageBackgroundColor.value.toString(),
+                    imageIndex = profileImageIndex.value
+                )
             )
         )
 
         viewModelScope.launch {
-            promiseRepository.addPlayer(code = code, user = user)
+            promiseRepository.addPlayer(code = code, user = user.asDomain())
                 .onSuccess {
                     _isLoading.value = false
                     _success.value = true

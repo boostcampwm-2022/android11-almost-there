@@ -1,8 +1,8 @@
 package com.woory.presentation.ui.gameresult
 
-import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGameResultBinding
+import com.woory.presentation.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

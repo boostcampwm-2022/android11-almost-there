@@ -58,7 +58,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
                 viewModel.promise.collectLatest { promise ->
                     promise ?: return@collectLatest
 
-                    if (OffsetDateTime.now() >= promise.gameDateTime) {
+                    if (OffsetDateTime.now() >= promise.data.gameDateTime) {
                         showDialog(CodeState.ALREADY_STARTED.getMessage(this@ProfileActivity))
                     } else {
                         viewModel.insertPromise(promise)

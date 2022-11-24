@@ -10,10 +10,10 @@ import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.poi.TMapPOIItem
-import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.util.MAP_API_KEY
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGamingBinding
+import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.util.MAP_API_KEY
 
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
 

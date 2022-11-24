@@ -11,8 +11,6 @@ import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.*
-import com.woory.firebase.mapper.toUserHpModel
-import com.woory.firebase.mapper.toUserLocationModel
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
@@ -40,7 +38,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 Tasks.await(task)
                 val res = task.result
                     .toObject(PromiseDocument::class.java)
-                    ?.toPromiseModel()
+                    ?.asPromiseModel()
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
             }
@@ -54,23 +52,20 @@ class DefaultFirebaseDataSource @Inject constructor(
         }
     }
 
-    // TODO : 랜덤 Code 생성하는 로직 추가 (어디서 생성을 할지??)
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         return withContext(scope.coroutineContext) {
-
             var generatedCode: String? = null
             var isDone = false
             while (isDone.not()) {
                 generatedCode = InviteCodeUtil.getRandomInviteCode()
-                fireStore
+                val task = fireStore
                     .collection("Promises")
                     .document(generatedCode)
                     .get()
-                    .addOnSuccessListener {
-                        if (it != null) {
-                            isDone = true
-                        }
-                    }
+                Tasks.await(task)
+                if (task.result.data == null) {
+                    isDone = true
+                }
             }
             requireNotNull(generatedCode)
 
@@ -78,7 +73,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore
                     .collection("Promises")
                     .document(generatedCode)
-                    .set(promiseDataModel.toPromise(generatedCode))
+                    .set(promiseDataModel.asPromiseDocument(generatedCode))
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -106,7 +101,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.toUserLocationModel()))
+                        trySend(Result.success(it.asUserLocationModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -122,7 +117,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection("UserLocation")
                     .document(userLocationModel.id)
-                    .set(userLocationModel.toUserLocation())
+                    .set(userLocationModel.asUserLocation())
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -154,7 +149,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.toUserHpModel()))
+                        trySend(Result.success(it.asUserHpModel()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -172,7 +167,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameToken)
                     .collection("Hp")
                     .document(userHpModel.id)
-                    .set(userHpModel.toUserHp())
+                    .set(userHpModel.asUserHp())
             }
 
             when (val exception = result.exceptionOrNull()) {
