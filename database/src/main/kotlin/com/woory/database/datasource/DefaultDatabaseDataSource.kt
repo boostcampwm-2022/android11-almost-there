@@ -4,6 +4,7 @@ import com.woory.data.model.GameTimeInfoModel
 import com.woory.data.source.DatabaseDataSource
 import com.woory.database.PromiseDao
 import com.woory.database.mapper.toGameTimeInfoEntity
+import com.woory.database.mapper.toGameTimeInfoModel
 import com.woory.database.mapper.toGameTimeInfoModels
 
 class DefaultDatabaseDataSource(private val dao: PromiseDao) : DatabaseDataSource {
@@ -36,5 +37,11 @@ class DefaultDatabaseDataSource(private val dao: PromiseDao) : DatabaseDataSourc
         return runCatching {
             dao.getPromiseTimesSortedByEndTime().toGameTimeInfoModels()
         }
+    }
+
+    override suspend fun getGameTimeByCode(code: String): Result<GameTimeInfoModel> = runCatching {
+        val result = dao.getGameTimeByCode(code) ?: throw NoSuchElementException()
+
+        result.toGameTimeInfoModel()
     }
 }
