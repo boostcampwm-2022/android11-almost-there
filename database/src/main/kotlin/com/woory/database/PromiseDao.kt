@@ -1,6 +1,10 @@
 package com.woory.database
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.woory.database.entity.GameTimeInfoEntity
 
 @Dao
@@ -20,4 +24,7 @@ interface PromiseDao {
 
     @Query("SELECT * From game_time_info ORDER BY datetime(end_time)")
     suspend fun getPromiseTimesSortedByEndTime(): List<GameTimeInfoEntity>
+
+    @Query("SELECT * FROM game_time_info WHERE code = :code")
+    suspend fun getGameTimeByCode(code: String): GameTimeInfoEntity?
 }

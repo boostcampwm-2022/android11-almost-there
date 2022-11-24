@@ -12,4 +12,6 @@ interface DatabaseDataSource {
     suspend fun getGameTimesSortedByStartTime(): Result<List<GameTimeInfoModel>>
 
     suspend fun getGameTimesSortedByEndTime(): Result<List<GameTimeInfoModel>>
+
+    suspend fun getGameTimeByCode(code: String): Result<GameTimeInfoModel>
 }
