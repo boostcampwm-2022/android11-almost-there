@@ -8,6 +8,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmTouchReceiver
+import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.util.PROMISE_ALARM_KEY
 
@@ -45,9 +46,14 @@ object NotificationProvider {
         val notificationManager = NotificationManagerCompat.from(context)
 
         val intent = Intent(context, AlarmTouchReceiver::class.java)
-        intent.putExtra(PROMISE_ALARM_KEY, promiseAlarm)
+        intent.putPromiseAlarm(promiseAlarm)
 
-        val pendingIntent = PendingIntent.getBroadcast(context, PROMISE_READY_NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            PROMISE_READY_NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val notification = createNotificationBuilder(
             context,
@@ -64,12 +70,24 @@ object NotificationProvider {
         context: Context,
         title: String,
         content: String,
-        promiseCode: String,
+        promiseAlarm: PromiseAlarm,
     ) {
-        val intent = Intent(context, AlarmTouchReceiver::class.java)
-        intent.putExtra("PROMISE_CODE", promiseCode)
-        intent.putExtra("ALARM_TYPE", "START")
+        val notificationManager = NotificationManagerCompat.from(context)
+
+        val intent = Intent(context, AlarmTouchReceiver::class.java).apply {
+            putPromiseAlarm(promiseAlarm)
+        }
 
         val pendingIntent = PendingIntent.getBroadcast(context, PROMISE_START_NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val notification = createNotificationBuilder(
+            context,
+            NotificationChannelProvider.PROMISE_START_CHANNEL_ID,
+            title,
+            content,
+            NotificationCompat.PRIORITY_HIGH,
+            pendingIntent,
+        )
+        notificationManager.notify(PROMISE_START_NOTIFICATION_ID, notification.build())
     }
 }

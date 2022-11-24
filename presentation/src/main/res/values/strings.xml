@@ -74,4 +74,8 @@
     <string name="hostofpromise">hostOFPromise</string>
     <string name="copy_complete">복사되었습니다.</string>
     <string name="promise_fetch_fail">약속 가져오기에 실패하였습니다.</string>
+    <string name="notification_channel_promise_start">게임 시작 알림 채널</string>
+    <string name="notification_channel_promise_start_description">게임 시작시 게임 진행 알림을 받는 채널입니다.</string>
+    <string name="notification_start_title">게임 시작 안내</string>
+    <string name="notification_start_content">게임 시작을 시작합니다 !</string>
 </resources>

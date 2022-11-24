@@ -25,13 +25,26 @@ class AlarmReceiver : BroadcastReceiver() {
                 onReceivePromiseReady(context, promiseAlarm)
             }
             ALARM_STATUS_START -> {
-
+                onReceivePromiseStart(context, promiseAlarm)
             }
             ALARM_STATUS_END -> {
 
             }
             else -> throw IllegalArgumentException(context.getString(R.string.notification_invalid_type))
         }
+    }
+
+    private fun onReceivePromiseStart(context: Context, promiseAlarm: PromiseAlarm) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            NotificationChannelProvider.providePromiseStartChannel(context)
+        }
+
+        NotificationProvider.notifyPromiseStartNotification(
+            context,
+            context.getString(R.string.notification_start_title),
+            context.getString(R.string.notification_channel_promise_start_description),
+            promiseAlarm
+        )
     }
 
     private fun onReceivePromiseReady(

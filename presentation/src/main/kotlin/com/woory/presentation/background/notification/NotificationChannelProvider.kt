@@ -38,7 +38,22 @@ object NotificationChannelProvider {
             true,
             name,
             description,
-            PROMISE_CHANNEL_ID
+            PROMISE_READY_CHANNEL_ID
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun providePromiseStartChannel(context: Context) {
+        val name = context.getString(R.string.notification_channel_promise_start)
+        val description = context.getString(R.string.notification_channel_promise_start_description)
+
+        createNotificationChannel(
+            context,
+            NotificationManager.IMPORTANCE_DEFAULT,
+            true,
+            name,
+            description,
+            PROMISE_START_CHANNEL_ID
         )
     }
 }
