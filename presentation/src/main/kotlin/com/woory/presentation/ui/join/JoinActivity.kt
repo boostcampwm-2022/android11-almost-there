@@ -30,9 +30,9 @@ class JoinActivity : BaseActivity<ActivityJoinBinding>(R.layout.activity_join) {
         bindViews()
     }
 
-    private fun initToolbar() = with(binding) {
-        setSupportActionBar(toolbar)
-
+    private fun initToolbar() {
+        setSupportActionBar(binding.containerToolbar.toolbar)
+        binding.containerToolbar.toolbar.title = getString(R.string.join)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)

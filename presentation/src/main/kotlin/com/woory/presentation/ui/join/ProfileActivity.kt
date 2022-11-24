@@ -33,13 +33,13 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
         binding.vm = viewModel
         code = intent.getStringExtra(PROMISE_CODE_KEY)
 
-        initToolbar()
+        setUpToolbar()
         bindViews()
     }
 
-    private fun initToolbar() = with(binding) {
-        setSupportActionBar(toolbar)
-
+    private fun setUpToolbar() {
+        setSupportActionBar(binding.containerToolbar.toolbar)
+        binding.containerToolbar.toolbar.title = getString(R.string.profile_title)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)

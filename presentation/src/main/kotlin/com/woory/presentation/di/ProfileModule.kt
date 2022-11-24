@@ -1,4 +1,4 @@
-package com.woory.presentation.ui.join
+package com.woory.presentation.di
 
 import androidx.lifecycle.SavedStateHandle
 import com.woory.presentation.ui.join.ProfileActivity.Companion.PROMISE_CODE_KEY

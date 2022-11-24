@@ -18,9 +18,10 @@ class ProfileFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.vm = viewModel
 
-        viewModel.setUser()
-        // TODO("VIEWModel set => setUser() ")
-        findNavController().navigate(R.id.nav_creating_promise_frag)
+        binding.btnNext.setOnClickListener {
+            findNavController().navigate(R.id.nav_creating_promise_frag)
+        }
     }
 }
