@@ -1,10 +1,10 @@
 package com.woory.firebase.model
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 
-data class UserState(
+data class UserLocationDocument(
     val id: String = "",
-    val hp: Int = 0,
     val location: GeoPoint = GeoPoint(0.0, 0.0),
-    val address: String = ""
+    val updatedAt: Timestamp = Timestamp(1, 1),
 )

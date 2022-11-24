@@ -1,11 +1,6 @@
 package com.woory.data.repository
 
-import com.woory.data.model.GameTimeInfoModel
-import com.woory.data.model.GeoPointModel
-import com.woory.data.model.PromiseDataModel
-import com.woory.data.model.UserHpModel
-import com.woory.data.model.UserLocationModel
-import com.woory.data.model.UserModel
+import com.woory.data.model.*
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -18,13 +13,13 @@ class DefaultPromiseRepository @Inject constructor(
     private val networkDataSource: NetworkDataSource
 ) : PromiseRepository {
 
-    override suspend fun setPromise(promise: PromiseDataModel): Result<Unit> =
+    override suspend fun setPromise(promise: PromiseDataModel): Result<String> =
         firebaseDataSource.setPromise(promise)
 
     override suspend fun getAddressByPoint(geoPoint: GeoPointModel): Result<String> =
         networkDataSource.getAddressByPoint(geoPoint)
 
-    override suspend fun getPromiseByCode(code: String): Result<PromiseDataModel> =
+    override suspend fun getPromiseByCode(code: String): Result<PromiseModel> =
         firebaseDataSource.getPromiseByCode(code)
 
     override suspend fun setUserLocation(userLocation: UserLocationModel): Result<Unit> =

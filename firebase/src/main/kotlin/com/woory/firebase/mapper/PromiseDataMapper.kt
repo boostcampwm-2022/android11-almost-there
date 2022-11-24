@@ -3,12 +3,12 @@ package com.woory.firebase.mapper
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 import com.woory.data.model.*
-import com.woory.firebase.model.PromiseData
+import com.woory.firebase.model.PromiseDocument
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneOffset
 import java.util.*
 
-internal fun PromiseData.toPromiseDataModel(): PromiseDataModel {
+internal fun PromiseDocument.toPromiseModel(): PromiseModel {
 
     val code = this.code
 
@@ -28,14 +28,13 @@ internal fun PromiseData.toPromiseDataModel(): PromiseDataModel {
 
     val users = this.users.map { it.toUserModel() }
 
-    return PromiseDataModel(
-        code, promiseLocation, promiseDateTime, gameDateTime, host, users
+    return PromiseModel(
+        code, PromiseDataModel(promiseLocation, promiseDateTime, gameDateTime, host, users)
     )
 }
 
-internal fun PromiseDataModel.toPromiseData(): PromiseData {
+internal fun PromiseDataModel.toPromise(code: String): PromiseDocument {
     val address = this.promiseLocation.address
-    val code = this.code
     val destination = GeoPoint(
         this.promiseLocation.geoPoint.latitude,
         this.promiseLocation.geoPoint.longitude
@@ -45,9 +44,9 @@ internal fun PromiseDataModel.toPromiseData(): PromiseData {
     val host = this.host.toPromiseParticipant()
     val users = this.users.map { it.toPromiseParticipant() }
 
-    return PromiseData(
-        address = address,
+    return PromiseDocument(
         code = code,
+        address = address,
         destination = destination,
         host = host,
         gameTime = gameTime,
