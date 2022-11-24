@@ -1,33 +1,27 @@
 package com.woory.almostthere.background.notification
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.woory.presentation.R
+import com.woory.presentation.background.alarm.AlarmTouchReceiver
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 
 object NotificationProvider {
     const val PROMISE_READY_NOTIFICATION_ID = 80
 
+    @SuppressLint("SuspiciousIndentation")
     private fun createNotificationBuilder(
         context: Context,
         channelId: String,
         title: String,
         content: String,
         priority: Int,
-        intent: Intent,
-        requestCode: Int = 0,
+        pendingIntent: PendingIntent,
     ): NotificationCompat.Builder {
-
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-
 
         return NotificationCompat.Builder(context, channelId).apply {
             // Todo :: 앱 아이콘 변경 필요
@@ -37,11 +31,11 @@ object NotificationProvider {
             setAutoCancel(true)
             this.priority = priority
 
-            if (priority == NotificationCompat.PRIORITY_HIGH) {
-                setFullScreenIntent(pendingIntent, true)
-            } else {
+//            if (priority == NotificationCompat.PRIORITY_HIGH) {
+//                setFullScreenIntent(pendingIntent, true)
+//            } else {
                 setContentIntent(pendingIntent)
-            }
+//            }
         }
     }
 
@@ -52,8 +46,12 @@ object NotificationProvider {
         promiseCode: String
     ) {
         val notificationManager = NotificationManagerCompat.from(context)
-        val intent = Intent(context, PromiseInfoActivity::class.java)
+
+        val intent = Intent(context, AlarmTouchReceiver::class.java)
         intent.putExtra("PROMISE_CODE", promiseCode)
+        intent.putExtra("ALARM_TYPE", "READY")
+
+        val pendingIntent = PendingIntent.getBroadcast(context, PROMISE_READY_NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification = createNotificationBuilder(
             context,
@@ -61,7 +59,7 @@ object NotificationProvider {
             title,
             content,
             NotificationCompat.PRIORITY_HIGH,
-            intent,
+            pendingIntent,
         )
 
         notificationManager.notify(PROMISE_READY_NOTIFICATION_ID, notification.build())

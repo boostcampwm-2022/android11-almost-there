@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.almostthere.background.notification.NotificationProvider
+import com.woory.presentation.R
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -21,18 +22,17 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
             }
             AlarmFunctions.PROMISE_START -> {}
-            else -> throw IllegalArgumentException("is not available alarm type")
+            else -> throw IllegalArgumentException(context.getString(R.string.notification_invalid_type))
         }
     }
 
     private fun onReceivePromiseReady(context: Context, promiseCode: String) {
         NotificationChannelProvider.providePromiseReadyChannel(context)
 
-        // Todo :: 알람 메세지 수정 필요
         NotificationProvider.notifyPromiseReadyNotification(
             context,
-            "임시 제목",
-            "임시 소제목",
+            context.getString(R.string.notification_ready_title),
+            context.getString(R.string.notification_ready_content),
             promiseCode
         )
     }
