@@ -59,6 +59,7 @@
     <string name="nickname_hint">닉네임 입력</string>
     <string name="back_main">메인 화면으로 돌아가기</string>
     <string name="join_failure">약속에 참여할 수 없습니다.</string>
+    <string name="search">검색</string>
     <string name="crown_icon">👑</string>
     <string name="hostofpromise">hostOFPromise</string>
     <string name="copy_complete">복사되었습니다.</string>

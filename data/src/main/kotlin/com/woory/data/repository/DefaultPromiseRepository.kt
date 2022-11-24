@@ -50,4 +50,7 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
         firebaseDataSource.addPlayer(code, user)
+
+    override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
+        networkDataSource.searchLocationByKeyword(keyword)
 }

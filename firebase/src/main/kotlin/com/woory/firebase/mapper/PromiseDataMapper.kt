@@ -14,7 +14,7 @@ import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneOffset
 import java.util.*
 
-internal fun PromiseDocument.asPromiseModel(): PromiseModel {
+internal fun PromiseDocument.asDomain(): PromiseModel {
 
     val code = this.code
 
@@ -41,7 +41,7 @@ internal fun PromiseDocument.asPromiseModel(): PromiseModel {
     )
 }
 
-internal fun PromiseDataModel.asPromiseDocument(code: String): PromiseDocument {
+internal fun PromiseDataModel.asModel(code: String): PromiseDocument {
     val address = this.promiseLocation.address
     val destination = GeoPoint(
         this.promiseLocation.geoPoint.latitude,
