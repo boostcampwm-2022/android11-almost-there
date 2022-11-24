@@ -3,11 +3,25 @@ package com.woory.presentation.ui.creatingpromise
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
-import com.woory.presentation.model.*
+import com.woory.presentation.model.Location
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.model.PromiseData
+import com.woory.presentation.model.User
+import com.woory.presentation.model.UserData
+import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
+import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
+import com.woory.presentation.ui.promiseinfo.PromiseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
@@ -54,6 +68,20 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
 
     private val _promiseSettingEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
     val promiseSettingEvent: SharedFlow<PromiseAlarm> = _promiseSettingEvent.asSharedFlow()
+
+    private val _locationSearchResult: MutableStateFlow<List<LocationSearchResult>> =
+        MutableStateFlow(
+            listOf()
+        )
+    val locationSearchResult: StateFlow<List<LocationSearchResult>> =
+        _locationSearchResult.asStateFlow()
+
+    private val _choosedLocation: MutableStateFlow<Location?> = MutableStateFlow(null)
+    val choosedLocation: StateFlow<Location?> = _choosedLocation.asStateFlow()
+
+    private val _locationSearchUiState: MutableStateFlow<PromiseUiState> =
+        MutableStateFlow(PromiseUiState.Loading)
+    val locationSearchUiState: StateFlow<PromiseUiState> = _locationSearchUiState.asStateFlow()
 
     fun setUser() {
         viewModelScope.launch {
@@ -111,6 +139,24 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
                     _promiseSettingEvent.emit(promiseAlarm.asUiModel())
                 }
             }
+        }
+    }
+
+    fun searchLocation(query: String) {
+        viewModelScope.launch {
+            repository.getSearchedLocationByKeyword(query).onSuccess {
+                setSearchedResult(it.map { SearchResultMapper.asUiModel(it) })
+            }
+        }
+    }
+
+    suspend fun setSearchedResult(lst: List<LocationSearchResult>) {
+        _locationSearchResult.emit(lst)
+    }
+
+    fun chooseLocation(location: Location) {
+        viewModelScope.launch {
+            _choosedLocation.emit(location)
         }
     }
 }
