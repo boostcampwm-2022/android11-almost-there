@@ -1,9 +1,9 @@
 package com.woory.data.model
 
 data class UserModel(
-    val id: String,
-    val name: String,
-    val image: UserImage
+    val userId: String,
+    val userName: String,
+    val userImage: UserImage
 )
 
 data class UserImage(

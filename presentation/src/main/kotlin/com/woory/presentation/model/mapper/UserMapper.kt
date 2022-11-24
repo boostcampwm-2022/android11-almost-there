@@ -6,15 +6,15 @@ object UserMapper : UiStateMapper<UserModel, com.woory.data.model.UserModel> {
 
     override fun asUiState(domain: com.woory.data.model.UserModel): UserModel =
         UserModel(
-            name = domain.name,
-            profileImage = domain.image.asUiState()
+            name = domain.userName,
+            profileImage = domain.userImage.asUiState()
         )
 
     override fun asDomain(uiState: UserModel): com.woory.data.model.UserModel =
         com.woory.data.model.UserModel(
-            id = "",
-            name = uiState.name,
-            image = uiState.profileImage.asDomain()
+            userId = "",
+            userName = uiState.name,
+            userImage = uiState.profileImage.asDomain()
         )
 }
 

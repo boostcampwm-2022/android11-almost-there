@@ -6,9 +6,9 @@ import com.woory.firebase.model.PromiseParticipant
 import com.woory.firebase.model.UserImageInfo
 
 internal fun UserModel.toPromiseParticipant() = PromiseParticipant(
-    userImage = this.image.toUserImageInfo(),
-    userName = this.name,
-    userId = this.id
+    userImage = this.userImage.toUserImageInfo(),
+    userName = this.userName,
+    userId = this.userId
 )
 
 internal fun UserImage.toUserImageInfo() = UserImageInfo(
@@ -17,9 +17,9 @@ internal fun UserImage.toUserImageInfo() = UserImageInfo(
 )
 
 internal fun PromiseParticipant.toUserModel() = UserModel(
-    id = this.userId,
-    name = this.userName,
-    image = this.userImage.toUserImage()
+    userId = this.userId,
+    userName = this.userName,
+    userImage = this.userImage.toUserImage()
 )
 
 internal fun UserImageInfo.toUserImage() = UserImage(
