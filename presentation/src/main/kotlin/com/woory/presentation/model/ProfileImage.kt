@@ -1,4 +1,4 @@
-package com.woory.presentation.ui.join
+package com.woory.presentation.model
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,4 +16,10 @@ enum class ProfileImage(@DrawableRes private val imageResId: Int) {
     @SuppressLint("UseCompatLoadingForDrawables")
     fun getDrawableImage(context: Context): Drawable =
         context.resources.getDrawable(imageResId, null)
+
+    companion object {
+        private val imageArray = values().indices
+
+        fun getRandomImage(): Int = imageArray.random()
+    }
 }

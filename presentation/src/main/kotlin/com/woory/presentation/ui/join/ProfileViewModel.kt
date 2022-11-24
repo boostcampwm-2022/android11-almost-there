@@ -42,10 +42,8 @@ class ProfileViewModel @Inject constructor(
     private val _success: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success.asStateFlow()
 
-    private val images = ProfileImage.values()
-
     fun shuffleProfileImage() {
-        profileImageIndex.value = images.indices.random()
+        profileImageIndex.value = ProfileImage.getRandomImage()
         profileImageBackgroundColor.value = Color.getRandomColor()
     }
 

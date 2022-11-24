@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="almost_there_primary">#E9F4EC</color>          <!-- Point -->
-    <color name="almost_there_primary_dark">#BAC3BC</color>     <!-- Press, Active, etc -->
-    <color name="almost_there_primary_light">#F1F8F3</color>    <!-- Disable, Label, etc -->
+    <color name="almost_there_primary">#BFE3C9</color>          <!-- Point -->
+    <color name="almost_there_primary_dark">#8CAD96</color>     <!-- Press, Active, etc -->
+    <color name="almost_there_primary_light">#D8E8DC</color>    <!-- Disable, Label, etc -->
     <color name="almost_there_black">#010101</color>            <!-- Title -->
     <color name="almost_there_grey01">#4F4F4F</color>           <!-- Body Bold -->
     <color name="almost_there_grey02">#828282</color>           <!-- Body Regular -->
@@ -11,7 +11,7 @@
     <color name="almost_there_white">#FFFFFF</color>            <!-- Disable, Label, etc -->
 
     <color name="splash_background">#E9F4EC</color>
-
+    <color name="cream">#FEFBF6</color>
     <color name="join_button_background">#FF00C853</color>
     <color name="loading_indicator_color">#FF2962FF</color>
 </resources>
