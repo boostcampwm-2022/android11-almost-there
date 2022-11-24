@@ -12,6 +12,8 @@ import com.skt.tmap.TMapView
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentPromiseInfoBinding
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.util.MAP_API_KEY
+import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -20,7 +22,7 @@ class PromiseInfoFragment :
     BaseFragment<FragmentPromiseInfoBinding>(R.layout.fragment_promise_info) {
 
     private val viewModel: PromiseInfoViewModel by activityViewModels()
-    private lateinit var tMapView: TMapView
+    private lateinit var mapView: TMapView
     private val participantAdapter by lazy {
         PromiseUserAdapter(viewModel)
     }
@@ -32,8 +34,7 @@ class PromiseInfoFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tMapView = binding.mapPromiseLocation
-
+        setUpMapView()
         viewModel.fetchPromiseDate()
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
@@ -63,6 +64,13 @@ class PromiseInfoFragment :
             clipBoard.setPrimaryClip(clip)
             makeSnackBar(getString(R.string.copy_complete))
         }
+    }
+
+    private fun setUpMapView() {
+        mapView = TMapView(getActivityContext(requireContext())).apply {
+            setSKTMapApiKey(MAP_API_KEY)
+        }
+        binding.containerMap.addView(mapView)
     }
 
     private fun makeSnackBar(text: String) {

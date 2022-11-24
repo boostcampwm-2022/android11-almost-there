@@ -45,8 +45,8 @@
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <com.skt.tmap.TMapView
-                android:id="@+id/map_promise_location"
+            <FrameLayout
+                android:id="@+id/container_map"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="@id/guideline_center"
