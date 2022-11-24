@@ -21,9 +21,9 @@ internal fun PromiseDocument.toPromiseModel(): PromiseModel {
     val gameDateTime = this.gameTime.toDate().toOffsetDate()
 
     val host = UserModel(
-        id = this.host.userId,
-        name = this.host.userName,
-        image = UserImage(this.host.userImage.color, this.host.userImage.imageIdx)
+        userId = this.host.userId,
+        userName = this.host.userName,
+        userImage = UserImage(this.host.userImage.color, this.host.userImage.imageIdx)
     )
 
     val users = this.users.map { it.toUserModel() }

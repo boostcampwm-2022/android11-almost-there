@@ -3,19 +3,145 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="android.text.TextUtils" />
+
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.join.ProfileViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.join.ProfileActivity">
 
-        <TextView
-            android:id="@+id/textView"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/startGuideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@string/profile_title"
+            app:titleTextAppearance="@style/Text18.Black.Bold" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <FrameLayout
+            android:id="@+id/profileImageLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_profile"
+            app:layout_constraintBottom_toTopOf="@id/nicknameInputLayout"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"
+            app:layout_constraintStart_toStartOf="@id/startGuideline"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintVertical_chainStyle="packed">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:backgroundColor="@{vm.profileImageBackgroundColor}"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/profileImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/profile_title"
+                    android:scaleType="centerCrop"
+                    app:src="@{vm.profileImageIndex}" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <ImageButton
+                android:id="@+id/switchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:backgroundTint="@color/almost_there_primary_dark"
+                android:contentDescription="@string/profile_title"
+                android:minWidth="48dp"
+                android:onClick="@{() -> vm.shuffleProfileImage()}"
+                android:src="@drawable/ic_switch" />
+
+        </FrameLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nicknameInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="7"
+            app:endIconMode="clear_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"
+            app:layout_constraintStart_toStartOf="@id/startGuideline"
+            app:layout_constraintTop_toBottomOf="@id/profileImageLayout"
+            app:startIconDrawable="@drawable/ic_nickname">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nicknameInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/nickname_hint"
+                android:inputType="text"
+                android:maxLength="7"
+                android:text="@={vm.nickname}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/joinButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/button_state_color"
+            android:enabled="@{TextUtils.isEmpty(vm.nickname) ? false : true}"
+            android:text="@string/join"
+            android:textAppearance="@style/Text12.Black.Bold"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"
+            app:layout_constraintStart_toStartOf="@id/startGuideline"
+            app:layout_constraintTop_toBottomOf="@id/nicknameInputLayout" />
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/loading_indicator_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:visibility="@{vm.isLoading}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

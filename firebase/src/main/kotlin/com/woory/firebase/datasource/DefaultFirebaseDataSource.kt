@@ -2,13 +2,17 @@ package com.woory.firebase.datasource
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.*
+import com.woory.firebase.mapper.toUserHpModel
+import com.woory.firebase.mapper.toUserLocationModel
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
@@ -17,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -168,6 +173,23 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .collection("Hp")
                     .document(userHpModel.id)
                     .set(userHpModel.toUserHp())
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
+        }
+    }
+
+    override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> {
+        return withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val res = fireStore
+                    .collection("Promises")
+                    .document(code)
+                    .update("users", FieldValue.arrayUnion(user))
+                    .await()
             }
 
             when (val exception = result.exceptionOrNull()) {

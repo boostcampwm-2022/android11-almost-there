@@ -2,11 +2,15 @@ package com.woory.presentation.binding
 
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.databinding.BindingAdapter
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.woory.presentation.R
+import com.woory.presentation.model.Color
 import com.woory.presentation.ui.join.FormState
+import com.woory.presentation.ui.join.ProfileImage
 
 @BindingAdapter("state_message")
 fun TextInputLayout.bindMessage(state: FormState) {
@@ -35,4 +39,16 @@ fun ProgressBar.bindVisibility(isLoading: Boolean) {
     } else {
         View.GONE
     }
+}
+
+@BindingAdapter("backgroundColor")
+fun MaterialCardView.bindBackgroundColor(color: Color) {
+    setCardBackgroundColor(android.graphics.Color.parseColor(color.toString()))
+}
+
+@BindingAdapter("src")
+fun ImageView.bindImage(index: Int) {
+    val imageDrawable = ProfileImage.values()[index].getDrawableImage(context)
+
+    setImageDrawable(imageDrawable)
 }

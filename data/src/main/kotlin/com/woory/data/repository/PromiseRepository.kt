@@ -18,4 +18,10 @@ interface PromiseRepository {
     suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>>
 
     suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>>
+
+    suspend fun getGameTimeByCode(code: String): Result<GameTimeInfoModel>
+
+    suspend fun insertPromise(info: GameTimeInfoModel): Result<Unit>
+
+    suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 }

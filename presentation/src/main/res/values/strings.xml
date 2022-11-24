@@ -50,4 +50,10 @@
     <string name="already_join">이미 참여중인 약속입니다.</string>
     <string name="already_started">만료된 약속입니다.</string>
     <string name="join">약속 참여</string>
+
+    <!-- 프로필 입력 화면 -->
+    <string name="profile_title">프로필 설정</string>
+    <string name="nickname_hint">닉네임 입력</string>
+    <string name="back_main">메인 화면으로 돌아가기</string>
+    <string name="join_failure">약속에 참여할 수 없습니다.</string>
 </resources>

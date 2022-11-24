@@ -45,7 +45,7 @@ class JoinActivity : BaseActivity<ActivityJoinBinding>(R.layout.activity_join) {
                 viewModel.promise.collectLatest { promise ->
                     promise ?: return@collectLatest
 
-                    ProfileActivity.startActivity(this@JoinActivity, promise)
+                    ProfileActivity.startActivity(this@JoinActivity, promise.code)
                     finish()
                 }
             }
