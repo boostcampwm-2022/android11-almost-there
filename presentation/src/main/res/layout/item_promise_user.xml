@@ -14,7 +14,7 @@
 
         <import type="android.graphics.Color" />
 
-        <import type="com.woory.presentation.ui.join.ProfileImage" />
+        <import type="com.woory.presentation.model.ProfileImage" />
 
         <import type="android.view.View" />
 
