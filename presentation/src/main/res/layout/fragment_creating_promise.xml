@@ -9,6 +9,7 @@
 
         <TextView
             android:id="@+id/tv_promise_location"
+            style="@style/Text12.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -17,155 +18,186 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/et_promise_location"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/container_et_promise_location"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
-            android:autofillHints="string"
-            android:ellipsize="end"
             android:enabled="false"
-            android:maxLines="1"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_location"
             app:layout_constraintEnd_toStartOf="@id/ib_promise_location"
-            app:layout_constraintStart_toEndOf="@+id/tv_promise_location"
-            tools:ignore="LabelFor,TextFields" />
+            app:layout_constraintStart_toStartOf="@+id/tv_promise_location"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_location">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_promise_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="string"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:ignore="LabelFor,TextFields,SpeakableTextPresentCheck" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:id="@+id/ib_promise_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/ib_size"
+            android:layout_height="@dimen/ib_size"
             android:layout_marginEnd="32dp"
             android:background="@drawable/ic_location"
-            android:contentDescription="@string/promise_location"
-            app:layout_constraintBottom_toBottomOf="@+id/et_promise_location"
+            android:contentDescription="@string/location_selection_from_map"
+            app:layout_constraintBottom_toBottomOf="@+id/container_et_promise_location"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/et_promise_location"
-            app:layout_constraintTop_toTopOf="@+id/et_promise_location" />
+            app:layout_constraintStart_toEndOf="@+id/container_et_promise_location"
+            app:layout_constraintTop_toTopOf="@+id/container_et_promise_location" />
 
         <TextView
             android:id="@+id/tv_promise_date_title"
+            style="@style/Text12.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="32dp"
             android:text="@string/promise_date"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_promise_location" />
+            app:layout_constraintTop_toBottomOf="@+id/container_et_promise_location" />
 
-        <EditText
-            android:id="@+id/et_promise_date"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/container_et_promise_date"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
-            android:ellipsize="end"
-            android:enabled="false"
-            android:importantForAutofill="no"
-            android:maxLines="1"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_date_title"
-            app:layout_constraintEnd_toStartOf="@+id/ib_promise_date"
-            app:layout_constraintStart_toEndOf="@+id/tv_promise_date_title"
-            tools:ignore="LabelFor,TextFields" />
+            app:layout_constraintEnd_toStartOf="@id/ib_promise_date"
+            app:layout_constraintStart_toStartOf="@id/tv_promise_date_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_date_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_promise_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:enabled="false"
+                android:importantForAutofill="no"
+                android:maxLines="1"
+                tools:ignore="LabelFor,TextFields,SpeakableTextPresentCheck" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:id="@+id/ib_promise_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/ib_size"
+            android:layout_height="@dimen/ib_size"
             android:layout_marginEnd="32dp"
             android:background="@drawable/ic_calendar"
-            android:contentDescription="@string/promise_date"
-            app:layout_constraintBottom_toBottomOf="@+id/et_promise_date"
+            android:contentDescription="@string/open_calendar"
+            app:layout_constraintBottom_toBottomOf="@id/container_et_promise_date"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/et_promise_date"
-            app:layout_constraintTop_toTopOf="@+id/et_promise_date" />
+            app:layout_constraintStart_toEndOf="@+id/container_et_promise_date"
+            app:layout_constraintTop_toTopOf="@+id/container_et_promise_date" />
 
         <TextView
             android:id="@+id/tv_promise_time_title"
+            style="@style/Text12.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="48dp"
             android:text="@string/promise_time"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_promise_date_title" />
+            app:layout_constraintTop_toBottomOf="@+id/container_et_promise_date" />
 
-        <EditText
-            android:id="@+id/et_promise_time"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/container_et_promise_time"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
-            android:ellipsize="end"
-            android:enabled="false"
-            android:importantForAutofill="no"
-            android:maxLines="1"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_time_title"
-            app:layout_constraintEnd_toStartOf="@+id/ib_promise_time"
-            app:layout_constraintStart_toEndOf="@+id/tv_promise_time_title"
-            tools:ignore="LabelFor,TextFields" />
+            app:layout_constraintEnd_toStartOf="@id/ib_promise_time"
+            app:layout_constraintStart_toStartOf="@id/tv_promise_time_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_time_title">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_promise_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:enabled="false"
+                android:importantForAutofill="no"
+                android:maxLines="1"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:id="@+id/ib_promise_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/ib_size"
+            android:layout_height="@dimen/ib_size"
             android:layout_marginEnd="32dp"
             android:background="@drawable/ic_time"
-            android:contentDescription="@string/promise_time"
-            app:layout_constraintBottom_toBottomOf="@+id/et_promise_time"
+            android:contentDescription="@string/promise_time_selection"
+            app:layout_constraintBottom_toBottomOf="@+id/container_et_promise_time"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/et_promise_time"
-            app:layout_constraintTop_toTopOf="@+id/et_promise_time" />
+            app:layout_constraintStart_toEndOf="@+id/container_et_promise_time"
+            app:layout_constraintTop_toTopOf="@+id/container_et_promise_time" />
 
         <TextView
             android:id="@+id/tv_game_time_title"
+            style="@style/Text12.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="48dp"
-            android:text="@string/game_start"
+            android:text="@string/game_start_time"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_promise_time_title" />
+            app:layout_constraintTop_toBottomOf="@+id/container_et_promise_time" />
 
-        <EditText
-            android:id="@+id/et_game_time"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/container_et_game_time"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
-            android:ellipsize="end"
-            android:enabled="false"
-            android:importantForAutofill="no"
-            android:maxLines="1"
-            android:singleLine="true"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_game_time_title"
             app:layout_constraintEnd_toStartOf="@+id/ib_game_time"
-            app:layout_constraintStart_toEndOf="@+id/tv_game_time_title"
-            tools:ignore="LabelFor,TextFields" />
+            app:layout_constraintStart_toStartOf="@+id/tv_game_time_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_game_time_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_game_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:enabled="false"
+                android:importantForAutofill="no"
+                android:maxLines="1"
+                android:singleLine="true"
+                tools:ignore="LabelFor,TextFields,SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:id="@+id/ib_game_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/ib_size"
+            android:layout_height="@dimen/ib_size"
             android:layout_marginEnd="32dp"
             android:background="@drawable/ic_hourglass"
-            android:contentDescription="@string/game_start_time"
-            app:layout_constraintBottom_toBottomOf="@+id/et_game_time"
+            android:contentDescription="@string/game_time_selection"
+            app:layout_constraintBottom_toBottomOf="@+id/container_et_game_time"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/et_game_time"
-            app:layout_constraintTop_toTopOf="@+id/et_game_time" />
+            app:layout_constraintStart_toEndOf="@+id/container_et_game_time"
+            app:layout_constraintTop_toTopOf="@+id/container_et_game_time" />
 
         <Button
             android:id="@+id/btn_promise_create"
-            android:layout_width="wrap_content"
+            style="@style/Text12.Black.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:text="@string/create"
+            android:text="@string/promise_creation_with_icon"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_game_time"
-            app:layout_constraintVertical_bias="0.1" />
+            app:layout_constraintEnd_toEndOf="@id/ib_game_time"
+            app:layout_constraintStart_toStartOf="@id/container_et_game_time"
+            app:layout_constraintTop_toBottomOf="@+id/container_et_game_time"
+            app:layout_constraintVertical_bias="0.5" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

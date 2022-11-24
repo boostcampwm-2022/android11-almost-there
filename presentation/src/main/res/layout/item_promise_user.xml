@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.woory.presentation.model.User" />
+
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.promiseinfo.PromiseInfoViewModel" />
+
+        <import type="android.graphics.Color" />
+
+        <import type="com.woory.presentation.model.ProfileImage" />
+
+        <import type="android.view.View" />
+
+        <import type="android.content.Context" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profileImageLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@drawable/bg_profile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profileBackground"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:backgroundColor="@{Color.parseColor(item.data.profileImage.color)}"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/profile_title"
+                android:scaleType="centerCrop"
+                app:src="@{item.data.profileImage.imageIndex}" />
+
+        </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/iv_host"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:adjustViewBounds="true"
+            android:backgroundTint="@color/almost_there_primary_dark"
+            android:contentDescription="@string/hostofpromise"
+            android:elevation="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_crown"
+            app:layout_constraintStart_toStartOf="@id/profileBackground"
+            app:layout_constraintTop_toTopOf="@id/profileBackground" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:text="@{item.data.name}"
+            android:textAppearance="@style/Text18.Black.Bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profileBackground" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

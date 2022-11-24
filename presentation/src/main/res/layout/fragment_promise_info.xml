@@ -45,8 +45,8 @@
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent="0.5" />
 
-            <com.skt.tmap.TMapView
-                android:id="@+id/map_promise_location"
+            <FrameLayout
+                android:id="@+id/container_map"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="@id/guideline_center"
@@ -189,9 +189,12 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_promise_participant"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/tv_participant" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

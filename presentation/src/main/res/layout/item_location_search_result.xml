@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.woory.presentation.ui.creatingpromise.LocationSearchResult" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        app:strokeColor="@color/almost_there_black"
+        app:strokeWidth="1dp"
+        android:elevation="10dp"
+        android:layout_margin="5dp"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:padding="5dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_location_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{item.name}"
+                android:textAppearance="@style/Text24.Black.Bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_location_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{item.address}"
+                android:textAppearance="@style/Text16.Black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_location_name" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

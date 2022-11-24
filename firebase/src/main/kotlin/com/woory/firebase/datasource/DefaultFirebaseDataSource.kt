@@ -10,12 +10,8 @@ import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
-import com.woory.firebase.mapper.asPromiseDocument
-import com.woory.firebase.mapper.asPromiseModel
-import com.woory.firebase.mapper.asUserHp
-import com.woory.firebase.mapper.asUserHpModel
-import com.woory.firebase.mapper.asUserLocation
-import com.woory.firebase.mapper.asUserLocationModel
+import com.woory.firebase.mapper.asDomain
+import com.woory.firebase.mapper.asModel
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
@@ -43,7 +39,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 Tasks.await(task)
                 val res = task.result
                     .toObject(PromiseDocument::class.java)
-                    ?.asPromiseModel()
+                    ?.asDomain()
                     ?: throw IllegalStateException("Unmatched State with Server")
                 res
             }
@@ -78,7 +74,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore
                     .collection("Promises")
                     .document(generatedCode)
-                    .set(promiseDataModel.asPromiseDocument(generatedCode))
+                    .set(promiseDataModel.asModel(generatedCode))
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -106,7 +102,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.asUserLocationModel()))
+                        trySend(Result.success(it.asDomain()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -122,7 +118,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection("UserLocation")
                     .document(userLocationModel.id)
-                    .set(userLocationModel.asUserLocation())
+                    .set(userLocationModel.asModel())
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -154,7 +150,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 kotlin.runCatching {
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
-                        trySend(Result.success(it.asUserHpModel()))
+                        trySend(Result.success(it.asDomain()))
                     } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
@@ -172,7 +168,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameToken)
                     .collection("Hp")
                     .document(userHpModel.id)
-                    .set(userHpModel.asUserHp())
+                    .set(userHpModel.asModel())
             }
 
             when (val exception = result.exceptionOrNull()) {

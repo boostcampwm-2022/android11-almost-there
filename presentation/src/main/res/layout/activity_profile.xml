@@ -31,23 +31,14 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.8" />
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:title="@string/profile_title"
-            app:titleTextAppearance="@style/Text18.Black.Bold" />
-
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/divider"
+        <include
+            android:id="@+id/container_toolbar"
+            layout="@layout/layout_toolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:id="@+id/profileImageLayout"
@@ -58,7 +49,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="@id/endGuideline"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintTop_toBottomOf="@id/container_toolbar"
             app:layout_constraintVertical_chainStyle="packed">
 
             <com.google.android.material.card.MaterialCardView
@@ -120,16 +111,14 @@
 
         <Button
             android:id="@+id/joinButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:backgroundTint="@color/button_state_color"
             android:enabled="@{TextUtils.isEmpty(vm.nickname) ? false : true}"
-            android:text="@string/join"
+            android:text="@string/join_with_icon"
             android:textAppearance="@style/Text12.Black.Bold"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@id/endGuideline"
-            app:layout_constraintStart_toStartOf="@id/startGuideline"
+            app:layout_constraintEnd_toEndOf="@id/nicknameInputLayout"
+            app:layout_constraintStart_toStartOf="@id/nicknameInputLayout"
             app:layout_constraintTop_toBottomOf="@id/nicknameInputLayout" />
 
         <ProgressBar
@@ -140,7 +129,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintTop_toBottomOf="@id/container_toolbar"
             app:visibility="@{vm.isLoading}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

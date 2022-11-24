@@ -10,7 +10,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woory.presentation.R
 import com.woory.presentation.model.Color
 import com.woory.presentation.ui.join.FormState
-import com.woory.presentation.ui.join.ProfileImage
+import com.woory.presentation.model.ProfileImage
 
 @BindingAdapter("state_message")
 fun TextInputLayout.bindMessage(state: FormState) {

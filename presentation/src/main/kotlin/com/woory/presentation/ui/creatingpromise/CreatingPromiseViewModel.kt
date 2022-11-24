@@ -6,8 +6,17 @@ import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.model.*
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
+import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
+import com.woory.presentation.ui.promiseinfo.PromiseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
@@ -19,14 +28,11 @@ import javax.inject.Inject
 class CreatingPromiseViewModel @Inject constructor(private val repository: PromiseRepository) :
     ViewModel() {
 
-    // TODO("UserName, UserProfileImage default 값으로 주어짐, 연결 필요")
-    private val _userName: MutableStateFlow<String?> = MutableStateFlow("anonymous")
-    val userName: StateFlow<String?> = _userName.asStateFlow()
+    val profileImageBackgroundColor: MutableStateFlow<Color> = MutableStateFlow(Color(0, 0, 0))
 
-    private val _userProfileImage: MutableStateFlow<UserProfileImage?> = MutableStateFlow(
-        UserProfileImage("0xffffff", 1)
-    )
-    val userProfileImage: StateFlow<UserProfileImage?> = _userProfileImage.asStateFlow()
+    val profileImageIndex: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    val nickname: MutableStateFlow<String> = MutableStateFlow("")
 
     private val _promiseLocation: MutableStateFlow<Location?> = MutableStateFlow(null)
     val promiseLocation: StateFlow<Location?> = _promiseLocation.asStateFlow()
@@ -49,16 +55,27 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
         (_promiseLocation != null) && (_promiseDate != null) && (_promiseTime != null) && (_gameTime != null)
     }
 
-    private val _userSettingEvent: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val userSettingEvent: SharedFlow<Unit> = _userSettingEvent.asSharedFlow()
-
     private val _promiseSettingEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
     val promiseSettingEvent: SharedFlow<PromiseAlarm> = _promiseSettingEvent.asSharedFlow()
 
-    fun setUser() {
-        viewModelScope.launch {
-            _userSettingEvent.emit(Unit)
-        }
+    private val _locationSearchResult: MutableStateFlow<List<LocationSearchResult>> =
+        MutableStateFlow(
+            listOf()
+        )
+
+    val locationSearchResult: StateFlow<List<LocationSearchResult>> =
+        _locationSearchResult.asStateFlow()
+
+    private val _choosedLocation: MutableStateFlow<Location?> = MutableStateFlow(null)
+    val choosedLocation: StateFlow<Location?> = _choosedLocation.asStateFlow()
+
+    private val _locationSearchUiState: MutableStateFlow<PromiseUiState> =
+        MutableStateFlow(PromiseUiState.Loading)
+    val locationSearchUiState: StateFlow<PromiseUiState> = _locationSearchUiState.asStateFlow()
+
+    fun shuffleProfileImage() {
+        profileImageIndex.value = ProfileImage.getRandomImage()
+        profileImageBackgroundColor.value = Color.getRandomColor()
     }
 
     fun setPromiseLocation(location: Location?) {
@@ -87,8 +104,8 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
 
     fun setPromise() {
         viewModelScope.launch {
-            val name = _userName.value ?: return@launch
-            val profileImage = _userProfileImage.value ?: return@launch
+            val name = nickname.value
+            val profileImage = UserProfileImage(profileImageBackgroundColor.value.toString(), profileImageIndex.value)
             val promiseLocation = _promiseLocation.value ?: return@launch
             val promiseDate = _promiseDate.value ?: return@launch
             val promiseTime = _promiseTime.value ?: return@launch
@@ -111,6 +128,24 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
                     _promiseSettingEvent.emit(promiseAlarm.asUiModel())
                 }
             }
+        }
+    }
+
+    fun searchLocation(query: String) {
+        viewModelScope.launch {
+            repository.getSearchedLocationByKeyword(query).onSuccess {
+                setSearchedResult(it.map { SearchResultMapper.asUiModel(it) })
+            }
+        }
+    }
+
+    suspend fun setSearchedResult(lst: List<LocationSearchResult>) {
+        _locationSearchResult.emit(lst)
+    }
+
+    fun chooseLocation(location: Location) {
+        viewModelScope.launch {
+            _choosedLocation.emit(location)
         }
     }
 }

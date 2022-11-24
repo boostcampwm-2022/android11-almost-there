@@ -29,7 +29,12 @@ class PromiseInfoActivity :
     }
 
     private fun setUpAppBar() {
+        setSupportActionBar(binding.containerToolbar.toolbar)
         binding.containerToolbar.toolbar.title = getString(R.string.promise_info)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowHomeEnabled(true)
+        }
     }
 
     companion object {
