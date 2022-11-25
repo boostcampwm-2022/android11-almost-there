@@ -10,12 +10,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
+import com.skt.tmap.overlay.TMapMarkerItem
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchBinding
 import com.woory.presentation.model.GeoPoint
@@ -54,6 +58,10 @@ class LocationSearchFragment :
         }
     }
 
+    private val bitmap by lazy {
+        ContextCompat.getDrawable(requireContext(), R.drawable.ic_goal_marker)?.toBitmap()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpMapView()
@@ -86,6 +94,26 @@ class LocationSearchFragment :
                 }
 
                 viewLifecycleOwner.lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        viewModel.choosedLocation.collect {
+                            if (it != null) {
+
+                                val latitude = it.geoPoint.latitude
+                                val longitude = it.geoPoint.longitude
+
+                                val marker = TMapMarkerItem().apply {
+                                    id = "1231234"
+                                    icon = bitmap
+                                    tMapPoint = TMapPoint(latitude, longitude)
+                                }
+
+                                mapView.apply {
+                                    setCenterPoint(latitude, longitude)
+                                    addTMapMarkerItem(marker)
+                                }
+                            }
+                        }
+                    }
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         viewModel.choosedLocation.collect {
                             if (it != null) {
