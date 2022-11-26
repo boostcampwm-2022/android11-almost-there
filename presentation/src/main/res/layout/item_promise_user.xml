@@ -8,10 +8,6 @@
             name="item"
             type="com.woory.presentation.model.User" />
 
-        <variable
-            name="vm"
-            type="com.woory.presentation.ui.promiseinfo.PromiseInfoViewModel" />
-
         <import type="android.graphics.Color" />
 
         <import type="com.woory.presentation.model.ProfileImage" />
