@@ -2,7 +2,7 @@
 name: "\U0001F31F Refactor"
 about: Refactoring 시 작성해주세요.
 title: "${리팩토링 사항} 리팩토링"
-labels: "\U0001F31F 리팩토링"
+labels: "\U0001F31F 리팩토링, \U0001F528 기능"
 assignees: ''
 
 ---
