@@ -28,7 +28,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_result"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
