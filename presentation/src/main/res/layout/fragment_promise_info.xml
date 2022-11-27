@@ -25,14 +25,26 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:backgroundTint="@{vm.uiState instanceof PromiseUiState.Loading ? @color/loading_indicator_color : @color/white}"
             tools:context=".ui.promiseinfo.PromiseInfoFragment">
 
             <ProgressBar
-                android:id="@+id/loadingIndicator"
+                android:id="@+id/ic_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:indeterminateTint="@color/loading_indicator_color"
                 android:visibility="@{vm.uiState instanceof PromiseUiState.Loading ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/iv_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_refresh"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,6 +62,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="@id/guideline_center"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -61,6 +74,7 @@
                 android:layout_margin="20dp"
                 android:textSize="24sp"
                 android:text="@{vm.promiseModel.code}"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 android:textStyle="italic|bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/guideline_center" />
@@ -72,6 +86,7 @@
                 android:layout_marginHorizontal="10dp"
                 android:text="@string/code_copy"
                 android:textSize="18sp"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 app:layout_constraintEnd_toStartOf="@id/btn_code_share"
                 app:layout_constraintTop_toTopOf="@id/btn_code_share" />
 
@@ -82,6 +97,7 @@
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/code_share"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@id/btn_code_copy"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -93,6 +109,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_promise_code">
@@ -184,6 +201,7 @@
                 android:layout_margin="20dp"
                 android:text="@string/participant"
                 android:textSize="32sp"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cv_promise_info" />
 
@@ -193,6 +211,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal"
+                android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/tv_participant" />

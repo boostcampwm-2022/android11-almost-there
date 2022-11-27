@@ -41,6 +41,10 @@ class LocationSearchResultFragment :
                 }
             }
         }
+
+        binding.btnSubmitSearch.setOnClickListener {
+            findLocation(binding.svPromiseLocation.query.toString())
+        }
     }
 
     private fun setSearchedLocation(location: LocationSearchResult) {
