@@ -6,11 +6,13 @@ import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.model.Promise
 import com.woory.presentation.model.mapper.promise.PromiseMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,8 +23,11 @@ class PromiseInfoViewModel @Inject constructor(
     val gameCode: StateFlow<String> = _gameCode.asStateFlow()
 
     private val _uiState: MutableStateFlow<PromiseUiState> =
-        MutableStateFlow(PromiseUiState.Waiting)
+        MutableStateFlow(PromiseUiState.Success)
     val uiState: StateFlow<PromiseUiState> = _uiState.asStateFlow()
+
+    private val _errorState: MutableSharedFlow<Throwable> = MutableSharedFlow()
+    val errorState: SharedFlow<Throwable> = _errorState.asSharedFlow()
 
     private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
     val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
@@ -36,15 +41,7 @@ class PromiseInfoViewModel @Inject constructor(
         }
     }
 
-    fun setUiState(state: PromiseUiState) {
-        viewModelScope.launch {
-            _uiState.emit(state)
-        }
-    }
-
-    fun isHost(userId: String): Boolean {
-        return host.value == userId
-    }
+    fun isHost(userId: String): Boolean = host.value == userId
 
     fun fetchPromiseDate() {
         viewModelScope.launch {
@@ -58,14 +55,11 @@ class PromiseInfoViewModel @Inject constructor(
                     _promiseModel.emit(promiseModel)
                     _host.emit(promiseModel.data.host.userId)
                 }
-                it.onFailure { error ->
-                    setUiState(PromiseUiState.Fail(error.message ?: DEFAULT_ERROR_MESSAGE))
+                it.onFailure { throwable ->
+                    _uiState.emit(PromiseUiState.Fail)
+                    _errorState.emit(throwable)
                 }
             }
         }
-    }
-
-    companion object {
-        private const val DEFAULT_ERROR_MESSAGE = ""
     }
 }

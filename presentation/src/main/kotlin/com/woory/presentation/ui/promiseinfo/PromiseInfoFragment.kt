@@ -55,11 +55,12 @@ class PromiseInfoFragment :
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    if (it is PromiseUiState.Fail) {
-                        makeSnackBar(it.message)
-                        viewModel.setUiState(PromiseUiState.Waiting)
-                    }
+                viewModel.errorState.collect {
+                    val errorMessage =
+                        it.message ?: requireContext().resources.getString(R.string.unknown_error)
+                    makeSnackBar(
+                        "Error : $errorMessage"
+                    )
                 }
             }
         }
@@ -88,8 +89,8 @@ class PromiseInfoFragment :
                                     it.data.promiseLocation.geoPoint.latitude,
                                     it.data.promiseLocation.geoPoint.longitude
                                 )
+                                participantAdapter.submitList(it.data.users)
                             }
-                            participantAdapter.submitList(it?.data?.users)
                         }
                     }
                 }
@@ -104,7 +105,7 @@ class PromiseInfoFragment :
             zoomLevel = 15
 
             val marker = TMapMarkerItem().apply {
-                id = "promiseLocation"
+                id = PROMISE_LOCATION_MARKER_ID
                 icon = markerImage
                 tMapPoint = TMapPoint(latitude, longitude)
             }
@@ -116,5 +117,9 @@ class PromiseInfoFragment :
 
     private fun makeSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        private const val PROMISE_LOCATION_MARKER_ID = "promiseLocation"
     }
 }
