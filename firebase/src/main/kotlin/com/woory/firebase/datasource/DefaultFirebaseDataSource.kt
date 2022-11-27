@@ -58,7 +58,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         callbackFlow {
             var documentReference: DocumentReference? = null
 
-            kotlin.runCatching {
+            runCatching {
                 documentReference = fireStore.collection("Promises").document(code)
             }.onFailure {
                 trySend(Result.failure(it))
@@ -69,7 +69,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     return@addSnapshotListener
                 }
 
-                kotlin.runCatching {
+                runCatching {
                     val result = value.toObject(PromiseDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
@@ -99,7 +99,7 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
             requireNotNull(generatedCode)
 
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 fireStore
                     .collection("Promises")
                     .document(generatedCode)
@@ -117,7 +117,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         callbackFlow {
             var documentReference: DocumentReference? = null
 
-            kotlin.runCatching {
+            runCatching {
                 documentReference = fireStore.collection("UserLocation").document(id)
             }.onFailure {
                 trySend(Result.failure(it))
@@ -128,7 +128,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     return@addSnapshotListener
                 }
 
-                kotlin.runCatching {
+                runCatching {
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
@@ -143,7 +143,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> {
         return withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val res = fireStore
                     .collection("UserLocation")
                     .document(userLocationModel.id)
@@ -161,7 +161,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         callbackFlow {
             var documentReference: DocumentReference? = null
 
-            kotlin.runCatching {
+            runCatching {
                 documentReference = fireStore
                     .collection("UserLocation")
                     .document(gameToken)
@@ -176,7 +176,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     return@addSnapshotListener
                 }
 
-                kotlin.runCatching {
+                runCatching {
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
@@ -191,7 +191,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> {
         return withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val res = fireStore
                     .collection("UserLocation")
                     .document(gameToken)
@@ -209,7 +209,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> {
         return withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val res = fireStore
                     .collection("Promises")
                     .document(code)

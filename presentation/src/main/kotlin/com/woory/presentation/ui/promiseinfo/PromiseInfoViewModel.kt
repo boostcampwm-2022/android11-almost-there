@@ -53,9 +53,6 @@ class PromiseInfoViewModel @Inject constructor(
 
             repository.getPromiseByCodeAndListen(code).collect {
                 it.onSuccess {
-                    it.data.users.forEach {
-                        Timber.tag("123123").d(it.data.profileImage.toString())
-                    }
                     val promiseModel = PromiseMapper.asUiModel(it)
                     _uiState.emit(PromiseUiState.Success)
                     _promiseModel.emit(promiseModel)
