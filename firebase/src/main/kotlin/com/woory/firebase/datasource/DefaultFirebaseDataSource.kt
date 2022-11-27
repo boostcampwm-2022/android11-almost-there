@@ -12,6 +12,7 @@ import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.asDomain
 import com.woory.firebase.mapper.asModel
+import com.woory.firebase.mapper.asPromiseParticipant
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
@@ -212,7 +213,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection("Promises")
                     .document(code)
-                    .update("users", FieldValue.arrayUnion(user))
+                    .update("users", FieldValue.arrayUnion(user.asPromiseParticipant()))
                     .await()
             }
 
