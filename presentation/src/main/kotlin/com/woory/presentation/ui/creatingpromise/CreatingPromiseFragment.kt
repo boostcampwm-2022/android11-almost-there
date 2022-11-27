@@ -137,6 +137,8 @@ class CreatingPromiseFragment :
                             )
                         )
 
+                        viewModel.setPromiseAlarm(promiseAlarm)
+
                         PromiseInfoActivity.startActivity(
                             requireContext(),
                             promiseAlarm.promiseCode

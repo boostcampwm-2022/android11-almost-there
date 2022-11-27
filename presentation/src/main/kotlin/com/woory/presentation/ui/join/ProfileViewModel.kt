@@ -74,7 +74,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
 
-            promiseRepository.setPromiseAlarm(promise.asDomain())
+            promiseRepository.setPromiseAlarmByPromiseModel(promise.asDomain())
                 .onSuccess {
                     addPlayer(promise.code)
                 }

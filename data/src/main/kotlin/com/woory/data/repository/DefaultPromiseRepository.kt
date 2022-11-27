@@ -16,7 +16,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         val result = firebaseDataSource.setPromise(promiseDataModel)
             .onSuccess { code ->
-                setPromiseAlarm(PromiseModel(code, promiseDataModel))
+                setPromiseAlarmByPromiseModel(PromiseModel(code, promiseDataModel))
             }
             .onFailure {
                 return Result.failure(it)
@@ -27,8 +27,11 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel> =
         databaseDataSource.getPromiseAlarmWhereCode(promiseCode)
 
-    override suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit> =
-        databaseDataSource.setPromiseAlarm(promiseModel)
+    override suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit> =
+        databaseDataSource.setPromiseAlarmByPromiseModel(promiseModel)
+
+    override suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit> =
+        databaseDataSource.setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel)
 
     override suspend fun getAddressByPoint(geoPointModel: GeoPointModel): Result<String> =
         networkDataSource.getAddressByPoint(geoPointModel)
