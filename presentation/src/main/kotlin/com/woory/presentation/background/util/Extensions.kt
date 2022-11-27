@@ -1,7 +1,6 @@
 package com.woory.presentation.background.util
 
 import android.content.Intent
-import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.asAlarmState
 import org.threeten.bp.Instant
@@ -11,7 +10,7 @@ import org.threeten.bp.ZoneId
 fun Intent.putPromiseAlarm(promiseAlarm: PromiseAlarm) {
     this.putExtra("alarmCode", promiseAlarm.alarmCode)
     this.putExtra("promiseCode", promiseAlarm.promiseCode)
-    this.putExtra("state", promiseAlarm.state.state)
+    this.putExtra("state", promiseAlarm.state.current)
     this.putExtra("startTime", promiseAlarm.startTime.asMillis())
     this.putExtra("endTime", promiseAlarm.endTime.asMillis())
 }
