@@ -6,25 +6,20 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.woory.presentation.background.util.putPromiseAlarm
+import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
-import com.woory.presentation.util.ALARM_STATUS_END
-import com.woory.presentation.util.ALARM_STATUS_READY
-import com.woory.presentation.util.ALARM_STATUS_START
-import com.woory.presentation.util.PROMISE_ALARM_KEY
-import org.threeten.bp.OffsetDateTime
 
 class AlarmFunctions(private val context: Context) {
 
     fun registerAlarm(
         promiseAlarm: PromiseAlarm
     ) {
-        val timeInMillis = when (promiseAlarm.status) {
+        val timeInMillis = when (promiseAlarm.state) {
 //            ALARM_STATUS_READY -> promiseAlarm.startTime.minusMinutes(5)
             // Todo :: 테스트용 코드
-            ALARM_STATUS_READY -> promiseAlarm.startTime.minusSeconds(5)
-            ALARM_STATUS_START -> promiseAlarm.startTime
-            ALARM_STATUS_END -> promiseAlarm.endTime
-            else -> return
+            AlarmState.READY -> promiseAlarm.startTime.minusSeconds(5)
+            AlarmState.START -> promiseAlarm.startTime
+            AlarmState.END -> promiseAlarm.endTime
         }.toInstant().toEpochMilli()
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager

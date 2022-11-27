@@ -8,12 +8,7 @@ import org.threeten.bp.OffsetDateTime
 data class PromiseAlarm(
     val alarmCode: Int,
     val promiseCode: String,
-    var status: String,
+    val state: AlarmState,
     val startTime: OffsetDateTime,
     val endTime: OffsetDateTime
-) : Parcelable {
-    fun onStatus(statusValue: String) =
-        this.copy().apply {
-            status = statusValue
-        }
-}
+) : Parcelable

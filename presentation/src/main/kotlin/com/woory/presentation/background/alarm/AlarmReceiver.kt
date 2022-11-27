@@ -10,10 +10,8 @@ import com.woory.presentation.R
 import com.woory.presentation.background.service.PromiseGameService
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.background.util.putPromiseAlarm
+import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
-import com.woory.presentation.util.ALARM_STATUS_END
-import com.woory.presentation.util.ALARM_STATUS_READY
-import com.woory.presentation.util.ALARM_STATUS_START
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -22,14 +20,14 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val promiseAlarm = intent.asPromiseAlarm()
 
-        when (promiseAlarm.status) {
-            ALARM_STATUS_READY -> {
+        when (promiseAlarm.state) {
+            AlarmState.READY -> {
                 onReceivePromiseReady(context, promiseAlarm)
             }
-            ALARM_STATUS_START -> {
+            AlarmState.START -> {
                 onReceivePromiseStart(context, promiseAlarm)
             }
-            ALARM_STATUS_END -> {
+            AlarmState.END -> {
 
             }
             else -> throw IllegalArgumentException(context.getString(R.string.notification_invalid_type))
