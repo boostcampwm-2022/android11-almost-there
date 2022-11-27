@@ -53,6 +53,34 @@ class DefaultFirebaseDataSource @Inject constructor(
         }
     }
 
+    override suspend fun getPromiseByCodeAndListen(code: String): Flow<Result<PromiseModel>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            kotlin.runCatching {
+                documentReference = fireStore.collection("Promises").document(code)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                if (value == null) {
+                    return@addSnapshotListener
+                }
+
+                kotlin.runCatching {
+                    val result = value.toObject(PromiseDocument::class.java)
+                    result?.let {
+                        trySend(Result.success(it.asDomain()))
+                    } ?: throw IllegalStateException("Unmatched State with Server")
+                }.onFailure {
+                    trySend(Result.failure(it))
+                }
+            }
+            
+            awaitClose { subscription?.remove() }
+        }
+
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         return withContext(scope.coroutineContext) {
             var generatedCode: String? = null
