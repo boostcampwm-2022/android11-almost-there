@@ -15,8 +15,8 @@ import com.woory.presentation.model.PromiseAlarm
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        context ?: throw IllegalArgumentException()
-        intent ?: throw IllegalArgumentException()
+        context ?: throw IllegalArgumentException("is context null")
+        intent ?: throw IllegalArgumentException("is intent null")
 
         val promiseAlarm = intent.asPromiseAlarm()
 
@@ -30,7 +30,6 @@ class AlarmReceiver : BroadcastReceiver() {
             AlarmState.END -> {
 
             }
-            else -> throw IllegalArgumentException(context.getString(R.string.notification_invalid_type))
         }
     }
 

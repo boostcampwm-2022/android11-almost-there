@@ -61,7 +61,6 @@
     <string name="nickname_hint">닉네임 입력</string>
     <string name="back_main">메인 화면으로 돌아가기</string>
     <string name="join_failure">약속에 참여할 수 없습니다.</string>
-    <string name="notification_invalid_type">is not available alarm type</string>
     <string name="notification_ready_title">게임 시작 5분 전 안내</string>
     <string name="notification_ready_content">알림을 클릭하여 준비 하세요!</string>
     <string name="open_calendar">캘린더 열기</string>

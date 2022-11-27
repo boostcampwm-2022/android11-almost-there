@@ -38,8 +38,6 @@ class PromiseGameService : Service() {
         startForeground(NotificationProvider.PROMISE_START_NOTIFICATION_ID, notification)
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(p0: Intent?): IBinder? = null
 
 }

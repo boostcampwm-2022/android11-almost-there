@@ -17,10 +17,10 @@ fun Intent.putPromiseAlarm(promiseAlarm: PromiseAlarm) {
 }
 
 fun Intent.asPromiseAlarm(): PromiseAlarm {
-    val extras = this.extras ?: throw IllegalArgumentException()
+    val extras = this.extras ?: throw IllegalArgumentException("is extras null")
     val alarmCode = extras.getInt("alarmCode")
-    val promiseCode = extras.getString("promiseCode") ?: throw IllegalArgumentException()
-    val state = extras.getString("state") ?: throw IllegalArgumentException()
+    val promiseCode = extras.getString("promiseCode") ?: throw IllegalArgumentException("is promise code null")
+    val state = extras.getString("state") ?: throw IllegalArgumentException("is state null")
     val startTime = extras.getLong("startTime")
     val endTime = extras.getLong("endTime")
 

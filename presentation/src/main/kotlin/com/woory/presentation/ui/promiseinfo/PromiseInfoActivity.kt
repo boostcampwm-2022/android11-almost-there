@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityPromiseInfoBinding
 import com.woory.presentation.ui.BaseActivity
+import com.woory.presentation.util.PROMISE_CODE_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.FragmentComponentManager
 
@@ -38,8 +39,6 @@ class PromiseInfoActivity :
     }
 
     companion object {
-        private const val PROMISE_CODE_KEY = "PROMISE_CODE_KEY"
-
         fun startActivity(context: Context, promiseCode: String) =
             context.startActivity(Intent(context, PromiseInfoActivity::class.java).apply {
                 putExtra(PROMISE_CODE_KEY, promiseCode)

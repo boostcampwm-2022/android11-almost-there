@@ -10,7 +10,6 @@ import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmTouchReceiver
 import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.PromiseAlarm
-import com.woory.presentation.util.PROMISE_ALARM_KEY
 
 object NotificationProvider {
     const val PROMISE_READY_NOTIFICATION_ID = 80
