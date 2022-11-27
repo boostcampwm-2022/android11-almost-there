@@ -41,10 +41,10 @@
         <activity
             android:name=".ui.join.ProfileActivity"
             android:exported="false"
-            android:parentActivityName=".ui.main.MainActivity"
             android:launchMode="singleTop" />
         <activity
             android:name=".ui.join.JoinActivity"
+            android:parentActivityName=".ui.main.MainActivity"
             android:exported="false" />
 
         <receiver android:name=".background.alarm.AlarmReceiver" />
