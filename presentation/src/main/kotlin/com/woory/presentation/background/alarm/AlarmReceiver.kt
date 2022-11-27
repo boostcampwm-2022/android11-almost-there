@@ -53,11 +53,12 @@ class AlarmReceiver : HiltBroadcastReceiver() {
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            repository.setPromiseAlarmByPromiseAlarmModel(
-                promiseAlarm
-                    .copy(state = AlarmState.END)
-                    .asDomain()
-            )
+            val alarmFunctions = AlarmFunctions(context)
+
+            promiseAlarm.copy(state = AlarmState.END).run {
+                alarmFunctions.registerAlarm(this)
+                repository.setPromiseAlarmByPromiseAlarmModel(this.asDomain())
+            }
         }
 
         Intent(context, PromiseGameService::class.java).run {
