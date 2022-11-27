@@ -3,7 +3,15 @@ package com.woory.presentation.ui.creatingpromise
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
-import com.woory.presentation.model.*
+import com.woory.data.repository.UserRepository
+import com.woory.presentation.model.Color
+import com.woory.presentation.model.Location
+import com.woory.presentation.model.ProfileImage
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.model.PromiseData
+import com.woory.presentation.model.User
+import com.woory.presentation.model.UserData
+import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
@@ -16,6 +24,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
@@ -25,8 +34,10 @@ import org.threeten.bp.OffsetDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class CreatingPromiseViewModel @Inject constructor(private val repository: PromiseRepository) :
-    ViewModel() {
+class CreatingPromiseViewModel @Inject constructor(
+    private val promiseRepository: PromiseRepository,
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     val profileImageBackgroundColor: MutableStateFlow<Color> = MutableStateFlow(Color(0, 0, 0))
 
@@ -104,28 +115,31 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
 
     fun setPromise() {
         viewModelScope.launch {
-            val name = nickname.value
-            val profileImage = UserProfileImage(profileImageBackgroundColor.value.toString(), profileImageIndex.value)
-            val promiseLocation = _promiseLocation.value ?: return@launch
-            val promiseDate = _promiseDate.value ?: return@launch
-            val promiseTime = _promiseTime.value ?: return@launch
-            val readyDuration = _readyDuration.value ?: return@launch
+            userRepository.userPreferences.collectLatest { userPreferences ->
+                val name = nickname.value
+                val profileImage = UserProfileImage(
+                    profileImageBackgroundColor.value.toString(),
+                    profileImageIndex.value
+                )
+                val promiseLocation = _promiseLocation.value ?: return@collectLatest
+                val promiseDate = _promiseDate.value ?: return@collectLatest
+                val promiseTime = _promiseTime.value ?: return@collectLatest
+                val readyDuration = _readyDuration.value ?: return@collectLatest
 
-            val zoneOffset = OffsetDateTime.now().offset
-            val promiseDateTime = OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
-            val gameDateTime =
-                OffsetDateTime.of(promiseDate, promiseTime, zoneOffset).minus(readyDuration)
+                val zoneOffset = OffsetDateTime.now().offset
+                val promiseDateTime = OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+                val gameDateTime =
+                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset).minus(readyDuration)
 
-            // TODO("User Token 처리 필요")
-            val userToken = "testCode"
-            val user = User(userToken, UserData(name, profileImage))
+                val user = User(userPreferences.userID, UserData(name, profileImage))
 
-            val promiseData =
-                PromiseData(promiseLocation, promiseDateTime, gameDateTime, user, listOf(user))
+                val promiseData =
+                    PromiseData(promiseLocation, promiseDateTime, gameDateTime, user, listOf(user))
 
-            repository.setPromise(promiseData.asDomain()).onSuccess { promiseCode ->
-                repository.getPromiseAlarm(promiseCode).onSuccess { promiseAlarm ->
-                    _promiseSettingEvent.emit(promiseAlarm.asUiModel())
+                promiseRepository.setPromise(promiseData.asDomain()).onSuccess { promiseCode ->
+                    promiseRepository.getPromiseAlarm(promiseCode).onSuccess { promiseAlarm ->
+                        _promiseSettingEvent.emit(promiseAlarm.asUiModel())
+                    }
                 }
             }
         }
@@ -133,7 +147,7 @@ class CreatingPromiseViewModel @Inject constructor(private val repository: Promi
 
     fun searchLocation(query: String) {
         viewModelScope.launch {
-            repository.getSearchedLocationByKeyword(query).onSuccess {
+            promiseRepository.getSearchedLocationByKeyword(query).onSuccess {
                 setSearchedResult(it.map { SearchResultMapper.asUiModel(it) })
             }
         }

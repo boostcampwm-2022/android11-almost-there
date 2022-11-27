@@ -3,7 +3,13 @@ package com.woory.presentation.ui.join
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
-import com.woory.presentation.model.*
+import com.woory.data.repository.UserRepository
+import com.woory.presentation.model.Color
+import com.woory.presentation.model.ProfileImage
+import com.woory.presentation.model.Promise
+import com.woory.presentation.model.User
+import com.woory.presentation.model.UserData
+import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.model.mapper.user.asDomain
@@ -11,13 +17,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val promiseRepository: PromiseRepository
+    private val promiseRepository: PromiseRepository,
+    private val userRepository: UserRepository
 //    @ProfileModule.Code private val code: String
 ) : ViewModel() {
 
@@ -41,6 +48,8 @@ class ProfileViewModel @Inject constructor(
 
     private val _success: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val success: StateFlow<Boolean> = _success.asStateFlow()
+
+    private val userPreferences = userRepository.userPreferences
 
     fun shuffleProfileImage() {
         profileImageIndex.value = ProfileImage.getRandomImage()
@@ -86,27 +95,29 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun addPlayer(code: String) {
-        val user = User(
-            userId = UUID.randomUUID().toString(),
-            data = UserData(
-                name = nickname.value,
-                profileImage = UserProfileImage(
-                    color = profileImageBackgroundColor.value.toString(),
-                    imageIndex = profileImageIndex.value
-                )
-            )
-        )
-
         viewModelScope.launch {
-            promiseRepository.addPlayer(code = code, user = user.asDomain())
-                .onSuccess {
-                    _isLoading.value = false
-                    _success.value = true
-                }
-                .onFailure {
-                    _isLoading.value = false
-                    _error.value = true
-                }
+            userPreferences.collectLatest { userPreferences ->
+                val user = User(
+                    userId = userPreferences.userID,
+                    data = UserData(
+                        name = nickname.value,
+                        profileImage = UserProfileImage(
+                            color = profileImageBackgroundColor.value.toString(),
+                            imageIndex = profileImageIndex.value
+                        )
+                    )
+                )
+
+                promiseRepository.addPlayer(code = code, user = user.asDomain())
+                    .onSuccess {
+                        _isLoading.value = false
+                        _success.value = true
+                    }
+                    .onFailure {
+                        _isLoading.value = false
+                        _error.value = true
+                    }
+            }
         }
     }
 }
