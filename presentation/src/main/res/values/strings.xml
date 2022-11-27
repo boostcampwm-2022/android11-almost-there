@@ -61,6 +61,8 @@
     <string name="nickname_hint">닉네임 입력</string>
     <string name="back_main">메인 화면으로 돌아가기</string>
     <string name="join_failure">약속에 참여할 수 없습니다.</string>
+    <string name="notification_ready_title">게임 시작 5분 전 안내</string>
+    <string name="notification_ready_content">알림을 클릭하여 준비 하세요!</string>
     <string name="open_calendar">캘린더 열기</string>
     <string name="location_selection_from_map">지도에서 선택</string>
     <string name="promise_time_selection">약속 시간 선택</string>
@@ -71,4 +73,8 @@
     <string name="hostofpromise">hostOFPromise</string>
     <string name="copy_complete">복사되었습니다.</string>
     <string name="promise_fetch_fail">약속 가져오기에 실패하였습니다.</string>
+    <string name="notification_channel_promise_start">게임 시작 알림 채널</string>
+    <string name="notification_channel_promise_start_description">게임 시작시 게임 진행 알림을 받는 채널입니다.</string>
+    <string name="notification_start_title">게임이 진행중 입니다.</string>
+    <string name="notification_start_content">자기장을 피해 약속 장소로 이동하세요.</string>
 </resources>
