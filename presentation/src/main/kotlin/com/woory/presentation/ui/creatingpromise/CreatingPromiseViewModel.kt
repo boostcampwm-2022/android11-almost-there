@@ -16,7 +16,7 @@ import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
 import com.woory.presentation.ui.promiseinfo.PromiseUiState
-import com.woory.presentation.util.Constants
+import com.woory.presentation.util.TimeConverter.zoneOffset
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -128,9 +128,9 @@ class CreatingPromiseViewModel @Inject constructor(
                 val readyDuration = _readyDuration.value ?: return@collectLatest
 
                 val promiseDateTime =
-                    OffsetDateTime.of(promiseDate, promiseTime, Constants.zoneOffset)
+                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
                 val gameDateTime =
-                    OffsetDateTime.of(promiseDate, promiseTime, Constants.zoneOffset)
+                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
                         .minus(readyDuration)
 
                 val user = User(userPreferences.userID, UserData(name, profileImage))

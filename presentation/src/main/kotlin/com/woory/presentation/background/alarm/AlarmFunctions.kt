@@ -8,7 +8,7 @@ import android.os.Build
 import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
-import com.woory.presentation.util.asMillis
+import com.woory.presentation.util.TimeConverter.asMillis
 
 class AlarmFunctions(private val context: Context) {
 

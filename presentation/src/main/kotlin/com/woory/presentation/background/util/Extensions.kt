@@ -3,8 +3,8 @@ package com.woory.presentation.background.util
 import android.content.Intent
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.asAlarmState
-import com.woory.presentation.util.asMillis
-import com.woory.presentation.util.asOffsetDateTime
+import com.woory.presentation.util.TimeConverter.asMillis
+import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 
 fun Intent.putPromiseAlarm(promiseAlarm: PromiseAlarm) {
     this.putExtra("alarmCode", promiseAlarm.alarmCode)

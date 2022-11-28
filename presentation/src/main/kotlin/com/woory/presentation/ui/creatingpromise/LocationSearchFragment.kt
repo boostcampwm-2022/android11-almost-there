@@ -26,7 +26,7 @@ import com.woory.presentation.databinding.FragmentLocationSearchBinding
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.Location
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.util.Constants
+import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,7 +52,7 @@ class LocationSearchFragment :
         } else {
             Toast.makeText(
                 requireContext(),
-                Constants.REQUIRE_PERMISSION_TEXT,
+                REQUIRE_PERMISSION_TEXT,
                 Toast.LENGTH_SHORT
             ).show()
         }

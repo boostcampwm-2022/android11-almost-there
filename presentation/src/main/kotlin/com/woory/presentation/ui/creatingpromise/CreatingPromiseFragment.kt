@@ -18,8 +18,8 @@ import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
-import com.woory.presentation.util.asCalendar
-import com.woory.presentation.util.asLocalDate
+import com.woory.presentation.util.TimeConverter.asCalendar
+import com.woory.presentation.util.TimeConverter.asLocalDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
