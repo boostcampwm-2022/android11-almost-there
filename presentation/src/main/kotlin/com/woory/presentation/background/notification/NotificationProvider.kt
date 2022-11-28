@@ -51,7 +51,7 @@ object NotificationProvider {
             context,
             PROMISE_READY_NOTIFICATION_ID,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = createNotificationBuilder(
