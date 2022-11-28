@@ -3,19 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-    </data>
-
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:alpha="0.8"
         android:elevation="5dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp">
 
@@ -46,29 +42,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                app:layout_constraintBottom_toTopOf="@id/tv_total_score_title"
+                app:layout_constraintBottom_toTopOf="@id/hpbar"
                 app:layout_constraintStart_toEndOf="@id/layout_character_img"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="김또깡" />
 
-            <TextView
-                android:id="@+id/tv_total_score_title"
-                style="@style/Text10.Black.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/total_score_title"
+            <com.woory.presentation.ui.customview.HPBar
+                android:id="@+id/hpbar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:value="100"
+                app:minValue="0"
+                app:maxValue="100"
+                app:textVisible="false"
+                app:backgroundVisible="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_ranking_number"
                 app:layout_constraintStart_toStartOf="@id/tv_nickname"
-                app:layout_constraintTop_toBottomOf="@+id/tv_nickname" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_nickname"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-            <TextView
-                style="@style/Text10.Black.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBaseline_toBaselineOf="@id/tv_total_score_title"
-                app:layout_constraintStart_toEndOf="@id/tv_total_score_title"
-                tools:text="85점" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 

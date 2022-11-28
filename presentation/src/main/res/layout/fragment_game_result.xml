@@ -16,14 +16,14 @@
             android:layout_marginStart="4dp"
             android:text="@string/game_result_finish"
             android:textColor="@color/almost_there_white"
-            android:textSize="64sp"
+            android:textSize="80sp"
             app:layout_constraintBottom_toTopOf="@+id/iv_result_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.2" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toTopOf="@id/iv_result_image"
@@ -32,7 +32,7 @@
             app:layout_constraintStart_toEndOf="@+id/tv_finish"
             app:layout_constraintTop_toBottomOf="@+id/tv_finish"
             app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@layout/item_total_ranking" />
+            tools:listitem="@layout/item_ranking" />
 
         <ImageView
             android:id="@+id/iv_result_image"
@@ -43,6 +43,7 @@
             android:contentDescription="@string/sudden_shiba"
             android:scaleType="centerCrop"
             android:src="@drawable/bg_sudden_shiba"
+            android:alpha="0.8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
