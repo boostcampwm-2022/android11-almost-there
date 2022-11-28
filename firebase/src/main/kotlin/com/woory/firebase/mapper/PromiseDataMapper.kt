@@ -3,8 +3,8 @@ package com.woory.firebase.mapper
 import com.google.firebase.firestore.GeoPoint
 import com.woory.data.model.*
 import com.woory.firebase.model.PromiseDocument
-import com.woory.firebase.util.asOffsetDate
-import com.woory.firebase.util.asTimeStamp
+import com.woory.firebase.util.TimeConverter.asOffsetDate
+import com.woory.firebase.util.TimeConverter.asTimeStamp
 
 internal fun PromiseDocument.asDomain(): PromiseModel {
     val promiseLocation = LocationModel(

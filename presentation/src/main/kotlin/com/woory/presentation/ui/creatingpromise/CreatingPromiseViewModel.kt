@@ -12,6 +12,7 @@ import com.woory.presentation.model.PromiseData
 import com.woory.presentation.model.User
 import com.woory.presentation.model.UserData
 import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
@@ -144,6 +145,12 @@ class CreatingPromiseViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun setPromiseAlarm(promiseAlarm: PromiseAlarm) {
+        viewModelScope.launch {
+            promiseRepository.setPromiseAlarmByPromiseAlarmModel(promiseAlarm.asDomain())
         }
     }
 
