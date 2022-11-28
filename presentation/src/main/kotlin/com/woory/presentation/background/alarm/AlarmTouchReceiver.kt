@@ -20,6 +20,7 @@ import javax.inject.Inject
 class AlarmTouchReceiver : HiltBroadcastReceiver() {
 
     @Inject lateinit var repository: PromiseRepository
+    private val coroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
@@ -45,7 +46,7 @@ class AlarmTouchReceiver : HiltBroadcastReceiver() {
         context: Context,
         promiseAlarm: PromiseAlarm
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             val alarmFunctions = AlarmFunctions(context)
             promiseAlarm.copy(state = AlarmState.START).run {
                 alarmFunctions.registerAlarm(this)

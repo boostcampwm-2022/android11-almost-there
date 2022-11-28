@@ -27,6 +27,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel> =
         databaseDataSource.getPromiseAlarmWhereCode(promiseCode)
 
+    override suspend fun getAllPromiseAlarms(): Result<List<PromiseAlarmModel>> =
+        databaseDataSource.getAll()
+
     override suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit> =
         databaseDataSource.setPromiseAlarmByPromiseModel(promiseModel)
 

@@ -1,6 +1,5 @@
 package com.woory.presentation.background.alarm
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -24,8 +23,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AlarmReceiver : HiltBroadcastReceiver() {
 
-    @Inject
-    lateinit var repository: PromiseRepository
+    @Inject lateinit var repository: PromiseRepository
+    private val coroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
@@ -52,7 +51,7 @@ class AlarmReceiver : HiltBroadcastReceiver() {
             NotificationChannelProvider.providePromiseStartChannel(context)
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             val alarmFunctions = AlarmFunctions(context)
 
             promiseAlarm.copy(state = AlarmState.END).run {

@@ -25,6 +25,8 @@ interface PromiseRepository {
 
     suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel>
 
+    suspend fun getAllPromiseAlarms(): Result<List<PromiseAlarmModel>>
+
     suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit>
 
     suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit>
