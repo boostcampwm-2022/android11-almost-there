@@ -43,7 +43,9 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.9.3")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofit_version")
 
-
+    // ThreeTenABP
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+    
     testImplementation("junit:junit:4.13.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")

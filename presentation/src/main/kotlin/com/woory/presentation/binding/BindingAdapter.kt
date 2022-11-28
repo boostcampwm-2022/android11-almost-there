@@ -9,8 +9,8 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.woory.presentation.R
 import com.woory.presentation.model.Color
-import com.woory.presentation.ui.join.FormState
 import com.woory.presentation.model.ProfileImage
+import com.woory.presentation.ui.join.FormState
 
 @BindingAdapter("state_message")
 fun TextInputLayout.bindMessage(state: FormState) {
