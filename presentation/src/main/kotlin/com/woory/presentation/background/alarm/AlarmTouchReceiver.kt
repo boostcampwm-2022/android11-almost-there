@@ -7,7 +7,7 @@ import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
-import com.woory.presentation.util.PROMISE_CODE_KEY
+import com.woory.presentation.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,7 +42,7 @@ class AlarmTouchReceiver : BroadcastReceiver() {
         }
         val intent = Intent(context, PromiseInfoActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(PROMISE_CODE_KEY, promiseAlarm.promiseCode)
+            putExtra(Constants.PROMISE_CODE_KEY, promiseAlarm.promiseCode)
         }
 
         context.startActivity(intent)
