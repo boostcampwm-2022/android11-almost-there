@@ -1,7 +1,11 @@
 package com.woory.data.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.woory.data.repository.DefaultPromiseRepository
+import com.woory.data.repository.DefaultUserRepository
 import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.UserRepository
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -23,4 +27,9 @@ object RepositoryModule {
         networkDataSource: NetworkDataSource
     ): PromiseRepository =
         DefaultPromiseRepository(databaseDataSource, firebaseDataSource, networkDataSource)
+
+    @Singleton
+    @Provides
+    fun provideUserRepository(dataStore: DataStore<Preferences>): UserRepository =
+        DefaultUserRepository(dataStore)
 }

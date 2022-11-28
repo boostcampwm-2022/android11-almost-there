@@ -19,13 +19,3 @@ object UserHpMapper : ModelMapper<UserHpModel, UserHpDocument> {
 internal fun UserHpModel.asModel() = UserHpMapper.asModel(this)
 
 internal fun UserHpDocument.asDomain() = UserHpMapper.asDomain(this)
-
-//internal fun UserHpDocument.asUserHpModel() = UserHpModel(
-//    id = this.id,
-//    hp = this.hp
-//)
-//
-//internal fun UserHpModel.asUserHp() = UserHpDocument(
-//    id = this.id,
-//    hp = this.hp
-//)

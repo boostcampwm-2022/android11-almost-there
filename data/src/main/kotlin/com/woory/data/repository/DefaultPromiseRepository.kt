@@ -39,6 +39,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getPromiseByCode(promiseCode: String): Result<PromiseModel> =
         firebaseDataSource.getPromiseByCode(promiseCode)
 
+    override suspend fun getPromiseByCodeAndListen(promiseCode: String): Flow<Result<PromiseModel>> =
+        firebaseDataSource.getPromiseByCodeAndListen(promiseCode)
+
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         firebaseDataSource.setUserLocation(userLocationModel)
 

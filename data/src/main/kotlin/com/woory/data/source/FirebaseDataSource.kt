@@ -11,6 +11,8 @@ interface FirebaseDataSource {
 
     suspend fun getPromiseByCode(code: String): Result<PromiseModel>
 
+    suspend fun getPromiseByCodeAndListen(code: String): Flow<Result<PromiseModel>>
+
     suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String>
 
     suspend fun getUserLocationById(id: String): Flow<Result<UserLocationModel>>

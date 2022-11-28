@@ -20,13 +20,3 @@ object UserLocationMapper : ModelMapper<UserLocationModel, UserLocationDocument>
 internal fun UserLocationModel.asModel() = UserLocationMapper.asModel(this)
 
 internal fun UserLocationDocument.asDomain() = UserLocationMapper.asDomain(this)
-
-//internal fun UserLocationDocument.asUserLocationModel() = UserLocationModel(
-//    id = this.id,
-//    location = GeoPointModel(this.location.latitude, this.location.longitude)
-//)
-//
-//internal fun UserLocationModel.asUserLocation() = UserLocationDocument(
-//    id = this.id,
-//    location = GeoPoint(this.location.latitude, this.location.longitude)
-//)

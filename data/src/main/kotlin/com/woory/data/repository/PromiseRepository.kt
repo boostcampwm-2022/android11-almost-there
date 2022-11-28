@@ -9,6 +9,8 @@ interface PromiseRepository {
 
     suspend fun getPromiseByCode(promiseCode: String): Result<PromiseModel>
 
+    suspend fun getPromiseByCodeAndListen(promiseCode: String): Flow<Result<PromiseModel>>
+
     suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String>
 
     suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>

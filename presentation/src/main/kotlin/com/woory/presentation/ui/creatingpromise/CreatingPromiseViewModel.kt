@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.model.*
-import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
