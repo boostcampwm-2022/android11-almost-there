@@ -40,12 +40,12 @@ object NotificationProvider {
         context: Context,
         title: String,
         content: String,
-        promiseAlarm: PromiseAlarm,
+        promiseAlarm: PromiseAlarm?,
     ) {
         val notificationManager = NotificationManagerCompat.from(context)
 
         val intent = Intent(context, AlarmTouchReceiver::class.java)
-        intent.putPromiseAlarm(promiseAlarm)
+        promiseAlarm?.let { intent.putPromiseAlarm(it) }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,

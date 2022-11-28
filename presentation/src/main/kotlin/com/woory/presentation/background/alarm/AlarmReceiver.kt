@@ -28,8 +28,8 @@ class AlarmReceiver : HiltBroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
-        context ?: throw IllegalArgumentException("is context null")
-        intent ?: throw IllegalArgumentException("is intent null")
+        context ?: return
+        intent ?: return
 
         val promiseAlarm = intent.asPromiseAlarm()
 

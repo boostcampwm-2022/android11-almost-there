@@ -21,8 +21,8 @@ class AlarmRestartReceiver : HiltBroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
-        context ?: throw IllegalArgumentException("is context null")
-        intent ?: throw IllegalArgumentException("is intent null")
+        context ?: return
+        intent ?: return
 
 
         if (intent.action.equals(Intent.ACTION_BOOT_COMPLETED)) {
