@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.woory.almostthere.background.notification.NotificationChannelProvider
-import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.R
+import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.service.PromiseGameService
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.background.util.putPromiseAlarm

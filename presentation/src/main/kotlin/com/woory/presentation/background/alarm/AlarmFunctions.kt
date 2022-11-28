@@ -8,6 +8,7 @@ import android.os.Build
 import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.util.TimeConverter.asMillis
 
 class AlarmFunctions(private val context: Context) {
 
@@ -20,7 +21,7 @@ class AlarmFunctions(private val context: Context) {
             AlarmState.READY -> promiseAlarm.startTime.minusSeconds(5)
             AlarmState.START -> promiseAlarm.startTime
             AlarmState.END -> promiseAlarm.endTime
-        }.toInstant().toEpochMilli()
+        }.asMillis()
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val receiverIntent = Intent(context, AlarmReceiver::class.java)

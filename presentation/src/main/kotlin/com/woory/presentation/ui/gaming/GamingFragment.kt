@@ -11,10 +11,10 @@ import com.skt.tmap.TMapView
 import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.poi.TMapPOIItem
+import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGamingBinding
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.util.MAP_API_KEY
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +41,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     // Todo :: 이하 코드 리펙토링 필요
     private fun setUpMapView() {
         mapView = TMapView(getActivityContext(requireContext())).apply {
-            setSKTMapApiKey(MAP_API_KEY)
+            setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
                 setMarker()
             }
