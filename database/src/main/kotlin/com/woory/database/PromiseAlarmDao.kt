@@ -14,7 +14,7 @@ interface PromiseAlarmDao {
     suspend fun setPromiseAlarm(gameTimeEntity: PromiseAlarmEntity)
 
     @Query("SELECT * FROM promise_alarm WHERE end_time > :currentTime")
-    suspend fun getAll(currentTime: OffsetDateTime = OffsetDateTime.now()): List<PromiseAlarmEntity>
+    suspend fun getAll(currentTime: Long = OffsetDateTime.now().toInstant().toEpochMilli()): List<PromiseAlarmEntity>
 
     @Query("SELECT * From promise_alarm ORDER BY datetime(start_time)")
     suspend fun getPromiseAlarmSortedByStartTime(): List<PromiseAlarmEntity>
