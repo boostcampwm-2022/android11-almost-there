@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityPromiseInfoBinding
 import com.woory.presentation.ui.BaseActivity
-import com.woory.presentation.util.PROMISE_CODE_KEY
+import com.woory.presentation.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.FragmentComponentManager
 
@@ -16,7 +16,8 @@ class PromiseInfoActivity :
     BaseActivity<ActivityPromiseInfoBinding>(R.layout.activity_promise_info) {
 
     private val gameCode by lazy {
-        intent?.getStringExtra(PROMISE_CODE_KEY) ?: throw IllegalArgumentException("참여 코드가 없습니다.")
+        intent?.getStringExtra(Constants.PROMISE_CODE_KEY)
+            ?: throw IllegalArgumentException("참여 코드가 없습니다.")
     }
 
     private val viewModel: PromiseInfoViewModel by viewModels()
@@ -41,7 +42,7 @@ class PromiseInfoActivity :
     companion object {
         fun startActivity(context: Context, promiseCode: String) =
             context.startActivity(Intent(context, PromiseInfoActivity::class.java).apply {
-                putExtra(PROMISE_CODE_KEY, promiseCode)
+                putExtra(Constants.PROMISE_CODE_KEY, promiseCode)
             })
     }
 }

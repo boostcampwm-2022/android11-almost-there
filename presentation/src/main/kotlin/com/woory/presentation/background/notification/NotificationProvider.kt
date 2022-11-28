@@ -77,7 +77,12 @@ object NotificationProvider {
             putPromiseAlarm(promiseAlarm)
         }
 
-        val pendingIntent = PendingIntent.getBroadcast(context, PROMISE_START_NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            PROMISE_START_NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notification = createNotificationBuilder(
             context,
