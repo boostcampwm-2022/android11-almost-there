@@ -1,6 +1,5 @@
 package com.woory.presentation.ui.promises
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -16,8 +15,9 @@ class PromisesFragment : BaseFragment<FragmentPromisesBinding>(R.layout.fragment
         onClickBefore = { },
         onClickOngoing = {
             // Todo :: 테스트용 화면 이동
-            val intent = Intent(requireActivity(), GamingActivity::class.java)
-            startActivity(intent)
+            if (it != null) {
+                GamingActivity.startActivity(requireContext(), it.code)
+            }
         },
         onClickEnd = { },
     )

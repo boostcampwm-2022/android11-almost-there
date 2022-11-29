@@ -9,6 +9,7 @@ import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserDataModel
 import com.woory.data.model.UserModel
 import com.woory.data.model.UserProfileImageModel
+import com.woory.firebase.model.MagneticInfoDocument
 import com.woory.firebase.model.PromiseDocument
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneOffset
@@ -83,3 +84,12 @@ private fun Date.asOffsetDate(): OffsetDateTime {
     )
 
 }
+
+fun PromiseDataModel.extractMagnetic(): MagneticInfoDocument =
+    MagneticInfoDocument(
+        centerPoint = GeoPoint(
+            promiseLocation.geoPoint.latitude,
+            promiseLocation.geoPoint.longitude
+        ),
+        radius = 1.0
+    )
