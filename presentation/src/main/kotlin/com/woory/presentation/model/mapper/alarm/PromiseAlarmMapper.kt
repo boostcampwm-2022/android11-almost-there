@@ -11,7 +11,7 @@ object PromiseAlarmMapper : UiModelMapper<PromiseAlarm, PromiseAlarmModel> {
         PromiseAlarmModel(
             alarmCode = uiModel.alarmCode,
             promiseCode = uiModel.promiseCode,
-            status = uiModel.state.state,
+            status = uiModel.state.current,
             startTime = uiModel.startTime,
             endTime = uiModel.endTime
         )

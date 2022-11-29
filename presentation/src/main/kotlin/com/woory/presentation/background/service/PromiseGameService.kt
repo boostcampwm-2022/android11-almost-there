@@ -20,7 +20,7 @@ class PromiseGameService : Service() {
             this,
             NotificationProvider.PROMISE_START_NOTIFICATION_ID,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationProvider.createNotificationBuilder(

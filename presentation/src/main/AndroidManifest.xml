@@ -49,6 +49,14 @@
 
         <receiver android:name=".background.alarm.AlarmReceiver" />
         <receiver android:name=".background.alarm.AlarmTouchReceiver" />
+        <receiver
+            android:name=".background.alarm.AlarmRestartReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".background.service.PromiseGameService"
