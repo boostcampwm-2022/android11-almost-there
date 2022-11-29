@@ -16,9 +16,8 @@
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:backgroundColor="@{Color.parseColor(profileImage.color)}"
         app:cardCornerRadius="10dp"
-        app:cardElevation="0dp"
+        backgroundColor="@{Color.parseColor(profileImage.color)}"
         tools:backgroundTint="@color/purple_200">
 
         <ImageView
@@ -26,8 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/player_image"
-            android:scaleType="center"
-            app:src="@{profileImage.imageIndex}"
+            android:scaleType="centerCrop"
+            src="@{profileImage.imageIndex}"
             tools:src="@drawable/bg_modest_shiba" />
     </com.google.android.material.card.MaterialCardView>
 
