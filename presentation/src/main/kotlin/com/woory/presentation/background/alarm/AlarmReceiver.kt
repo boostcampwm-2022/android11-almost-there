@@ -3,7 +3,7 @@ package com.woory.presentation.background.alarm
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.woory.almostthere.background.notification.NotificationChannelProvider
+import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.R
@@ -11,6 +11,7 @@ import com.woory.presentation.background.HiltBroadcastReceiver
 import com.woory.presentation.background.service.PromiseGameService
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.background.util.putPromiseAlarm
+import com.woory.presentation.background.util.startServiceBp
 import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.mapper.alarm.asDomain
@@ -62,12 +63,7 @@ class AlarmReceiver : HiltBroadcastReceiver() {
 
         Intent(context, PromiseGameService::class.java).run {
             putPromiseAlarm(promiseAlarm)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(this)
-            } else {
-                context.startService(this)
-            }
+            context.startServiceBp(this)
         }
     }
 
@@ -83,7 +79,7 @@ class AlarmReceiver : HiltBroadcastReceiver() {
             context,
             context.getString(R.string.notification_ready_title),
             context.getString(R.string.notification_ready_content),
-            promiseAlarm,
+            promiseAlarm
         )
     }
 }

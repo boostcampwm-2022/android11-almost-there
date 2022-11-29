@@ -1,19 +1,17 @@
 package com.woory.presentation.background.service
 
 import android.app.PendingIntent
-import android.app.Service
 import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Build
-import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.woory.almostthere.background.notification.NotificationChannelProvider
+import androidx.lifecycle.LifecycleService
+import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.ui.gaming.GamingActivity
-import com.woory.presentation.ui.promises.PromisesActivity
 
-class PromiseGameService : Service() {
+class PromiseGameService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
@@ -38,7 +36,4 @@ class PromiseGameService : Service() {
         }
         startForeground(NotificationProvider.PROMISE_START_NOTIFICATION_ID, notification)
     }
-
-    override fun onBind(p0: Intent?): IBinder? = null
-
 }

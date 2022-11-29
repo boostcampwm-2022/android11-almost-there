@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmTouchReceiver
 import com.woory.presentation.background.util.putPromiseAlarm
@@ -21,9 +20,9 @@ object NotificationProvider {
         context: Context,
         channelId: String,
         title: String,
-        content: String,
+        content: String?,
         priority: Int,
-        pendingIntent: PendingIntent,
+        pendingIntent: PendingIntent?,
     ): NotificationCompat.Builder {
 
         return NotificationCompat.Builder(context, channelId).apply {

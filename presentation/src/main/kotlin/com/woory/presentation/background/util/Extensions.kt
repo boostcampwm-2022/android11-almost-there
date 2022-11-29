@@ -1,6 +1,8 @@
 package com.woory.presentation.background.util
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.asAlarmState
 import com.woory.presentation.util.PROMISE_CODE_KEY
@@ -31,4 +33,10 @@ fun Intent.asPromiseAlarm(): PromiseAlarm {
         startTime = startTime.asOffsetDateTime(),
         endTime = endTime.asOffsetDateTime()
     )
+}
+
+fun Context.startServiceBp(intent: Intent) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    this.startForegroundService(intent)
+} else {
+    this.startService(intent)
 }
