@@ -3,16 +3,18 @@ package com.woory.presentation.background.alarm
 import android.content.Context
 import android.content.Intent
 import com.woory.data.repository.PromiseRepository
+import com.woory.presentation.R
 import com.woory.presentation.background.HiltBroadcastReceiver
+import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
-import com.woory.presentation.util.PROMISE_CODE_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,14 +53,17 @@ class AlarmTouchReceiver : HiltBroadcastReceiver() {
             promiseAlarm.copy(state = AlarmState.START).run {
                 alarmFunctions.registerAlarm(this)
                 repository.setPromiseAlarmByPromiseAlarmModel(this.asDomain())
+                    .onSuccess {
+                        delay(1000)
+                        NotificationProvider.notifyActivityNotification(
+                            context,
+                            context.getString(R.string.notification_ready_complete_title),
+                            context.getString(R.string.notification_ready_complete_content),
+                            promiseAlarm,
+                            PromiseInfoActivity::class.java,
+                        )
+                    }
             }
         }
-
-        val intent = Intent(context, PromiseInfoActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(PROMISE_CODE_KEY, promiseAlarm.promiseCode)
-        }
-
-        context.startActivity(intent)
     }
 }

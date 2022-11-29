@@ -79,11 +79,11 @@ class AlarmReceiver : HiltBroadcastReceiver() {
             NotificationChannelProvider.providePromiseReadyChannel(context)
         }
 
-        NotificationProvider.notifyPromiseReadyNotification(
+        NotificationProvider.notifyBroadcastNotification(
             context,
             context.getString(R.string.notification_ready_title),
             context.getString(R.string.notification_ready_content),
-            promiseAlarm
+            promiseAlarm,
         )
     }
 }
