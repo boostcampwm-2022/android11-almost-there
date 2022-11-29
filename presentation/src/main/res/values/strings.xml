@@ -83,4 +83,5 @@
     <string name="unknown_error" />
     <string name="calculate">정산</string>
     <string name="exit">닫기</string>
+    <string name="input_amount_due">정산 금액 입력</string>
 </resources>
