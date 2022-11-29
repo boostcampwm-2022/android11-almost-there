@@ -9,7 +9,7 @@ import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 fun Intent.putPromiseAlarm(promiseAlarm: PromiseAlarm) {
     this.putExtra("alarmCode", promiseAlarm.alarmCode)
     this.putExtra("promiseCode", promiseAlarm.promiseCode)
-    this.putExtra("state", promiseAlarm.state.state)
+    this.putExtra("state", promiseAlarm.state.current)
     this.putExtra("startTime", promiseAlarm.startTime.asMillis())
     this.putExtra("endTime", promiseAlarm.endTime.asMillis())
 }
