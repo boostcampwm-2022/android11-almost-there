@@ -81,4 +81,6 @@
     <string name="notification_start_title">게임이 진행중 입니다.</string>
     <string name="notification_start_content">자기장을 피해 약속 장소로 이동하세요.</string>
     <string name="unknown_error" />
+    <string name="calculate">정산</string>
+    <string name="exit">닫기</string>
 </resources>
