@@ -56,4 +56,10 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
         networkDataSource.searchLocationByKeyword(keyword)
+
+    override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
+        firebaseDataSource.getMagneticInfoByCode(promiseCode)
+
+    override suspend fun updateMagneticRadius(gameCode: String, radius: Float): Result<Unit> =
+        firebaseDataSource.updateMagneticRadius(gameCode, radius)
 }
