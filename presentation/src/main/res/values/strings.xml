@@ -77,5 +77,7 @@
     <string name="notification_channel_promise_start_description">게임 시작시 게임 진행 알림을 받는 채널입니다.</string>
     <string name="notification_start_title">게임이 진행중 입니다.</string>
     <string name="notification_start_content">자기장을 피해 약속 장소로 이동하세요.</string>
+    <string name="notification_ready_complete_title">게임 준비 완료</string>
+    <string name="notification_ready_complete_content">게임 준비가 완료되었습니다. 약속 정보를 확인하려면 터치하세요.</string>
     <string name="unknown_error" />
 </resources>
