@@ -84,4 +84,9 @@
     <string name="calculate">정산</string>
     <string name="exit">닫기</string>
     <string name="input_amount_due">정산 금액 입력</string>
+    <string name="won">원</string>
+    <string name="other_payment_title">친구들은 얼마만큼 냈을까요?</string>
+    <string name="my_payment_title">💸 내가 낼 금액은? 💸</string>
+    <string name="payment">%,2d</string>
+    <string name="modification_amount_due">정산 금액 수정 ✏️</string>
 </resources>

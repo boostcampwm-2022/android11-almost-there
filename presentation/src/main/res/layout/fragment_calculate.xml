@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.3" />
+            app:layout_constraintGuide_percent="0.32" />
 
         <View
             android:id="@+id/container_my_payment"
@@ -25,6 +25,99 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_coin"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/tv_my_payment_title"
+            app:layout_constraintStart_toStartOf="@id/tv_my_payment_title"
+            app:layout_constraintTop_toTopOf="@id/container_my_payment"
+            app:lottie_rawRes="@raw/money" />
 
+        <TextView
+            android:id="@+id/tv_my_payment_title"
+            style="@style/Text18.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/my_payment_title"
+            app:layout_constraintBottom_toTopOf="@id/tv_payment"
+            app:layout_constraintEnd_toEndOf="@id/container_my_payment"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/container_my_payment"
+            app:layout_constraintTop_toBottomOf="@id/lottie_coin" />
+
+        <TextView
+            android:id="@+id/tv_payment"
+            style="@style/Text24.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="@id/container_my_payment"
+            app:layout_constraintEnd_toStartOf="@id/tv_won"
+            app:layout_constraintStart_toStartOf="@id/tv_my_payment_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_my_payment_title"
+            tools:text="10,100" />
+
+        <TextView
+            android:id="@+id/tv_won"
+            style="@style/Text18.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/won"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_payment"
+            app:layout_constraintEnd_toEndOf="@id/tv_my_payment_title"
+            app:layout_constraintHorizontal_bias="0.059"
+            app:layout_constraintStart_toEndOf="@id/tv_payment" />
+
+        <TextView
+            android:id="@+id/tv_other_payment_title"
+            style="@style/Text18.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="20dp"
+            android:text="@string/other_payment_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_my_payment" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/container_rv_other_payment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="20dp"
+            android:alpha="0.8"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintBottom_toTopOf="@id/btn_input_amount_due"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_other_payment_title">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_payments"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_user_payment" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <Button
+            android:id="@+id/btn_input_amount_due"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:alpha="0.8"
+            android:text="@string/modification_amount_due"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_rv_other_payment"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
