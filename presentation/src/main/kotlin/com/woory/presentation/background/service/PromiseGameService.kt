@@ -2,6 +2,7 @@ package com.woory.presentation.background.service
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
@@ -18,16 +19,16 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
+import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asDomain
-import com.woory.presentation.ui.promises.PromisesActivity
+import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.TimeConverter.asMillis
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,8 +39,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-
-// TODO : HP 업데이트를 언제 할까?
 
 @AndroidEntryPoint
 class PromiseGameService : LifecycleService() {
@@ -162,13 +161,15 @@ class PromiseGameService : LifecycleService() {
     }
 
     private fun startForeground() {
-        val intent = Intent(this, PromisesActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            NotificationProvider.PROMISE_START_NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
+        val intent = Intent(this, GamingActivity::class.java)
+
+        val pendingIntent: PendingIntent = TaskStackBuilder.create(this).run {
+            addNextIntentWithParentStack(intent)
+            getPendingIntent(
+                NotificationProvider.PROMISE_START_NOTIFICATION_ID,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        } ?: return
 
         val notification = NotificationProvider.createNotificationBuilder(
             this,

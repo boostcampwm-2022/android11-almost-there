@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_result"
+    app:startDestination="@id/nav_game_result_frag">
+
+    <fragment
+        android:id="@+id/nav_game_result_frag"
+        android:name="com.woory.presentation.ui.gameresult.GameResultFragment"
+        tools:layout="@layout/fragment_game_result" />
+
+    <fragment
+        android:id="@+id/nav_calculate_frag"
+        android:name="com.woory.presentation.ui.gameresult.CalculateFragment"
+        tools:layout="@layout/fragment_calculate" />
+
+</navigation>

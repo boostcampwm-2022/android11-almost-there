@@ -40,13 +40,15 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:src="@drawable/bg_sudden_shiba"
-            app:layout_constraintBottom_toBottomOf="@+id/container_soon_promise"
+            android:layout_marginStart="-60dp"
+            android:contentDescription="@string/sudden_shiba"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/container_soon_promise"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/tv_ended_text"
