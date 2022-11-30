@@ -4,6 +4,7 @@ import com.google.firebase.firestore.GeoPoint
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.firebase.model.MagneticInfoDocument
+import com.woory.firebase.util.TimeConverter.asOffsetDate
 
 object MagneticDataMapper : ModelMapper<MagneticInfoModel, MagneticInfoDocument> {
     override fun asModel(domain: MagneticInfoModel): MagneticInfoDocument =
@@ -21,7 +22,8 @@ object MagneticDataMapper : ModelMapper<MagneticInfoModel, MagneticInfoDocument>
                 model.centerPoint.latitude,
                 model.centerPoint.longitude
             ),
-            model.radius
+            model.radius,
+            model.timeStamp.asOffsetDate()
         )
 }
 

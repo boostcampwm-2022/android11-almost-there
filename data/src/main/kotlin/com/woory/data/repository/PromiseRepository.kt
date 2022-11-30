@@ -43,5 +43,9 @@ interface PromiseRepository {
 
     suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel>
 
-    suspend fun updateMagneticRadius(gameCode: String, radius: Float): Result<Unit>
+    suspend fun getMagneticInfoByCodeAndListen(promiseCode: String): Flow<Result<MagneticInfoModel>>
+
+    suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
+
+    suspend fun decreaseMagneticRadius(gameCode: String)
 }
