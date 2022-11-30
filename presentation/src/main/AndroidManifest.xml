@@ -47,14 +47,38 @@
             android:parentActivityName=".ui.main.MainActivity"
             android:exported="false" />
 
-        <receiver android:name=".background.alarm.AlarmReceiver" />
-        <receiver android:name=".background.alarm.AlarmTouchReceiver" />
+        <receiver android:name=".background.receiver.AlarmReceiver" />
+        <receiver android:name=".background.receiver.AlarmTouchReceiver" />
+        <receiver
+            android:name=".background.receiver.BootBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".background.service.PromiseGameService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+        <service
+            android:name=".background.service.PromiseReadyService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <service
+            android:name=".background.service.PromiseAlarmRegisterService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".background.service.AlarmRestartService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

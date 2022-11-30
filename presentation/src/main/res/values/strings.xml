@@ -78,8 +78,14 @@
     <string name="total_score_title">종합 점수:</string>
     <string name="notification_channel_promise_start">게임 시작 알림 채널</string>
     <string name="notification_channel_promise_start_description">게임 시작시 게임 진행 알림을 받는 채널입니다.</string>
+    <string name="notification_channel_service">백그라운드 작업 알림 채널</string>
+    <string name="notification_channel_service_description">백그라운드 작업 진행에 관한 알림을 받는 채널입니다.</string>
     <string name="notification_start_title">게임이 진행중 입니다.</string>
     <string name="notification_start_content">자기장을 피해 약속 장소로 이동하세요.</string>
+    <string name="notification_ready_progress_title">게임 준비 중</string>
+    <string name="notification_ready_complete_title">게임 준비 완료</string>
+    <string name="notification_ready_complete_content">게임 준비가 완료되었습니다. 약속 정보를 확인하려면 터치하세요.</string>
+    <string name="notification_alarm_restart">알람 재 등록중</string>
     <string name="unknown_error" />
     <string name="calculate">정산</string>
     <string name="exit">닫기</string>

@@ -4,38 +4,44 @@ import com.woory.data.model.PromiseAlarmModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.source.DatabaseDataSource
 import com.woory.database.PromiseAlarmDao
-import com.woory.database.mapper.toPromiseAlarmEntity
-import com.woory.database.mapper.toPromiseAlarmModel
+import com.woory.database.mapper.asPromiseAlarmEntity
+import com.woory.database.mapper.asPromiseAlarmModel
 
 class DefaultDatabaseDataSource(private val dao: PromiseAlarmDao) : DatabaseDataSource {
 
-    override suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit> {
+    override suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit> {
         return runCatching {
-            dao.setPromiseAlarm(promiseModel.toPromiseAlarmEntity())
+            dao.setPromiseAlarm(promiseModel.asPromiseAlarmEntity())
+        }
+    }
+
+    override suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit> {
+        return kotlin.runCatching {
+            dao.setPromiseAlarm(promiseAlarmModel.asPromiseAlarmEntity())
         }
     }
 
     override suspend fun getAll(): Result<List<PromiseAlarmModel>> {
         return runCatching {
-            dao.getAll().toPromiseAlarmModel()
+            dao.getAll().asPromiseAlarmModel()
         }
     }
 
     override suspend fun getPromiseAlarmSortedByStartTime(): Result<List<PromiseAlarmModel>> {
         return runCatching {
-            dao.getPromiseAlarmSortedByStartTime().toPromiseAlarmModel()
+            dao.getPromiseAlarmSortedByStartTime().asPromiseAlarmModel()
         }
     }
 
     override suspend fun getPromiseAlarmSortedByEndTime(): Result<List<PromiseAlarmModel>> {
         return runCatching {
-            dao.getPromiseAlarmSortedByEndTime().toPromiseAlarmModel()
+            dao.getPromiseAlarmSortedByEndTime().asPromiseAlarmModel()
         }
     }
 
     override suspend fun getPromiseAlarmWhereCode(promiseCode: String): Result<PromiseAlarmModel> {
         return runCatching {
-            dao.getPromiseAlarmWhereCode(promiseCode).toPromiseAlarmModel()
+            dao.getPromiseAlarmWhereCode(promiseCode).asPromiseAlarmModel()
         }
     }
 }

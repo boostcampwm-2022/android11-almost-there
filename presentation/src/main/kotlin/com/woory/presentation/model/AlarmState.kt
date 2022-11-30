@@ -1,6 +1,6 @@
 package com.woory.presentation.model
 
-enum class AlarmState(val state: String) {
+enum class AlarmState(val current: String) {
     READY("READY"), START("START"), END("END")
 }
 

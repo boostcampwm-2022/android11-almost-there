@@ -1,23 +1,19 @@
 package com.woory.database
 
 import androidx.room.TypeConverter
+import com.woory.database.util.TimeConverter.asMillis
+import com.woory.database.util.TimeConverter.asOffsetDateTime
 import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.format.DateTimeFormatter
 
 object OffsetDateTimeConverters {
-    private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-
     @TypeConverter
-    @JvmStatic
-    fun toOffsetDateTime(value: String?): OffsetDateTime? {
-        return value?.let {
-            return formatter.parse(value, OffsetDateTime::from)
-        }
+    fun toOffsetDateTime(value: Long?): OffsetDateTime? {
+        return value?.asOffsetDateTime()
     }
 
     @TypeConverter
-    @JvmStatic
-    fun fromOffsetDateTime(date: OffsetDateTime?): String? {
-        return date?.format(formatter)
+    fun fromOffsetDateTime(date: OffsetDateTime?): Long? {
+        return date?.asMillis()
     }
 }
+
