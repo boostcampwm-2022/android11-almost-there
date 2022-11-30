@@ -1,4 +1,4 @@
-package com.woory.presentation.background.alarm
+package com.woory.presentation.background.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

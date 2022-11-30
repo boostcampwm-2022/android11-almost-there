@@ -1,9 +1,8 @@
-package com.woory.presentation.background.alarm
+package com.woory.presentation.background.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.woory.presentation.background.service.PromiseAlarmRegisterService
 import com.woory.presentation.background.service.PromiseReadyService
 import com.woory.presentation.background.util.asPromiseAlarm

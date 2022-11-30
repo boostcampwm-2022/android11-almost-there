@@ -2,7 +2,6 @@ package com.woory.presentation.background.service
 
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.coroutineScope
@@ -11,14 +10,14 @@ import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
-import com.woory.presentation.background.util.asPromiseAlarm
-import com.woory.presentation.model.mapper.alarm.asDomain
+import com.woory.presentation.model.mapper.alarm.asUiModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PromiseAlarmRegisterService : LifecycleService() {
+class AlarmRestartService: LifecycleService() {
 
     @Inject
     lateinit var repository: PromiseRepository
@@ -34,7 +33,7 @@ class PromiseAlarmRegisterService : LifecycleService() {
         val notification = NotificationProvider.createNotificationBuilder(
             this,
             NotificationChannelProvider.PROMISE_READY_SERVICE_CHANNEL_ID,
-            getString(R.string.notification_ready_progress_title),
+            getString(R.string.notification_alarm_restart),
             null,
             NotificationCompat.PRIORITY_LOW,
             null
@@ -45,17 +44,16 @@ class PromiseAlarmRegisterService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        intent ?: throw IllegalArgumentException("intent is null")
-
-        val promiseAlarm = intent.asPromiseAlarm()
 
         lifecycle.coroutineScope.launch {
-            repository.setPromiseAlarmByPromiseAlarmModel(promiseAlarm.asDomain())
-                .onSuccess {
-                    alarmFunctions.registerAlarm(promiseAlarm)
+            repository.getAllPromiseAlarms()
+                .onSuccess { promiseAlarmModels ->
+                    promiseAlarmModels.forEach { promiseAlarmModel ->
+                        alarmFunctions.registerAlarm(promiseAlarmModel.asUiModel())
+                    }
                 }
                 .onFailure {
-                    Log.d("ERROR", "Failure register alarm")
+                    Timber.tag("TAG").d("Error -> $it")
                 }
                 .also {
                     stopSelf()

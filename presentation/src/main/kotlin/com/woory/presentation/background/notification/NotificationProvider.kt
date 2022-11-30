@@ -7,7 +7,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.woory.presentation.R
-import com.woory.presentation.background.alarm.AlarmTouchReceiver
+import com.woory.presentation.background.receiver.AlarmTouchReceiver
 import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.PromiseAlarm
 

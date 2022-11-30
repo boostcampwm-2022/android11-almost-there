@@ -82,5 +82,6 @@
     <string name="notification_ready_progress_title">게임 준비 중</string>
     <string name="notification_ready_complete_title">게임 준비 완료</string>
     <string name="notification_ready_complete_content">게임 준비가 완료되었습니다. 약속 정보를 확인하려면 터치하세요.</string>
+    <string name="notification_alarm_restart">알람 재 등록중</string>
     <string name="unknown_error" />
 </resources>
