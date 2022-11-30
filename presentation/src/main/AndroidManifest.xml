@@ -69,6 +69,11 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+        <service
+            android:name=".background.service.PromiseAlarmRegisterService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -50,7 +50,7 @@ object NotificationProvider {
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            PROMISE_READY_NOTIFICATION_ID,
+            promiseAlarm.alarmCode,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -91,6 +91,6 @@ object NotificationProvider {
             NotificationCompat.PRIORITY_HIGH,
             pendingIntent,
         )
-        notificationManager.notify(PROMISE_READY_NOTIFICATION_ID, notification.build())
+        notificationManager.notify(PROMISE_READY_COMPLETE_NOTIFICATION_ID, notification.build())
     }
 }

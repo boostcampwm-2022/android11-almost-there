@@ -3,6 +3,8 @@ package com.woory.presentation.background.alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import com.woory.presentation.background.service.PromiseAlarmRegisterService
 import com.woory.presentation.background.service.PromiseReadyService
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.background.util.putPromiseAlarm
@@ -35,6 +37,11 @@ class AlarmTouchReceiver : BroadcastReceiver() {
         context: Context,
         promiseAlarm: PromiseAlarm
     ) {
+        Intent(context, PromiseAlarmRegisterService::class.java).run {
+            putPromiseAlarm(promiseAlarm.copy(state = AlarmState.START))
+            context.startServiceBp(this)
+        }
+
         Intent(context, PromiseReadyService::class.java).run {
             putPromiseAlarm(promiseAlarm)
             context.startServiceBp(this)
