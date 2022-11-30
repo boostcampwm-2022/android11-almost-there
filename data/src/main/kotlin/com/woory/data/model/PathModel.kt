@@ -1,8 +1,7 @@
 package com.woory.data.model
 
-import java.time.OffsetDateTime
-
 data class PathModel(
-    val points: List<GeoPointModel>,
-    val time: OffsetDateTime,
+    val routeType: RouteType,
+    val distance: Double,
+    val time: Int,
 )
