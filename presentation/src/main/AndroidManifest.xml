@@ -47,10 +47,10 @@
             android:parentActivityName=".ui.main.MainActivity"
             android:exported="false" />
 
-        <receiver android:name=".background.alarm.AlarmReceiver" />
-        <receiver android:name=".background.alarm.AlarmTouchReceiver" />
+        <receiver android:name=".background.receiver.AlarmReceiver" />
+        <receiver android:name=".background.receiver.AlarmTouchReceiver" />
         <receiver
-            android:name=".background.alarm.AlarmRestartReceiver"
+            android:name=".background.receiver.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -63,6 +63,22 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+        <service
+            android:name=".background.service.PromiseReadyService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <service
+            android:name=".background.service.PromiseAlarmRegisterService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".background.service.AlarmRestartService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>
