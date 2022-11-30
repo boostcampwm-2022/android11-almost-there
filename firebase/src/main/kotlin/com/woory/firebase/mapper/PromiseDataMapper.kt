@@ -65,5 +65,5 @@ fun PromiseDataModel.extractMagnetic(): MagneticInfoDocument =
             promiseLocation.geoPoint.latitude,
             promiseLocation.geoPoint.longitude
         ),
-        radius = 1.0
+        radius = 10.0
     )

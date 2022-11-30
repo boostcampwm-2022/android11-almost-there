@@ -26,7 +26,11 @@ interface FirebaseDataSource {
 
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 
-    suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel>
+    suspend fun getMagneticInfoByCodeAndListen(code: String): Flow<Result<MagneticInfoModel>>
 
-    suspend fun updateMagneticRadius(gameCode: String, radius: Float): Result<Unit>
+    suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
+
+    suspend fun decreaseMagneticRadius(gameCode: String)
+
+    suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel>
 }

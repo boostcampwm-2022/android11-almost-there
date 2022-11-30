@@ -1,9 +1,12 @@
 package com.woory.firebase.datasource
 
+import android.util.Log
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.TransactionOptions
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
@@ -20,6 +23,7 @@ import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
 import com.woory.firebase.util.InviteCodeUtil
+import com.woory.firebase.util.TimeConverter.asMillis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -102,14 +106,33 @@ class DefaultFirebaseDataSource @Inject constructor(
             requireNotNull(generatedCode)
 
             val result = runCatching {
-                fireStore
+
+                val promiseCollection =
+                    fireStore.collection(PROMISE_COLLECTION_NAME).document(generatedCode)
+                val magneticCollection = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
-                    .document(generatedCode).apply {
-                        set(promiseDataModel.asModel(generatedCode))
-                        collection(MAGNETIC_COLLECTION_NAME)
-                            .document(generatedCode)
-                            .set(promiseDataModel.extractMagnetic())
-                    }
+                    .document(generatedCode)
+                    .collection(MAGNETIC_COLLECTION_NAME)
+                    .document(generatedCode)
+                val hpCollection = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(generatedCode)
+                    .collection(HP_COLLECTION_NAME)
+                    .document()
+
+                fireStore.runBatch { batch ->
+                    batch.set(promiseCollection, promiseDataModel.asModel(generatedCode))
+                    batch.set(magneticCollection, promiseDataModel.extractMagnetic())
+                    batch.set(hpCollection, mapOf<String, String>())
+                }
+//                fireStore
+//                    .collection(PROMISE_COLLECTION_NAME)
+//                    .document(generatedCode).apply {
+//                        set(promiseDataModel.asModel(generatedCode))
+//                        collection(MAGNETIC_COLLECTION_NAME)
+//                            .document(generatedCode)
+//                            .set(promiseDataModel.extractMagnetic())
+//                    }
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -137,7 +160,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
-                    } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
+                    } ?: throw IllegalStateException("위치 DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
@@ -184,7 +207,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
-                    } ?: throw IllegalStateException("DB의 데이터 값이 다릅니다.")
+                    } ?: throw IllegalStateException("hp DB의 데이터 값이 다릅니다.")
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
@@ -197,7 +220,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         withContext(scope.coroutineContext) {
             val result = runCatching {
                 val res = fireStore
-                    .collection(LOCATION_COLLECTION_NAME)
+                    .collection(PROMISE_COLLECTION_NAME)
                     .document(gameToken)
                     .collection(HP_COLLECTION_NAME)
                     .document(userHpModel.id)
@@ -229,7 +252,39 @@ class DefaultFirebaseDataSource @Inject constructor(
     /**
      * 자기장 반지름과 중심 좌표를 가져오는 함수
      */
-    override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
+    override suspend fun getMagneticInfoByCodeAndListen(code: String): Flow<Result<MagneticInfoModel>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(code)
+                    .collection(MAGNETIC_COLLECTION_NAME)
+                    .document(code)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, error ->
+                if (value == null) {
+                    return@addSnapshotListener
+                }
+
+                runCatching {
+                    val result = value.toObject(MagneticInfoDocument::class.java)
+                    result?.let {
+                        trySend(Result.success(it.asDomain()))
+                    } ?: throw IllegalStateException("자기장 DB의 데이터 값이 다릅니다.")
+                }.onFailure {
+                    trySend(Result.failure(it))
+                }
+            }
+
+            awaitClose { subscription?.remove() }
+        }
+
+        override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
                 val task = fireStore
@@ -254,12 +309,9 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
         }
 
-    /**
-     * 자기장 반지름을 업데이트하는 함수
-     */
-    override suspend fun updateMagneticRadius(gameCode: String, radius: Float): Result<Unit> =
+    override suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val reference = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
@@ -282,6 +334,35 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
         }
 
+    override suspend fun decreaseMagneticRadius(gameCode: String): Unit =
+        withContext(scope.coroutineContext) {
+            runCatching {
+                val reference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(MAGNETIC_COLLECTION_NAME)
+                    .document(gameCode)
+
+                fireStore.runTransaction() { transaction ->
+                    val snapShot = transaction.get(reference)
+                    val serverRadius = snapShot.getLong(RADIUS_KEY) ?: return@runTransaction
+                    val updateTime = snapShot.getTimestamp("timeStamp") ?: return@runTransaction
+                    val currentTime = System.currentTimeMillis()
+                    if (System.currentTimeMillis() - updateTime.asMillis() >= 1000 * 28) {
+                        Log.d("123123", "updated by me")
+                        transaction.update(
+                            reference, mapOf(
+                                RADIUS_KEY to serverRadius - 1,
+                                "timeStamp" to Timestamp(
+                                    currentTime / 1000,
+                                    (currentTime % 1000).toInt() * 1000000
+                                )
+                            )
+                        )
+                    }
+                }
+            }
+        }
 
     companion object {
         private const val PROMISE_COLLECTION_NAME = "Promises"
