@@ -34,14 +34,17 @@
             app:layout_constraintEnd_toEndOf="@id/tv_my_payment_title"
             app:layout_constraintStart_toStartOf="@id/tv_my_payment_title"
             app:layout_constraintTop_toTopOf="@id/container_my_payment"
+            app:layout_constraintBottom_toTopOf="@id/tv_my_payment_title"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
             app:lottie_rawRes="@raw/money" />
 
         <TextView
             android:id="@+id/tv_my_payment_title"
-            style="@style/Text18.Black"
+            style="@style/Text14.Black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:text="@string/my_payment_title"
             app:layout_constraintBottom_toTopOf="@id/tv_payment"
             app:layout_constraintEnd_toEndOf="@id/container_my_payment"
@@ -55,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="@id/container_my_payment"
             app:layout_constraintEnd_toStartOf="@id/tv_won"
             app:layout_constraintStart_toStartOf="@id/tv_my_payment_title"
@@ -64,7 +67,7 @@
 
         <TextView
             android:id="@+id/tv_won"
-            style="@style/Text18.Black"
+            style="@style/Text14.Black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/won"
@@ -75,7 +78,7 @@
 
         <TextView
             android:id="@+id/tv_other_payment_title"
-            style="@style/Text18.Black"
+            style="@style/Text14.Black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -115,9 +118,9 @@
             android:layout_margin="20dp"
             android:alpha="0.8"
             android:text="@string/modification_amount_due"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_rv_other_payment"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_rv_other_payment" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
