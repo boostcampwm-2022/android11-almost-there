@@ -33,6 +33,7 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,6 +86,15 @@ class CreatingPromiseViewModel @Inject constructor(
     private val _locationSearchUiState: MutableStateFlow<PromiseUiState> =
         MutableStateFlow(PromiseUiState.Loading)
     val locationSearchUiState: StateFlow<PromiseUiState> = _locationSearchUiState.asStateFlow()
+
+    private val _isSearchMapReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSearchMapReady: StateFlow<Boolean> = _isSearchMapReady.asStateFlow()
+
+    fun setIsMapReady(isMapReady: Boolean) {
+        viewModelScope.launch {
+            _isSearchMapReady.emit(isMapReady)
+        }
+    }
 
     fun shuffleProfileImage() {
         profileImageIndex.value = ProfileImage.getRandomImage()
