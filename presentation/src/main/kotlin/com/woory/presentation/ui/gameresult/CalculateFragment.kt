@@ -47,7 +47,7 @@ class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragme
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.userPaymentAdapter.collectLatest {
+                    viewModel.userPaymentList.collectLatest {
                         (binding.rvPayments.adapter as UserPaymentAdapter).submitList(it)
                     }
                 }
