@@ -48,7 +48,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tv_time"
                 app:layout_constraintTop_toBottomOf="@id/tv_time"
-                tools:listitem="@layout/item_real_time_ranking" />
+                tools:listitem="@layout/item_ranking" />
 
             <include
                 android:id="@+id/layout_promise_info"
