@@ -27,3 +27,19 @@ data class UserState(
     val hp: Int,
     val location: Location
 ) : Parcelable
+
+@Parcelize
+data class UserRanking(
+    val userId: String,
+    val userData: UserData,
+    val hp: Int,
+    val rankingNumber: Int
+) : Parcelable
+
+@Parcelize
+data class UserPayment(
+    val userId: String,
+    val userData: UserData,
+    val rankingNumber: Int,
+    val payment: Int
+) : Parcelable
