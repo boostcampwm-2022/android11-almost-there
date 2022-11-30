@@ -1,5 +1,6 @@
 package com.woory.data.source
 
+import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
@@ -24,4 +25,12 @@ interface FirebaseDataSource {
     suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
 
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
+
+    suspend fun getMagneticInfoByCodeAndListen(code: String): Flow<Result<MagneticInfoModel>>
+
+    suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
+
+    suspend fun decreaseMagneticRadius(gameCode: String)
+
+    suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel>
 }

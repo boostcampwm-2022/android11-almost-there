@@ -85,6 +85,9 @@ dependencies {
     // Timber
     implementation("com.jakewharton.timber:timber:5.0.1")
 
+    // FusedLocationProvider
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Lottie
     implementation("com.airbnb.android:lottie:5.2.0")
     

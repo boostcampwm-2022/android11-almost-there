@@ -87,6 +87,8 @@
     <string name="notification_ready_complete_content">게임 준비가 완료되었습니다. 약속 정보를 확인하려면 터치하세요.</string>
     <string name="notification_alarm_restart">알람 재 등록중</string>
     <string name="unknown_error" />
+    <string name="magnetic_radius_setting_title">자기장 반지름을 업데이트 하고 있습니다.</string>
+    <string name="magnetic_radius_setting_content">게임 시작을 준비 해 주세요!</string>
     <string name="calculate">정산</string>
     <string name="exit">닫기</string>
     <string name="input_amount_due">정산 금액 입력</string>

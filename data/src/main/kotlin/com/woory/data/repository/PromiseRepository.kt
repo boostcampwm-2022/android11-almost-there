@@ -1,6 +1,14 @@
 package com.woory.data.repository
 
-import com.woory.data.model.*
+import com.woory.data.model.GeoPointModel
+import com.woory.data.model.LocationSearchModel
+import com.woory.data.model.MagneticInfoModel
+import com.woory.data.model.PromiseAlarmModel
+import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseModel
+import com.woory.data.model.UserHpModel
+import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
 import kotlinx.coroutines.flow.Flow
 
 interface PromiseRepository {
@@ -32,4 +40,12 @@ interface PromiseRepository {
     suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit>
 
     suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
+
+    suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel>
+
+    suspend fun getMagneticInfoByCodeAndListen(promiseCode: String): Flow<Result<MagneticInfoModel>>
+
+    suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
+
+    suspend fun decreaseMagneticRadius(gameCode: String)
 }
