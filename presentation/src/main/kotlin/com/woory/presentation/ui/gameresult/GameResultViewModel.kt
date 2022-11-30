@@ -16,16 +16,16 @@ import javax.inject.Inject
 @HiltViewModel
 class GameResultViewModel @Inject constructor() : ViewModel() {
 
-    private val _userRankingList: MutableStateFlow<List<UserRanking>> =
-        MutableStateFlow(emptyList())
-    val userRankingList: StateFlow<List<UserRanking>> = _userRankingList.asStateFlow()
+    private val _userRankingList: MutableStateFlow<List<UserRanking>?> =
+        MutableStateFlow(null)
+    val userRankingList: StateFlow<List<UserRanking>?> = _userRankingList.asStateFlow()
 
     private val _myPayment: MutableStateFlow<Int> = MutableStateFlow(0)
     val myPayment: StateFlow<Int> = _myPayment.asStateFlow()
 
-    private val _userPaymentList: MutableStateFlow<List<UserPayment>> =
-        MutableStateFlow(emptyList())
-    val userPaymentAdapter: StateFlow<List<UserPayment>> = _userPaymentList.asStateFlow()
+    private val _userPaymentList: MutableStateFlow<List<UserPayment>?> =
+        MutableStateFlow(null)
+    val userPaymentAdapter: StateFlow<List<UserPayment>?> = _userPaymentList.asStateFlow()
 
     init {
         fetchUserRankingList()
