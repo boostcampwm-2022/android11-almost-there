@@ -1,14 +1,12 @@
 package com.woory.presentation.ui.gaming
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.model.MagneticInfo
-import com.woory.presentation.model.Promise
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asUiModel
 import com.woory.presentation.model.mapper.magnetic.asUiModel
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +26,10 @@ class GamingViewModel @Inject constructor(
     private val repository: PromiseRepository
 ) : ViewModel() {
     private val _gameCode: MutableStateFlow<String> = MutableStateFlow("")
-    private val gameCode: StateFlow<String> = _gameCode.asStateFlow()
+    val gameCode: StateFlow<String> = _gameCode.asStateFlow()
 
     private val _userDefaultMarker: MutableStateFlow<Bitmap?> = MutableStateFlow(null)
     private val userDefaultMarker: StateFlow<Bitmap?> = _userDefaultMarker.asStateFlow()
-
-    private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
-    val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
 
     private val _errorState: MutableSharedFlow<Throwable> = MutableSharedFlow()
     val errorState: SharedFlow<Throwable> = _errorState.asSharedFlow()
@@ -60,13 +54,17 @@ class GamingViewModel @Inject constructor(
             repository
                 .getPromiseByCode(code)
                 .onSuccess {
-                    val uiModel = it.asUiModel()
-
-                    repository.getMagneticInfoByCode(code).onSuccess { magneticInfoModel ->
-                        _magneticInfo.emit(magneticInfoModel.asUiModel())
-                    }.onFailure { throwable ->
-                        _errorState.emit(throwable)
+                    launch {
+                        repository.getMagneticInfoByCodeAndListen(code).collect { result ->
+                            result.onSuccess { magneticInFoModel ->
+                                _magneticInfo.emit(magneticInFoModel.asUiModel())
+                            }.onFailure { throwable ->
+                                _errorState.emit(throwable)
+                            }
+                        }
                     }
+
+                    val uiModel = it.asUiModel()
 
                     uiModel.data.users.forEach { user ->
                         launch {
@@ -79,7 +77,6 @@ class GamingViewModel @Inject constructor(
                             }
                         }
                     }
-                    _promiseModel.emit(uiModel)
                 }.onFailure {
                     _errorState.emit(it)
                 }

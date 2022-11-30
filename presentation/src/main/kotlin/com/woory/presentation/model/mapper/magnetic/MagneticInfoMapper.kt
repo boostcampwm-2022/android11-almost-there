@@ -13,7 +13,8 @@ object MagneticInfoMapper : UiModelMapper<MagneticInfo, MagneticInfoModel> {
                 domain.centerPoint.latitude,
                 domain.centerPoint.longitude
             ),
-            domain.radius
+            domain.radius,
+            domain.updatedAt
         )
 
     override fun asDomain(uiModel: MagneticInfo): MagneticInfoModel =
@@ -22,7 +23,8 @@ object MagneticInfoMapper : UiModelMapper<MagneticInfo, MagneticInfoModel> {
                 uiModel.centerPoint.latitude,
                 uiModel.centerPoint.longitude
             ),
-            uiModel.radius
+            uiModel.radius,
+            uiModel.updatedAt
         )
 }
 

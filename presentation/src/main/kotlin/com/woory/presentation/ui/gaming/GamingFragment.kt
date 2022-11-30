@@ -3,7 +3,9 @@ package com.woory.presentation.ui.gaming
 import android.graphics.Color
 import android.graphics.PointF
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +26,7 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
@@ -35,6 +38,15 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     }
 
     private val viewModel: GamingViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        viewModel.fetchPromiseData()
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,8 +61,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                 }
             }
         }
-
-        viewModel.fetchPromiseData()
     }
 
     // Todo :: 이하 코드 리펙토링 필요
@@ -64,7 +74,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                             viewModel.userLocation.collectLatest {
                                 if (it != null) {
                                     viewModel.setUserMarker(it)
-                                    setCenterPoint(it.geoPoint.latitude, it.geoPoint.longitude)
                                     removeTMapMarkerItem(it.token)
                                     addTMapMarkerItem(viewModel.getUserMarker(it.token))
                                 }
@@ -72,8 +81,13 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                         }
                         launch {
                             viewModel.magneticInfo.collectLatest {
+                                Timber.tag("123123").d("updated")
                                 if (it != null) {
                                     removeAllTMapCircle()
+                                    setCenterPoint(
+                                        it.centerPoint.latitude,
+                                        it.centerPoint.longitude
+                                    )
                                     addTMapCircle(
                                         TMapCircle(
                                             MAGNETIC_CIRCLE_KEY,

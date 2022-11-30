@@ -4,6 +4,7 @@ import com.google.firebase.firestore.GeoPoint
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.UserLocationModel
 import com.woory.firebase.model.UserLocationDocument
+import com.woory.firebase.util.TimeConverter.asTimeStamp
 
 object UserLocationMapper : ModelMapper<UserLocationModel, UserLocationDocument> {
     override fun asModel(domain: UserLocationModel): UserLocationDocument = UserLocationDocument(

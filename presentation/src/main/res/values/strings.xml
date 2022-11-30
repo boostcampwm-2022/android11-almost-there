@@ -78,4 +78,6 @@
     <string name="notification_start_title">게임이 진행중 입니다.</string>
     <string name="notification_start_content">자기장을 피해 약속 장소로 이동하세요.</string>
     <string name="unknown_error" />
+    <string name="magnetic_radius_setting_title">자기장 반지름을 업데이트 하고 있습니다.</string>
+    <string name="magnetic_radius_setting_content">게임 시작을 준비 해 주세요!</string>
 </resources>
