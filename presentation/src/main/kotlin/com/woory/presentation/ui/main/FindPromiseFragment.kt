@@ -1,12 +1,12 @@
 package com.woory.presentation.ui.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentFindPromiseBinding
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.ui.promises.PromisesActivity
+import com.woory.presentation.ui.history.PromiseHistoryType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,13 +17,13 @@ class FindPromiseFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.containerEndedPromise.setOnClickListener {
-            val intent = Intent(requireActivity(), PromisesActivity::class.java)
-            startActivity(intent)
+            val action = MainFragmentDirections.startPromiseHistoryActivity(PromiseHistoryType.PAST)
+            findNavController().navigate(action)
         }
 
         binding.containerSoonPromise.setOnClickListener {
-            val intent = Intent(requireActivity(), PromisesActivity::class.java)
-            startActivity(intent)
+            val action = MainFragmentDirections.startPromiseHistoryActivity(PromiseHistoryType.FUTURE)
+            findNavController().navigate(action)
         }
     }
 }

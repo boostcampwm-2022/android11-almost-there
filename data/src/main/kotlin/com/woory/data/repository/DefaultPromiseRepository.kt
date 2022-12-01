@@ -71,6 +71,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
         networkDataSource.searchLocationByKeyword(keyword)
 
+    override suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>> =
+        databaseDataSource.getAll()
+
     override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
         firebaseDataSource.getMagneticInfoByCode(promiseCode)
 
