@@ -14,4 +14,8 @@
     <color name="cream">#FEFBF6</color>
     <color name="join_button_background">#FF00C853</color>
     <color name="loading_indicator_color">#FF2962FF</color>
+
+    <color name="gold">#FFFFCA09</color>
+    <color name="silver">#FFB6B5B8</color>
+    <color name="bronze">#FFAD8A56</color>
 </resources>
