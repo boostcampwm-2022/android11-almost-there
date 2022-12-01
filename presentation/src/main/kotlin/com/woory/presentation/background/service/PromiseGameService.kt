@@ -24,7 +24,6 @@ import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
-import com.woory.presentation.ui.history.PromiseHistoryActivity
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.UserLocation
@@ -91,22 +90,16 @@ class PromiseGameService : LifecycleService() {
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        val intent = Intent(this, PromiseHistoryActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            NotificationProvider.PROMISE_START_NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-                    startForeground ()
-                    lifecycleScope . launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    userRepository.userPreferences.collect {
-                        _userId.emit(it.userID)
-                    }
+        startForeground()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userRepository.userPreferences.collect {
+                    _userId.emit(it.userID)
                 }
             }
-                    client . requestLocationUpdates (
-                    LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000 * 20).build(),
+        }
+        client.requestLocationUpdates(
+            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000 * 20).build(),
             callback,
             Looper.getMainLooper()
         )
