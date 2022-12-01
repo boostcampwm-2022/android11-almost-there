@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityPromiseInfoBinding
 import com.woory.presentation.ui.BaseActivity
+import com.woory.presentation.util.NO_GAME_CODE_EXCEPTION
 import com.woory.presentation.util.PROMISE_CODE_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.FragmentComponentManager
@@ -17,7 +18,7 @@ class PromiseInfoActivity :
 
     private val gameCode by lazy {
         intent?.getStringExtra(PROMISE_CODE_KEY)
-            ?: throw IllegalArgumentException("참여 코드가 없습니다.")
+            ?: throw NO_GAME_CODE_EXCEPTION
     }
 
     private val viewModel: PromiseInfoViewModel by viewModels()
