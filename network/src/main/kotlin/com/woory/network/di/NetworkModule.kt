@@ -28,16 +28,6 @@ object NetworkModule {
 
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-    class ODsayInterceptor : Interceptor {
-        @Throws(IOException::class)
-        override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
-            val newRequest =
-                request().newBuilder()
-                    .build()
-            proceed(newRequest)
-        }
-    }
-
     class TMapInterceptor : Interceptor {
         @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
@@ -57,7 +47,6 @@ object NetworkModule {
 
     private fun createODsayOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder().run {
-            addInterceptor(ODsayInterceptor())
             build()
         }
     }
@@ -78,7 +67,6 @@ object NetworkModule {
         Retrofit.Builder()
             .baseUrl(ODSAY_URL)
             .client(createODsayOkHttpClient())
-//            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(ODsayService::class.java)
 

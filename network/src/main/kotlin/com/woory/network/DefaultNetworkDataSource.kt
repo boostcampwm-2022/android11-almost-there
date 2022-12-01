@@ -22,7 +22,10 @@ class DefaultNetworkDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getPublicTransitRoute(start: GeoPointModel, dest: GeoPointModel): Result<PathModel> {
+    override suspend fun getPublicTransitRoute(
+        start: GeoPointModel,
+        dest: GeoPointModel
+    ): Result<PathModel> {
         return runCatching {
             val response = oDSayService.getPublicTransitRoute(
                 apiKey = BuildConfig.ODSAY_API_KEY,
@@ -33,9 +36,7 @@ class DefaultNetworkDataSource @Inject constructor(
             )
 
             val json = JSONObject(response.string()).getJSONObject("result")
-            val searchType = json.getInt("searchType")
-
-            val routeInfo = when (searchType) {
+            val routeInfo = when (json.getInt("searchType")) {
                 IN_CITY -> {
                     json.getJSONArray("path")
                         .getJSONObject(0)
@@ -55,6 +56,30 @@ class DefaultNetworkDataSource @Inject constructor(
             PathModel(
                 routeType = RouteType.PUBLIC_TRANSIT,
                 time = time,
+                distance = distance.toInt()
+            )
+        }
+    }
+
+    override suspend fun getCarRoute(start: GeoPointModel, dest: GeoPointModel): Result<PathModel> {
+        return runCatching {
+            val response = tMapService.getCarRoute(
+                startX = start.longitude,
+                startY = start.latitude,
+                endX = dest.longitude,
+                endY = dest.latitude
+            )
+
+            val json = JSONObject(response.string()).getJSONArray("features")
+                .getJSONObject(0)
+                .getJSONObject("properties")
+
+            val time = json.getInt("totalTime")
+            val distance = json.getInt("totalDistance")
+
+            PathModel(
+                routeType = RouteType.CAR,
+                time = time / 60,
                 distance = distance
             )
         }
