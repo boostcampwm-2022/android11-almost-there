@@ -72,6 +72,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
         networkDataSource.searchLocationByKeyword(keyword)
 
+    override suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>> =
+        databaseDataSource.getAll()
+
     override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
         firebaseDataSource.getMagneticInfoByCode(promiseCode)
 
@@ -93,7 +96,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
         firebaseDataSource.setUserInitialHpData(gameCode, token)
 
-    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Unit> =
+    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long> =
         firebaseDataSource.decreaseUserHp(gameCode, token)
 
     override suspend fun getUserHpAndListen(

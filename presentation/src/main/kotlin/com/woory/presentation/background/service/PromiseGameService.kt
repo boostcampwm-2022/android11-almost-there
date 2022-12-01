@@ -6,7 +6,6 @@ import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Build
 import android.os.Looper
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
@@ -23,6 +22,7 @@ import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
+import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.UserLocation
@@ -32,6 +32,7 @@ import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.DistanceUtil
 import com.woory.presentation.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
+import com.woory.presentation.util.NO_GAME_CODE_EXCEPTION
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -83,12 +84,17 @@ class PromiseGameService : LifecycleService() {
                     val curLocation = GeoPoint(location.latitude, location.longitude)
                     userId.value?.let { id ->
                         promiseRepository.setUserLocation(
-                            UserLocation(id, curLocation).asDomain()
+                            UserLocation(id, curLocation, System.currentTimeMillis()).asDomain()
                         )
 
                         magneticZoneInfo.value?.let {
                             if (DistanceUtil.getDistance(it.centerPoint, curLocation) > it.radius) {
                                 promiseRepository.decreaseUserHp(it.gameCode, id)
+                                    .onSuccess { updatedHp ->
+                                        if (updatedHp == 0L) {
+                                            stopUpdateLocation()
+                                        }
+                                    }
                             }
                         }
                     }
@@ -120,10 +126,11 @@ class PromiseGameService : LifecycleService() {
     @Throws(IllegalArgumentException::class)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-//        val gameCode = intent?.asPromiseAlarm()?.promiseCode
-//            ?: throw IllegalArgumentException(getString(R.string.no_code_error))
-        val gameCode =
-            intent?.getStringExtra(GAME_CODE_KEY) ?: throw java.lang.Exception("게임 코드 내놔")
+        val gameCode = try {
+            intent?.asPromiseAlarm()?.promiseCode ?: throw NO_GAME_CODE_EXCEPTION
+        } catch (e: java.lang.Exception) {
+            intent?.getStringExtra(GAME_CODE_KEY) ?: throw NO_GAME_CODE_EXCEPTION
+        }
 
         val job = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -173,13 +180,13 @@ class PromiseGameService : LifecycleService() {
                         // TODO : Service 에 다시 즐어왔을 때 로직 -> 게임에서 제외시켜버리기
                         false -> {
                             promiseRepository.sendOutUser(gameCode, userToken)
-                            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+                            stopUpdateLocation()
                         }
                     }
                 }.onFailure {
                     // TODO : 통신 실패시 로직 -> 게임에서 제외시켜버리기
                     promiseRepository.sendOutUser(gameCode, userToken)
-                    fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+                    stopUpdateLocation()
                 }
             }
         }
@@ -215,8 +222,8 @@ class PromiseGameService : LifecycleService() {
         startForeground(NotificationProvider.PROMISE_START_NOTIFICATION_ID, notification)
     }
 
-    private fun makeToast(text: String) {
-        Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
+    private fun stopUpdateLocation() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
     private fun extractTimeDifference(startTime: OffsetDateTime, endTime: OffsetDateTime) =

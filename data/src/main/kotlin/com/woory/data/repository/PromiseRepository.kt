@@ -42,6 +42,8 @@ interface PromiseRepository {
 
     suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
 
+    suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>>
+
     suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel>
 
     suspend fun getMagneticInfoByCodeAndListen(promiseCode: String): Flow<Result<MagneticInfoModel>>
@@ -56,7 +58,7 @@ interface PromiseRepository {
 
     suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit>
 
-    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Unit>
+    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
 }
