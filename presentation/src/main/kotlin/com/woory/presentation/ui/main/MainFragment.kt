@@ -23,7 +23,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(R.layout.fragment_main) {
         super.onViewCreated(view, savedInstanceState)
         binding.containerJoinPromise.setOnClickListener {
             navController.navigate(
-                R.id.nav_dummy_join_act,
+                R.id.nav_join_act,
                 null,
                 animLeftToRightNavOptions
             )
