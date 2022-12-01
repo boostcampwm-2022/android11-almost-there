@@ -26,8 +26,8 @@ class GameResultViewModel @Inject constructor(
 
     val userRankingList: StateFlow<List<UserRanking>?> = _userRankingList.asStateFlow()
 
-    private val _myPayment: MutableStateFlow<Int> = MutableStateFlow(0)
-    val myPayment: StateFlow<Int> = _myPayment.asStateFlow()
+    private val _myPayment: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val myPayment: StateFlow<Int?> = _myPayment.asStateFlow()
 
     private val _userPaymentList: MutableStateFlow<List<UserPayment>?> =
         MutableStateFlow(null)
@@ -90,7 +90,7 @@ class GameResultViewModel @Inject constructor(
         }
     }
 
-    private fun loadUserPaymentList() {
+    fun loadUserPaymentList(value: Int) {
         viewModelScope.launch {
             // TODO("테스트값")
             val testUserPaymentList = listOf(

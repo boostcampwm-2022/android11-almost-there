@@ -1,9 +1,7 @@
 package com.woory.presentation.ui.gameresult
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -11,25 +9,27 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentCalculateBinding
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragment_calculate) {
+class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragment_calculate),
+    AmountDueDialogFragment.ButtonClickListener {
 
     private val viewModel: GameResultViewModel by activityViewModels()
 
     private val amountDueDialog by lazy {
-        Dialog(requireContext()).apply {
-            setContentView(R.layout.dialog_amount_due)
+        AmountDueDialogFragment().apply {
+            setButtonClickListener(this@CalculateFragment)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpToolbar()
-        setUpDialogButtonClickListener()
+        setUpButtonClickListener()
         showAmountDueDialog()
         setUpAdapter()
         observeData()
@@ -43,6 +43,12 @@ class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragme
         binding.rvPayments.adapter = UserPaymentAdapter()
     }
 
+    private fun setUpButtonClickListener() {
+        binding.btnInputAmountDue.setOnClickListener {
+            showAmountDueDialog()
+        }
+    }
+
     private fun observeData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -54,24 +60,26 @@ class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragme
 
                 launch {
                     viewModel.myPayment.collectLatest {
-                        binding.tvPayment.text = String.format(getString(R.string.payment), it)
+                        binding.tvPayment.text = if (it != null) {
+                            String.format(getString(R.string.payment), it)
+                        } else ""
                     }
                 }
             }
         }
     }
 
-    private fun setUpDialogButtonClickListener() {
-        amountDueDialog.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
-            amountDueDialog.cancel()
-        }
-
-        amountDueDialog.findViewById<Button>(R.id.btn_submit).setOnClickListener {
-            amountDueDialog.cancel()
-        }
+    private fun showAmountDueDialog() {
+        amountDueDialog.show(parentFragmentManager, amountDueDialog.TAG)
     }
 
-    private fun showAmountDueDialog() {
-        amountDueDialog.show()
+    override fun onSubmit(value: Int) {
+        viewModel.loadUserPaymentList(value)
+    }
+
+    override fun onCancel() {
+        if (viewModel.myPayment.value == null) {
+            requireActivity().finish()
+        }
     }
 }
