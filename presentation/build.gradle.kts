@@ -79,6 +79,7 @@ dependencies {
 
     // DI
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     kapt("com.google.dagger:hilt-compiler:2.44")
 
     // ThreeTenABP
