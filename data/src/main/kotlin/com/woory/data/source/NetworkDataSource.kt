@@ -8,7 +8,11 @@ interface NetworkDataSource {
 
     suspend fun getAddressByPoint(geoPoint: GeoPointModel): Result<String>
 
-    suspend fun getPath(start: GeoPointModel, dest: GeoPointModel): Result<PathModel>
+    suspend fun getPublicTransitRoute(start: GeoPointModel, dest: GeoPointModel): Result<PathModel>
+
+    suspend fun getCarRoute(start: GeoPointModel, dest: GeoPointModel): Result<PathModel>
+
+    suspend fun getWalkRoute(start: GeoPointModel, dest: GeoPointModel): Result<PathModel>
 
     suspend fun searchLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
 }

@@ -19,6 +19,8 @@ object TimeConverter {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(asMillis()), zoneId)
     }
 
+    fun Long.asTimeStamp() = Timestamp(this / 1000, (this % 1000).toInt() * 1000000)
+
     fun OffsetDateTime.asTimeStamp(): Timestamp =
         Timestamp(toEpochSecond(), nano)
 }

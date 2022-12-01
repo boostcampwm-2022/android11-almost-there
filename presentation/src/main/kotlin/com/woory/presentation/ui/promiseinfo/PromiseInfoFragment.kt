@@ -19,6 +19,7 @@ import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentPromiseInfoBinding
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -71,6 +72,10 @@ class PromiseInfoFragment :
             val clip = ClipData.newPlainText("", viewModel.gameCode.value)
             clipBoard.setPrimaryClip(clip)
             makeSnackBar(getString(R.string.copy_complete))
+        }
+
+        binding.btnDummyStartGame.setOnClickListener {
+            GamingActivity.startActivity(requireContext(), viewModel.gameCode.value)
         }
     }
 

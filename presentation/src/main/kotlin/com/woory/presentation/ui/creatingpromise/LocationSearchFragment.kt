@@ -66,6 +66,7 @@ class LocationSearchFragment :
         super.onViewCreated(view, savedInstanceState)
         setUpMapView()
         setUpButton()
+        binding.vm = viewModel
     }
 
     private fun setUpMapView() {
@@ -73,6 +74,7 @@ class LocationSearchFragment :
             setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
                 zoomLevel = DEFAULT_ZOOM_LEVEL
+                viewModel.setIsMapReady(true)
 
                 if (ActivityCompat.checkSelfPermission(
                         requireContext(),
@@ -161,6 +163,11 @@ class LocationSearchFragment :
                 )
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.setIsMapReady(false)
     }
 
     companion object {

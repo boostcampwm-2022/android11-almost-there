@@ -12,7 +12,7 @@
 
     <fragment
         android:id="@+id/nav_calculate_frag"
-        android:name="com.woory.presentation.ui.gameresult.CalculateFragment"
-        tools:layout="@layout/fragment_calculate" />
+        android:name="com.woory.presentation.ui.gameresult.SplitMoneyFragment"
+        tools:layout="@layout/fragment_split_money" />
 
 </navigation>

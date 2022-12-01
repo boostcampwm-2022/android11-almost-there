@@ -87,6 +87,19 @@
     <string name="notification_ready_complete_content">게임 준비가 완료되었습니다. 약속 정보를 확인하려면 터치하세요.</string>
     <string name="notification_alarm_restart">알람 재 등록중</string>
     <string name="unknown_error" />
+    <string name="past_promise_history">과거 약속 정보</string>
+    <string name="future_promise_history">미래 약속 정보</string>
+    <string name="rank_label">순위</string>
+    <string name="rank1">1위</string>
+    <string name="rank2">2위</string>
+    <string name="rank3">3위</string>
+    <string name="hp">HP</string>
+    <string name="empty_promises">약속 정보가 존재하지 않습니다.</string>
+    <string name="history_item_title">%s님 외 %d명</string>
+    <string name="history_item_state_before">%d분 후 시작</string>
+    <string name="history_item_state_ongoing">%d분 전</string>
+    <string name="magnetic_radius_setting_title">자기장 반지름을 업데이트 하고 있습니다.</string>
+    <string name="magnetic_radius_setting_content">게임 시작을 준비 해 주세요!</string>
     <string name="calculate">정산</string>
     <string name="exit">닫기</string>
     <string name="input_amount_due">정산 금액 입력</string>
@@ -95,4 +108,7 @@
     <string name="my_payment_title">💸 내가 낼 금액은? 💸</string>
     <string name="payment">%,2d</string>
     <string name="modification_amount_due">정산 금액 수정 ✏️</string>
+    <string name="won_symbol">₩</string>
+    <string name="amount_due_helper_text">최대 500만원까지 입력 가능</string>
+    <string name="balance">잔액</string>
 </resources>

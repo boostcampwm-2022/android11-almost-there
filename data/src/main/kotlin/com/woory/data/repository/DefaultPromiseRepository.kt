@@ -1,6 +1,14 @@
 package com.woory.data.repository
 
-import com.woory.data.model.*
+import com.woory.data.model.GeoPointModel
+import com.woory.data.model.LocationSearchModel
+import com.woory.data.model.MagneticInfoModel
+import com.woory.data.model.PromiseAlarmModel
+import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseModel
+import com.woory.data.model.UserHpModel
+import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -62,4 +70,19 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
         networkDataSource.searchLocationByKeyword(keyword)
+
+    override suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>> =
+        databaseDataSource.getAll()
+
+    override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
+        firebaseDataSource.getMagneticInfoByCode(promiseCode)
+
+    override suspend fun getMagneticInfoByCodeAndListen(promiseCode: String): Flow<Result<MagneticInfoModel>> =
+        firebaseDataSource.getMagneticInfoByCodeAndListen(promiseCode)
+
+    override suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit> =
+        firebaseDataSource.updateMagneticRadius(gameCode, radius)
+
+    override suspend fun decreaseMagneticRadius(gameCode: String) =
+        firebaseDataSource.decreaseMagneticRadius(gameCode)
 }

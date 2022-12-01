@@ -2,6 +2,15 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
+
+        <import type="android.view.View" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ok"
+            android:enabled="@{vm.isSearchMapReady()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,6 +40,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/search_location"
             android:src="@drawable/ic_search"
+            android:enabled="@{vm.isSearchMapReady()}"
             app:layout_constraintBottom_toBottomOf="@id/btn_submit"
             app:layout_constraintEnd_toStartOf="@id/btn_submit"
             app:layout_constraintTop_toTopOf="parent" />

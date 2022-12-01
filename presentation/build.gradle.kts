@@ -6,6 +6,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -63,6 +64,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
 
     // coroutine
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
@@ -77,6 +79,7 @@ dependencies {
 
     // DI
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     kapt("com.google.dagger:hilt-compiler:2.44")
 
     // ThreeTenABP
@@ -85,10 +88,17 @@ dependencies {
     // Timber
     implementation("com.jakewharton.timber:timber:5.0.1")
 
+    // FusedLocationProvider
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Lottie
     implementation("com.airbnb.android:lottie:5.2.0")
-    
+
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.4")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
 }
