@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -73,7 +74,7 @@ class PromiseGameService : LifecycleService() {
                 lifecycleScope.launch {
                     userId.value?.let { id ->
                         repository.setUserLocation(
-                            UserLocation(id, GeoPoint(it.latitude, it.longitude)).asDomain()
+                            UserLocation(id, GeoPoint(it.latitude, it.longitude), OffsetDateTime.now().asMillis()).asDomain()
                         )
                     }
 //                    _location.emit(GeoPoint(it.latitude, it.longitude))

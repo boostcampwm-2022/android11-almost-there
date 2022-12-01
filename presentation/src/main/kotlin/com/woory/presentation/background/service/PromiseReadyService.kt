@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -13,18 +12,25 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.RouteRepository
+import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
+import com.woory.presentation.util.TimeConverter.asMillis
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.threeten.bp.Duration
+import org.threeten.bp.OffsetDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +40,10 @@ class PromiseReadyService : LifecycleService() {
 
     @Inject
     lateinit var promiseRepository: PromiseRepository
+
+    @Inject
+    lateinit var userRepository: UserRepository
+
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreate() {
@@ -67,30 +77,43 @@ class PromiseReadyService : LifecycleService() {
                 val promise = promiseRepository.getPromiseByCode(promiseAlarm.promiseCode)
                     .getOrThrow()
                     .asUiModel()
-                val dest = promise.data.promiseLocation.geoPoint
 
-                getLastLocation() { start ->
+                val gameDuration =
+                    Duration.between(promise.data.gameDateTime, promise.data.promiseDateTime)
+                        .toMinutes()
+                val destGeoPoint = promise.data.promiseLocation.geoPoint
+
+                getLastLocation(promiseAlarm) { startGeoPoint ->
                     lifecycleScope.launch {
+
+                        launch {
+                            userRepository.userPreferences.collectLatest {
+                                val userToken = it.userID
+                                val currentUserLocation = UserLocation(userToken, startGeoPoint, OffsetDateTime.now().asMillis())
+                                promiseRepository.setUserLocation(currentUserLocation.asDomain())
+                            }
+                        }
+
                         withContext(this.coroutineContext) {
-                            routeRepository.getMaximumVelocity(start.asDomain(), dest.asDomain())
-                                .onSuccess {
-                                    Log.d("TAG", "성공 -> $it")
+                            routeRepository.getMaximumVelocity(
+                                startGeoPoint.asDomain(),
+                                destGeoPoint.asDomain()
+                            )
+                                .onSuccess { velocity ->
+                                    val maxRadius = velocity * gameDuration
+                                    promiseRepository.updateMagneticRadius(promise.code, maxRadius)
                                 }
-                                .onFailure {
-                                    Log.d("TAG", "실패 -> $it")
+                                .onFailure { error ->
+                                    Timber.tag("TAG").d("Error -> $error")
                                 }
                                 .also {
-                                    stopSelf()
+                                    stopService(promiseAlarm)
                                 }
                         }
                     }
                 }
             }
-
-            notifyReadyCompleteNotification(promiseAlarm)
         }
-
-
         return START_NOT_STICKY
     }
 
@@ -104,7 +127,7 @@ class PromiseReadyService : LifecycleService() {
         )
     }
 
-    private fun getLastLocation(callback: (GeoPoint) -> Unit) {
+    private fun getLastLocation(promiseAlarm: PromiseAlarm, callback: (GeoPoint) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -117,10 +140,15 @@ class PromiseReadyService : LifecycleService() {
         }
 
         fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-            it ?: return@addOnSuccessListener
+            it ?: stopService(promiseAlarm)
+
             val geoPoint = GeoPoint(it.latitude, it.longitude)
-            Log.d("TAG", "현재 -> $geoPoint")
             callback(geoPoint)
         }
+    }
+
+    private fun stopService(promiseAlarm: PromiseAlarm) {
+        stopSelf()
+        notifyReadyCompleteNotification(promiseAlarm)
     }
 }
