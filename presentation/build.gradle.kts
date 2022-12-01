@@ -6,6 +6,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -63,6 +64,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
 
     // coroutine
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
@@ -77,6 +79,7 @@ dependencies {
 
     // DI
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     kapt("com.google.dagger:hilt-compiler:2.44")
 
     // ThreeTenABP

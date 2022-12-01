@@ -17,6 +17,7 @@ android {
 
         val projectProperties = readProperties(file("../local.properties"))
         buildConfigField("String", "MAP_API_KEY", projectProperties["MAP_API_KEY"] as String)
+        buildConfigField("String", "ODSAY_API_KEY", projectProperties["ODSAY_API_KEY"] as String)
     }
 }
 

@@ -5,6 +5,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.woory.data.source.NetworkDataSource
 import com.woory.network.BuildConfig
 import com.woory.network.DefaultNetworkDataSource
+import com.woory.network.ODsayService
 import com.woory.network.TMapService
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://apis.openapi.sk.com"
+    private const val ODSAY_URL = "https://api.odsay.com/v1/api/"
 
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
@@ -43,6 +45,12 @@ object NetworkModule {
         }
     }
 
+    private fun createODsayOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().run {
+            build()
+        }
+    }
+
     @Singleton
     @Provides
     fun provideMapService(): TMapService =
@@ -55,7 +63,19 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideNetworkDataSource(tMapService: TMapService): NetworkDataSource {
-        return DefaultNetworkDataSource(tMapService)
+    fun provideODsayService(): ODsayService =
+        Retrofit.Builder()
+            .baseUrl(ODSAY_URL)
+            .client(createODsayOkHttpClient())
+            .build()
+            .create(ODsayService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideNetworkDataSource(
+        tMapService: TMapService,
+        oDsayService: ODsayService
+    ): NetworkDataSource {
+        return DefaultNetworkDataSource(tMapService, oDsayService)
     }
 }
