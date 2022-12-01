@@ -111,4 +111,7 @@
     <string name="no_code_error">게임 코드가 없습니다.</string>
     <string name="ranking_format">%1$s 위</string>
     <string name="loading_text">...</string>
+    <string name="won_symbol">₩</string>
+    <string name="amount_due_helper_text">최대 500만원까지 입력 가능</string>
+    <string name="balance">잔액</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.soulplay.presentation
+package com.woory.presentation
 
 import org.junit.Test
 
