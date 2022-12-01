@@ -108,4 +108,7 @@
     <string name="my_payment_title">💸 내가 낼 금액은? 💸</string>
     <string name="payment">%,2d</string>
     <string name="modification_amount_due">정산 금액 수정 ✏️</string>
+    <string name="won_symbol">₩</string>
+    <string name="amount_due_helper_text">최대 500만원까지 입력 가능</string>
+    <string name="balance">잔액</string>
 </resources>
