@@ -6,11 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.woory.data.repository.PromiseRepository
+import com.woory.presentation.model.AddedUserHp
+import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.UserLocation
+import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.location.asUiModel
 import com.woory.presentation.model.mapper.magnetic.asUiModel
 import com.woory.presentation.model.mapper.promise.asUiModel
+import com.woory.presentation.model.mapper.user.asUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,10 +43,19 @@ class GamingViewModel @Inject constructor(
     private val _magneticInfo: MutableStateFlow<MagneticInfo?> = MutableStateFlow(null)
     val magneticInfo: StateFlow<MagneticInfo?> = _magneticInfo.asStateFlow()
 
-    private val _userLocation: MutableStateFlow<UserLocation?> = MutableStateFlow(null)
-    val userLocation: StateFlow<UserLocation?> = _userLocation.asStateFlow()
+    private val _userLocationEvent: MutableStateFlow<UserLocation?> = MutableStateFlow(null)
+    val userLocationEvent: StateFlow<UserLocation?> = _userLocationEvent.asStateFlow()
 
     private val userMarkers: MutableMap<String, TMapMarkerItem> = mutableMapOf()
+
+    val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
+
+    private val userImageMap: MutableMap<String, MutableStateFlow<UserProfileImage>> =
+        mutableMapOf()
+
+    private val userLocationMap: MutableMap<String, MutableStateFlow<GeoPoint?>> = mutableMapOf()
+
+    val userNameMap: MutableMap<String, MutableStateFlow<String>> = mutableMapOf()
 
     fun setGameCode(code: String) {
         viewModelScope.launch {
@@ -65,14 +80,28 @@ class GamingViewModel @Inject constructor(
                     }
 
                     val uiModel = it.asUiModel()
-
                     uiModel.data.users.forEach { user ->
+
+                        userHpMap[user.userId] = MutableStateFlow(null)
+                        userLocationMap[user.userId] = MutableStateFlow(null)
+                        userImageMap[user.userId] = MutableStateFlow(user.data.profileImage)
+                        userNameMap[user.userId] = MutableStateFlow(user.data.name)
+
                         launch {
                             repository.getUserLocation(user.userId).collect { result ->
                                 result.onSuccess { userLocationModel ->
-                                    _userLocation.emit(userLocationModel.asUiModel())
-                                }.onFailure { throwable ->
-                                    _errorState.emit(throwable)
+                                    val uiLocationModel = userLocationModel.asUiModel()
+                                    _userLocationEvent.emit(uiLocationModel)
+                                    userLocationMap[user.userId]?.emit(uiLocationModel.geoPoint)
+                                }
+                            }
+                        }
+
+                        // TODO : 유저 hp 정보 받아오기
+                        launch {
+                            repository.getUserHpAndListen(code, user.userId).collect { result ->
+                                result.onSuccess { addedUserHpModel ->
+                                    userHpMap[user.userId]?.emit(addedUserHpModel.asUiState())
                                 }
                             }
                         }
@@ -88,6 +117,21 @@ class GamingViewModel @Inject constructor(
             _userDefaultMarker.emit(marker)
         }
     }
+
+    fun getUserImage(id: String): UserProfileImage? = userImageMap[id]?.value
+
+    fun getUserRanking(id: String): Int? {
+        return userHpMap[id]?.value?.let {
+            userHpMap.values.map { it.value }.indexOf(it) + 1
+        }
+    }
+
+    suspend fun getAddress(id: String): String? =
+        withContext(viewModelScope.coroutineContext) {
+            userLocationMap[id]?.value?.let {
+                repository.getAddressByPoint(it.asDomain()).getOrNull()
+            }
+        }
 
     fun setUserMarker(newData: UserLocation) {
         if (userMarkers[newData.token] == null) {

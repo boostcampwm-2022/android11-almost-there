@@ -3,6 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.gaming.GamingViewModel" />
+
+        <variable
+            name="id"
+            type="String" />
+
+        <variable
+            name="rank"
+            type="Integer" />
+
+        <!--        <variable-->
+        <!--            name="profile"-->
+        <!--            type="com.woory.presentation.model.mapper.gaming.BottomSheetProfile" />-->
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_bottom_sheet"
         android:background="@drawable/bg_bottom_sheet"
@@ -31,17 +50,18 @@
 
         <TextView
             android:id="@+id/tv_name"
-            style="@style/Text32.Black.Bold"
+            style="@style/Text24.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:text="@{vm.userNameMap[id], default=``}"
             app:layout_constraintLeft_toRightOf="@+id/layout_character_img"
             app:layout_constraintTop_toTopOf="@id/layout_character_img"
             tools:text="Ivy 님" />
 
         <TextView
             android:id="@+id/tv_hp_text"
-            style="@style/Text24.Black.Bold"
+            style="@style/Text18.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/gaming_hp"
@@ -51,7 +71,7 @@
 
         <TextView
             android:id="@+id/tv_ranking_text"
-            style="@style/Text24.Black.Bold"
+            style="@style/Text18.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/gaming_ranking"
@@ -59,10 +79,12 @@
             app:layout_constraintStart_toStartOf="@id/tv_name" />
 
         <com.woory.presentation.ui.customview.HPBar
+            android:id="@+id/hp_bar"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
             android:padding="5dp"
+            app:textVisible="true"
             app:backgroundVisible="true"
             app:layout_constraintBottom_toBottomOf="@id/tv_hp_text"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,14 +92,14 @@
             app:layout_constraintTop_toTopOf="@id/tv_hp_text"
             app:maxValue="100"
             app:minValue="0"
-            app:textVisible="true"
-            app:value="100" />
+            app:value="@{vm.userHpMap[id].hp, default=0}" />
 
         <TextView
             android:id="@+id/tv_ranking"
-            style="@style/Text24.Black.Bold"
+            style="@style/Text18.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{@string/ranking_format(rank), default=`0위`}"
             app:layout_constraintStart_toStartOf="@id/guideline_center"
             app:layout_constraintTop_toTopOf="@id/tv_ranking_text"
             tools:text="1위" />
@@ -94,14 +116,14 @@
 
         <TextView
             android:id="@+id/tv_location"
-            style="@style/Text24.Black.Bold"
+            style="@style/Text18.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="@id/iv_location"
             app:layout_constraintStart_toEndOf="@id/iv_location"
             app:layout_constraintTop_toTopOf="@id/iv_location"
-            tools:text="대전광역시 유성구 대학로 99" />
+            android:text="@string/loading_text" />
 
         <ImageView
             android:id="@+id/iv_expected_time"
@@ -115,14 +137,14 @@
 
         <TextView
             android:id="@+id/tv_expected_time"
-            style="@style/Text24.Black.Bold"
+            style="@style/Text18.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="@id/iv_expected_time"
             app:layout_constraintStart_toEndOf="@id/iv_expected_time"
             app:layout_constraintTop_toTopOf="@id/iv_expected_time"
-            tools:text="예상 도착시간 15시 30분" />
+            android:text="@string/loading_text" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

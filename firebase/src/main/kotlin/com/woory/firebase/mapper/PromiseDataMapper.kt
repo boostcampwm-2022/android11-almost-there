@@ -59,11 +59,11 @@ internal fun PromiseDataModel.asModel(code: String): PromiseDocument {
     )
 }
 
-fun PromiseDataModel.extractMagnetic(): MagneticInfoDocument =
+fun PromiseDataModel.extractMagnetic(code: String): MagneticInfoDocument =
     MagneticInfoDocument(
+        gameCode = code,
         centerPoint = GeoPoint(
             promiseLocation.geoPoint.latitude,
             promiseLocation.geoPoint.longitude
-        ),
-        radius = 10.0
+        )
     )
