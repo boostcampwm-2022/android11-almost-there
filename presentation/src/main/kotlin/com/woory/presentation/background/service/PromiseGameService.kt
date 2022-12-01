@@ -6,7 +6,6 @@ import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Build
 import android.os.Looper
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
@@ -85,7 +84,7 @@ class PromiseGameService : LifecycleService() {
                     val curLocation = GeoPoint(location.latitude, location.longitude)
                     userId.value?.let { id ->
                         promiseRepository.setUserLocation(
-                            UserLocation(id, curLocation).asDomain()
+                            UserLocation(id, curLocation, System.currentTimeMillis()).asDomain()
                         )
 
                         magneticZoneInfo.value?.let {

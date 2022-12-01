@@ -13,7 +13,8 @@ object UserLocationMapper : UiModelMapper<UserLocation, UserLocationModel> {
             geoPoint = GeoPoint(
                 domain.location.latitude,
                 domain.location.longitude
-            )
+            ),
+            updatedAt = domain.updatedAt
         )
 
     override fun asDomain(uiModel: UserLocation): UserLocationModel =
@@ -22,7 +23,8 @@ object UserLocationMapper : UiModelMapper<UserLocation, UserLocationModel> {
             location = GeoPointModel(
                 uiModel.geoPoint.latitude,
                 uiModel.geoPoint.longitude
-            )
+            ),
+            updatedAt = uiModel.updatedAt
         )
 }
 

@@ -2,8 +2,13 @@ package com.woory.network
 
 import com.woory.network.model.AddressInfoResponse
 import com.woory.network.model.LocationSearchResponse
+import okhttp3.ResponseBody
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 interface TMapService {
 
@@ -23,4 +28,24 @@ interface TMapService {
         @Query("searchKeyword") searchKeyword: String,
         @Query("count") count: Int = 20
     ): LocationSearchResponse
+
+    @POST("tmap/routes")
+    suspend fun getCarRoute(
+        @Query("version") version: Int = 1,
+        @Query("startX") startX: Double,
+        @Query("startY") startY: Double,
+        @Query("endX") endX: Double,
+        @Query("endY") endY: Double,
+    ): ResponseBody
+
+    @POST("tmap/routes/pedestrian")
+    suspend fun getWalkRoute(
+        @Query("version") version: Int = 1,
+        @Query("startX") startX: Double,
+        @Query("startY") startY: Double,
+        @Query("endX") endX: Double,
+        @Query("endY") endY: Double,
+        @Query("startName") startName: String = "START",
+        @Query("endName") endName: String = "END",
+        ): ResponseBody
 }

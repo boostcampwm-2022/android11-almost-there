@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="promise"
+            type="com.woory.presentation.model.Promise" />
+
+        <variable
+            name="type"
+            type="com.woory.presentation.ui.history.PromiseHistoryViewType" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:contentPadding="12dp"
+        app:itemBackgroundColor="@{type}">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{@string/history_item_title(promise.data.host.data.name, promise.data.users.size - 1)}"
+                android:textAppearance="@style/Text16.Black.Bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="김구라님 외 3명" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/promiseDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{promise.data.gameDateTime.toString()}"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/users"
+                app:layout_constraintTop_toBottomOf="@id/users"
+                tools:text="2022년 11월 11일 11시 11분" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/promiseLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{promise.data.promiseLocation.address}"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/users"
+                app:layout_constraintTop_toBottomOf="@id/promiseDate"
+                tools:text="경기도 성남시 분당구 판교역로 166" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/rankLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/rank_label"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:itemRankLabel="@{type}"
+                app:layout_constraintStart_toStartOf="@id/users"
+                app:layout_constraintTop_toBottomOf="@id/promiseLocation" />
+
+            <HorizontalScrollView
+                android:id="@+id/rankBadgeContainerScrollView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:scrollbars="none"
+                app:itemRankLabel="@{type}"
+                app:layout_constraintStart_toStartOf="@id/users"
+                app:layout_constraintTop_toBottomOf="@id/rankLabel">
+
+                <LinearLayout
+                    android:id="@+id/rankBadgeContainer"
+                    android:layout_width="wrap_content"
+                    app:itemRankType="@{type}"
+                    app:itemRankPromise="@{promise}"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+            </HorizontalScrollView>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:indicatorColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/users"
+                app:layout_constraintTop_toBottomOf="@id/rankBadgeContainerScrollView" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/Text16.Black.Bold"
+                app:itemStatePromise="@{promise}"
+                app:itemStateType="@{type}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/users"
+                tools:text="10분 전" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/hpLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/hp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:itemHP="@{type}"
+                app:layout_constraintStart_toStartOf="@id/hp"
+                app:layout_constraintTop_toBottomOf="@id/state" />
+
+            <com.woory.presentation.ui.customview.HPBar
+                android:id="@+id/hp"
+                android:layout_width="100dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="4dp"
+                app:itemHP="@{type}"
+                app:layout_constraintEnd_toEndOf="@id/state"
+                app:layout_constraintTop_toBottomOf="@id/hpLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
