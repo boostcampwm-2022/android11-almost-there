@@ -1,12 +1,11 @@
 package com.woory.firebase.datasource
 
-import android.util.Log
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.TransactionOptions
+import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
@@ -18,12 +17,14 @@ import com.woory.firebase.mapper.asDomain
 import com.woory.firebase.mapper.asModel
 import com.woory.firebase.mapper.asPromiseParticipant
 import com.woory.firebase.mapper.extractMagnetic
+import com.woory.firebase.model.AddedUserHpDocument
 import com.woory.firebase.model.MagneticInfoDocument
 import com.woory.firebase.model.PromiseDocument
 import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
 import com.woory.firebase.util.InviteCodeUtil
 import com.woory.firebase.util.TimeConverter.asMillis
+import com.woory.firebase.util.TimeConverter.asTimeStamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -48,11 +49,9 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = task.result
                     .toObject(PromiseDocument::class.java)
                     ?.asDomain()
-                    ?: throw IllegalStateException("Unmatched State with Server")
+                    ?: throw UNMATCHED_STATE_EXCEPTION
                 res
             }
-
-            // TODO: 현재 요청 시점이 해당 약속의 자기장 시작 시간보다 늦으면 new exception
 
             when (val exception = result.exceptionOrNull()) {
                 null -> result
@@ -79,7 +78,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val result = value.toObject(PromiseDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
-                    } ?: throw IllegalStateException("Unmatched State with Server")
+                    } ?: throw UNMATCHED_STATE_EXCEPTION
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
@@ -114,25 +113,11 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(generatedCode)
                     .collection(MAGNETIC_COLLECTION_NAME)
                     .document(generatedCode)
-                val hpCollection = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(generatedCode)
-                    .collection(HP_COLLECTION_NAME)
-                    .document()
 
                 fireStore.runBatch { batch ->
                     batch.set(promiseCollection, promiseDataModel.asModel(generatedCode))
-                    batch.set(magneticCollection, promiseDataModel.extractMagnetic())
-                    batch.set(hpCollection, mapOf<String, String>())
+                    batch.set(magneticCollection, promiseDataModel.extractMagnetic(generatedCode))
                 }
-//                fireStore
-//                    .collection(PROMISE_COLLECTION_NAME)
-//                    .document(generatedCode).apply {
-//                        set(promiseDataModel.asModel(generatedCode))
-//                        collection(MAGNETIC_COLLECTION_NAME)
-//                            .document(generatedCode)
-//                            .set(promiseDataModel.extractMagnetic())
-//                    }
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -160,7 +145,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val result = value.toObject(UserLocationDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
-                    } ?: throw IllegalStateException("위치 DB의 데이터 값이 다릅니다.")
+                    } ?: throw UNMATCHED_STATE_EXCEPTION
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
@@ -207,7 +192,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val result = value.toObject(UserHpDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
-                    } ?: throw IllegalStateException("hp DB의 데이터 값이 다릅니다.")
+                    } ?: UNMATCHED_STATE_EXCEPTION
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
@@ -266,7 +251,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 trySend(Result.failure(it))
             }
 
-            val subscription = documentReference?.addSnapshotListener { value, error ->
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
                 if (value == null) {
                     return@addSnapshotListener
                 }
@@ -275,7 +260,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val result = value.toObject(MagneticInfoDocument::class.java)
                     result?.let {
                         trySend(Result.success(it.asDomain()))
-                    } ?: throw IllegalStateException("자기장 DB의 데이터 값이 다릅니다.")
+                    } ?: throw UNMATCHED_STATE_EXCEPTION
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
@@ -298,7 +283,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .result
                     .toObject(MagneticInfoDocument::class.java)
                     ?.asDomain()
-                    ?: throw IllegalStateException("Unmatched State with Server")
+                    ?: throw UNMATCHED_STATE_EXCEPTION
 
                 res
             }
@@ -334,41 +319,167 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
         }
 
-    override suspend fun decreaseMagneticRadius(gameCode: String): Unit =
+    override suspend fun decreaseMagneticRadius(
+        gameCode: String,
+        minusValue: Double
+    ): Result<Unit> =
         withContext(scope.coroutineContext) {
-            runCatching {
+            val result = runCatching {
                 val reference = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(MAGNETIC_COLLECTION_NAME)
                     .document(gameCode)
 
-                fireStore.runTransaction() { transaction ->
+                fireStore.runTransaction { transaction ->
                     val snapShot = transaction.get(reference)
                     val serverRadius = snapShot.getLong(RADIUS_KEY) ?: return@runTransaction
-                    val updateTime = snapShot.getTimestamp("timeStamp") ?: return@runTransaction
-                    val currentTime = System.currentTimeMillis()
-                    if (System.currentTimeMillis() - updateTime.asMillis() >= 1000 * 28) {
-                        Log.d("123123", "updated by me")
+                    val updateTime = snapShot.getTimestamp(TIMESTAMP_KEY) ?: return@runTransaction
+
+                    if (isFirstAccess(updateTime)) {
                         transaction.update(
                             reference, mapOf(
-                                RADIUS_KEY to serverRadius - 1,
-                                "timeStamp" to Timestamp(
-                                    currentTime / 1000,
-                                    (currentTime % 1000).toInt() * 1000000
-                                )
+                                RADIUS_KEY to serverRadius - minusValue,
+                                TIMESTAMP_KEY to System.currentTimeMillis().asTimeStamp()
                             )
                         )
                     }
                 }
             }
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
         }
+
+    override suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean> =
+        withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val task = fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+                    .get()
+
+                Tasks.await(task)
+
+                task.result.data.isNullOrEmpty()
+            }
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun sendOutUser(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                val reference = fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+
+                fireStore.runTransaction {
+                    it.update(reference, mapOf(LOST_KEY to true, HP_KEY to 0))
+                }
+            }
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = kotlin.runCatching {
+                fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+                    .set(
+                        AddedUserHpDocument(
+                            userId = token,
+                            updatedAt = System.currentTimeMillis().asTimeStamp()
+                        )
+                    )
+            }
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                val reference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+
+                fireStore.runTransaction { transaction ->
+                    val snapShot = transaction.get(reference)
+                    val hp = snapShot.getLong(HP_KEY) ?: return@runTransaction
+
+                    transaction.update(reference, mapOf(HP_KEY to hp - 1))
+                }
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getUserHpAndListen(
+        gameCode: String,
+        token: String
+    ): Flow<Result<AddedUserHpModel>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                if (value == null) {
+                    return@addSnapshotListener
+                }
+
+                runCatching {
+                    val result = value.toObject(AddedUserHpDocument::class.java)
+                    result?.let {
+                        trySend(Result.success(it.asDomain()))
+                    } ?: throw UNMATCHED_STATE_EXCEPTION
+                }.onFailure {
+                    trySend(Result.failure(it))
+                }
+            }
+            awaitClose { subscription?.remove() }
+        }
+
+    private fun isFirstAccess(prevTime: Timestamp): Boolean =
+        System.currentTimeMillis() - prevTime.asMillis() >= 1000 * (MAGNETIC_FIELD_UPDATE_TERM_SECOND - 1)
 
     companion object {
         private const val PROMISE_COLLECTION_NAME = "Promises"
         private const val LOCATION_COLLECTION_NAME = "UserLocation"
         private const val MAGNETIC_COLLECTION_NAME = "Magnetic"
         private const val HP_COLLECTION_NAME = "Hp"
+        private const val GAME_INFO_COLLECTION_NAME = "GameInfo"
+        private const val HP_KEY = "hp"
         private const val RADIUS_KEY = "radius"
+        private const val LOST_KEY = "lost"
+        private const val TIMESTAMP_KEY = "timeStamp"
+        private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
+        private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")
     }
 }
