@@ -9,13 +9,13 @@ import androidx.core.app.NotificationCompat
 import com.woory.almostthere.background.notification.NotificationChannelProvider
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationProvider
-import com.woory.presentation.ui.promises.PromisesActivity
+import com.woory.presentation.ui.history.PromiseHistoryActivity
 
 class PromiseGameService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val intent = Intent(this, PromisesActivity::class.java)
+        val intent = Intent(this, PromiseHistoryActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,
             NotificationProvider.PROMISE_START_NOTIFICATION_ID,
