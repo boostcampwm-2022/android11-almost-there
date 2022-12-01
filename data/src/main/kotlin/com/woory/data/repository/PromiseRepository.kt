@@ -56,7 +56,7 @@ interface PromiseRepository {
 
     suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit>
 
-    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Unit>
+    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
 }

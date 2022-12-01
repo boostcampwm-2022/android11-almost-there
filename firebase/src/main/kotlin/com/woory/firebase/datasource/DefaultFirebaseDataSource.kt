@@ -409,8 +409,9 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
         }
 
-    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Unit> =
+    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long> =
         withContext(scope.coroutineContext) {
+            var userHp: Long = -1
             val result = runCatching {
                 val reference = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
@@ -420,14 +421,14 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                 fireStore.runTransaction { transaction ->
                     val snapShot = transaction.get(reference)
-                    val hp = snapShot.getLong(HP_KEY) ?: return@runTransaction
+                    userHp = snapShot.getLong(HP_KEY) ?: return@runTransaction
 
-                    transaction.update(reference, mapOf(HP_KEY to hp - 1))
+                    transaction.update(reference, mapOf(HP_KEY to userHp - 1))
                 }
             }
 
             when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(Unit)
+                null -> Result.success(userHp - 1)
                 else -> Result.failure(exception)
             }
         }
