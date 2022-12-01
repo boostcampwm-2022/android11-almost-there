@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.woory.presentation.R
-import com.woory.presentation.databinding.FragmentCalculateBinding
+import com.woory.presentation.databinding.FragmentSplitMoneyBinding
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,14 +15,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragment_calculate),
-    AmountDueDialogFragment.ButtonClickListener {
+class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.fragment_split_money),
+    TotalCostFragment.ButtonClickListener {
 
     private val viewModel: GameResultViewModel by activityViewModels()
 
     private val amountDueDialog by lazy {
-        AmountDueDialogFragment().apply {
-            setButtonClickListener(this@CalculateFragment)
+        TotalCostFragment().apply {
+            setButtonClickListener(this@SplitMoneyFragment)
         }
     }
 
@@ -40,7 +40,7 @@ class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragme
     }
 
     private fun setUpAdapter() {
-        binding.rvPayments.adapter = UserPaymentAdapter()
+        binding.rvPayments.adapter = UserSplitMoneyAdapter()
     }
 
     private fun setUpButtonClickListener() {
@@ -53,13 +53,13 @@ class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragme
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.userPaymentList.collectLatest {
-                        (binding.rvPayments.adapter as UserPaymentAdapter).submitList(it)
+                    viewModel.userSplitMoneyItems.collectLatest {
+                        (binding.rvPayments.adapter as UserSplitMoneyAdapter).submitList(it)
                     }
                 }
 
                 launch {
-                    viewModel.myPayment.collectLatest {
+                    viewModel.mySplitMoney.collectLatest {
                         binding.tvPayment.text = if (it != null) {
                             String.format(getString(R.string.payment), it)
                         } else ""
@@ -78,7 +78,7 @@ class CalculateFragment : BaseFragment<FragmentCalculateBinding>(R.layout.fragme
     }
 
     override fun onCancel() {
-        if (viewModel.myPayment.value == null) {
+        if (viewModel.mySplitMoney.value == null) {
             requireActivity().finish()
         }
     }

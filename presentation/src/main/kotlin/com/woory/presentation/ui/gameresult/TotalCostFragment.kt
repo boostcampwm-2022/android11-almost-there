@@ -5,15 +5,15 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import com.woory.presentation.R
-import com.woory.presentation.databinding.DialogFragmentAmountDueBinding
+import com.woory.presentation.databinding.DialogFragmentTotalCostBinding
 import com.woory.presentation.ui.BaseDialogFragment
 import com.woory.presentation.util.extractNumber
 import com.woory.presentation.util.getCommaNumber
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AmountDueDialogFragment :
-    BaseDialogFragment<DialogFragmentAmountDueBinding>(R.layout.dialog_fragment_amount_due) {
+class TotalCostFragment :
+    BaseDialogFragment<DialogFragmentTotalCostBinding>(R.layout.dialog_fragment_total_cost) {
 
     private val maxAmountDue = 5000000
 
