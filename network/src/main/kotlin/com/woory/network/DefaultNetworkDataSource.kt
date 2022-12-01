@@ -36,19 +36,9 @@ class DefaultNetworkDataSource @Inject constructor(
             )
 
             val json = JSONObject(response.string()).getJSONObject("result")
-            val routeInfo = when (json.getInt("searchType")) {
-                IN_CITY -> {
-                    json.getJSONArray("path")
-                        .getJSONObject(0)
-                        .getJSONObject("info")
-                }
-                OUT_CITY_DIRECT,
-                OUT_CITY_TRANSFER -> {
-                    json.getJSONArray("path")
-                        .getJSONObject(0)
-                }
-                else -> throw IllegalArgumentException("odesay error")
-            }
+            val routeInfo = json.getJSONArray("path")
+                .getJSONObject(0)
+                .getJSONObject("info")
 
             val time = routeInfo.getInt("totalTime")
             val distance = routeInfo.getDouble("totalDistance")
@@ -122,11 +112,5 @@ class DefaultNetworkDataSource @Inject constructor(
                 searchKeyword = keyword
             ).searchPoiInfo.pois.poi.map { it.asDomain() }
         }
-    }
-
-    companion object {
-        const val IN_CITY = 0
-        const val OUT_CITY_DIRECT = 1
-        const val OUT_CITY_TRANSFER = 2
     }
 }
