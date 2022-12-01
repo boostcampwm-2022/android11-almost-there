@@ -21,6 +21,7 @@ import com.woory.presentation.ui.join.FormState
 import com.woory.presentation.util.getDip
 import org.threeten.bp.Duration
 import org.threeten.bp.OffsetDateTime
+import com.woory.presentation.ui.join.FormState
 
 @BindingAdapter("state_message")
 fun TextInputLayout.bindMessage(state: FormState) {

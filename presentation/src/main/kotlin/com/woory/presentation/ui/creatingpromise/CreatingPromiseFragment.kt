@@ -18,14 +18,15 @@ import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
+import com.woory.presentation.util.TimeConverter.asCalendar
+import com.woory.presentation.util.TimeConverter.asLocalDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
-import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
-import java.util.*
+import java.util.Calendar
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
@@ -65,7 +66,9 @@ class CreatingPromiseFragment :
 
     private val promiseDateSetListener by lazy {
         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            viewModel.setPromiseDate(LocalDate.of(year, month, dayOfMonth))
+            val calendar = Calendar.getInstance()
+            calendar.set(year, month, dayOfMonth)
+            viewModel.setPromiseDate(calendar.asLocalDate())
         }
     }
 
@@ -137,6 +140,8 @@ class CreatingPromiseFragment :
                             )
                         )
 
+                        viewModel.setPromiseAlarm(promiseAlarm)
+
                         PromiseInfoActivity.startActivity(
                             requireContext(),
                             promiseAlarm.promiseCode
@@ -190,32 +195,26 @@ class CreatingPromiseFragment :
     }
 
     private fun showPromiseDatePickerDialog() {
-        val calendar = Calendar.getInstance().apply {
+        val minPickCalendar = Calendar.getInstance().apply {
             add(Calendar.DAY_OF_MONTH, 1)
         }
+        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar
+        val year = lastPickCalendar.get(Calendar.YEAR)
+        val month = lastPickCalendar.get(Calendar.MONTH)
+        val dayOfMonth = lastPickCalendar.get(Calendar.DAY_OF_MONTH)
 
-        viewModel.promiseDate.value.let {
-            val year = it?.year ?: calendar.get(Calendar.YEAR)
-            val month = it?.monthValue ?: calendar.get(Calendar.MONTH)
-            val dayOfMonth = it?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH)
-
-            promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
-            promiseDatePickerDialog.datePicker.minDate = calendar.timeInMillis
-            promiseDatePickerDialog.show()
-        }
-
+        promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
+        promiseDatePickerDialog.datePicker.minDate = minPickCalendar.timeInMillis
+        promiseDatePickerDialog.show()
     }
 
     private fun showPromiseTimePickerDialog() {
-        val calendar = Calendar.getInstance()
+        val localTime = viewModel.promiseTime.value ?: LocalTime.now()
+        val hour = localTime.hour
+        val minute = localTime.minute
 
-        viewModel.promiseTime.value.let {
-            val hour = it?.hour ?: calendar.get(Calendar.HOUR)
-            val minute = it?.minute ?: calendar.get(Calendar.MINUTE)
-
-            promiseTimePickerDialog.updateTime(hour, minute)
-            promiseTimePickerDialog.show()
-        }
+        promiseTimePickerDialog.updateTime(hour, minute)
+        promiseTimePickerDialog.show()
     }
 
     private fun showGameTimePickerDialog() {

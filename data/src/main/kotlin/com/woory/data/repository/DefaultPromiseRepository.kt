@@ -2,6 +2,7 @@ package com.woory.data.repository
 
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.LocationSearchModel
+import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseAlarmModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
@@ -23,7 +24,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> {
         val result = firebaseDataSource.setPromise(promiseDataModel)
             .onSuccess { code ->
-                setPromiseAlarm(PromiseModel(code, promiseDataModel))
+                setPromiseAlarmByPromiseModel(PromiseModel(code, promiseDataModel))
             }
             .onFailure {
                 return Result.failure(it)
@@ -34,8 +35,14 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel> =
         databaseDataSource.getPromiseAlarmWhereCode(promiseCode)
 
-    override suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit> =
-        databaseDataSource.setPromiseAlarm(promiseModel)
+    override suspend fun getAllPromiseAlarms(): Result<List<PromiseAlarmModel>> =
+        databaseDataSource.getAll()
+
+    override suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit> =
+        databaseDataSource.setPromiseAlarmByPromiseModel(promiseModel)
+
+    override suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit> =
+        databaseDataSource.setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel)
 
     override suspend fun getAddressByPoint(geoPointModel: GeoPointModel): Result<String> =
         networkDataSource.getAddressByPoint(geoPointModel)
@@ -66,4 +73,16 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>> =
         databaseDataSource.getAll()
+
+    override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
+        firebaseDataSource.getMagneticInfoByCode(promiseCode)
+
+    override suspend fun getMagneticInfoByCodeAndListen(promiseCode: String): Flow<Result<MagneticInfoModel>> =
+        firebaseDataSource.getMagneticInfoByCodeAndListen(promiseCode)
+
+    override suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit> =
+        firebaseDataSource.updateMagneticRadius(gameCode, radius)
+
+    override suspend fun decreaseMagneticRadius(gameCode: String) =
+        firebaseDataSource.decreaseMagneticRadius(gameCode)
 }

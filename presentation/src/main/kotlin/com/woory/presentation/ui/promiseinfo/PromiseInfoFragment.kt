@@ -15,10 +15,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentPromiseInfoBinding
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.util.MAP_API_KEY
+import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -72,11 +73,15 @@ class PromiseInfoFragment :
             clipBoard.setPrimaryClip(clip)
             makeSnackBar(getString(R.string.copy_complete))
         }
+
+        binding.btnDummyStartGame.setOnClickListener {
+            GamingActivity.startActivity(requireContext(), viewModel.gameCode.value)
+        }
     }
 
     private fun setUpMapView() {
         mapView = TMapView(getActivityContext(requireContext())).apply {
-            setSKTMapApiKey(MAP_API_KEY)
+            setSKTMapApiKey(BuildConfig.MAP_API_KEY)
 
             setOnMapReadyListener {
                 binding.rvPromiseParticipant.adapter = participantAdapter

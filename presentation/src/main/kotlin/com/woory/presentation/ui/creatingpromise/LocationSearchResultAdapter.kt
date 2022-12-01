@@ -10,7 +10,7 @@ import com.woory.presentation.ui.BaseViewHolder
 
 class LocationSearchResultAdapter(
     val callback: (LocationSearchResult) -> Unit
-): ListAdapter<LocationSearchResult, LocationSearchResultAdapter.LocationSearchResultViewHolder>(
+) : ListAdapter<LocationSearchResult, LocationSearchResultAdapter.LocationSearchResultViewHolder>(
     LocationResultDiff()
 ) {
     class LocationSearchResultViewHolder(

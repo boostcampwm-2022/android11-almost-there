@@ -4,7 +4,9 @@ import com.woory.data.model.PromiseAlarmModel
 import com.woory.data.model.PromiseModel
 
 interface DatabaseDataSource {
-    suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit>
+    suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit>
+
+    suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit>
 
     suspend fun getAll(): Result<List<PromiseAlarmModel>>
 

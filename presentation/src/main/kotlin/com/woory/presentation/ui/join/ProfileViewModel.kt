@@ -4,12 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
-import com.woory.presentation.model.Color
-import com.woory.presentation.model.ProfileImage
-import com.woory.presentation.model.Promise
-import com.woory.presentation.model.User
-import com.woory.presentation.model.UserData
-import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.*
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.model.mapper.user.asDomain
@@ -83,7 +78,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
 
-            promiseRepository.setPromiseAlarm(promise.asDomain())
+            promiseRepository.setPromiseAlarmByPromiseModel(promise.asDomain())
                 .onSuccess {
                     addPlayer(promise.code)
                 }

@@ -2,6 +2,7 @@ package com.woory.data.repository
 
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.LocationSearchModel
+import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseAlarmModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
@@ -32,9 +33,21 @@ interface PromiseRepository {
 
     suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel>
 
-    suspend fun setPromiseAlarm(promiseModel: PromiseModel): Result<Unit>
+    suspend fun getAllPromiseAlarms(): Result<List<PromiseAlarmModel>>
+
+    suspend fun setPromiseAlarmByPromiseModel(promiseModel: PromiseModel): Result<Unit>
+
+    suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit>
 
     suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
 
     suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>>
+
+    suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel>
+
+    suspend fun getMagneticInfoByCodeAndListen(promiseCode: String): Flow<Result<MagneticInfoModel>>
+
+    suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
+
+    suspend fun decreaseMagneticRadius(gameCode: String)
 }

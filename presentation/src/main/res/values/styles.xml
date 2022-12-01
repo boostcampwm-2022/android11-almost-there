@@ -2,6 +2,20 @@
 <resources>
 
     <!--  Text Style  -->
+    <style name="Text72">
+        <item name="fontFamily">@font/sans400</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">72sp</item>
+    </style>
+
+    <style name="Text72.Black">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Text72.Black.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Text32">
         <item name="fontFamily">@font/sans400</item>
         <item name="android:includeFontPadding">false</item>

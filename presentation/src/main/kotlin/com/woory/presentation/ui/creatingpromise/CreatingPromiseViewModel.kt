@@ -12,10 +12,12 @@ import com.woory.presentation.model.PromiseData
 import com.woory.presentation.model.User
 import com.woory.presentation.model.UserData
 import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
 import com.woory.presentation.ui.promiseinfo.PromiseUiState
+import com.woory.presentation.util.TimeConverter.zoneOffset
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +33,7 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,6 +87,15 @@ class CreatingPromiseViewModel @Inject constructor(
         MutableStateFlow(PromiseUiState.Loading)
     val locationSearchUiState: StateFlow<PromiseUiState> = _locationSearchUiState.asStateFlow()
 
+    private val _isSearchMapReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSearchMapReady: StateFlow<Boolean> = _isSearchMapReady.asStateFlow()
+
+    fun setIsMapReady(isMapReady: Boolean) {
+        viewModelScope.launch {
+            _isSearchMapReady.emit(isMapReady)
+        }
+    }
+
     fun shuffleProfileImage() {
         profileImageIndex.value = ProfileImage.getRandomImage()
         profileImageBackgroundColor.value = Color.getRandomColor()
@@ -126,10 +138,11 @@ class CreatingPromiseViewModel @Inject constructor(
                 val promiseTime = _promiseTime.value ?: return@collectLatest
                 val readyDuration = _readyDuration.value ?: return@collectLatest
 
-                val zoneOffset = OffsetDateTime.now().offset
-                val promiseDateTime = OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+                val promiseDateTime =
+                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
                 val gameDateTime =
-                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset).minus(readyDuration)
+                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+                        .minus(readyDuration)
 
                 val user = User(userPreferences.userID, UserData(name, profileImage))
 
@@ -142,6 +155,12 @@ class CreatingPromiseViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun setPromiseAlarm(promiseAlarm: PromiseAlarm) {
+        viewModelScope.launch {
+            promiseRepository.setPromiseAlarmByPromiseAlarmModel(promiseAlarm.asDomain())
         }
     }
 
