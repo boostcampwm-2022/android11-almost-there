@@ -37,4 +37,15 @@ interface TMapService {
         @Query("endX") endX: Double,
         @Query("endY") endY: Double,
     ): ResponseBody
+
+    @POST("tmap/routes/pedestrian")
+    suspend fun getWalkRoute(
+        @Query("version") version: Int = 1,
+        @Query("startX") startX: Double,
+        @Query("startY") startY: Double,
+        @Query("endX") endX: Double,
+        @Query("endY") endY: Double,
+        @Query("startName") startName: String = "START",
+        @Query("endName") endName: String = "END",
+        ): ResponseBody
 }

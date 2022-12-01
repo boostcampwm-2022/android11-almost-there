@@ -61,7 +61,10 @@ class DefaultNetworkDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getCarRoute(start: GeoPointModel, dest: GeoPointModel): Result<PathModel> {
+    override suspend fun getCarRoute(
+        start: GeoPointModel,
+        dest: GeoPointModel
+    ): Result<PathModel> {
         return runCatching {
             val response = tMapService.getCarRoute(
                 startX = start.longitude,
@@ -79,6 +82,33 @@ class DefaultNetworkDataSource @Inject constructor(
 
             PathModel(
                 routeType = RouteType.CAR,
+                time = time / 60,
+                distance = distance
+            )
+        }
+    }
+
+    override suspend fun getWalkRoute(
+        start: GeoPointModel,
+        dest: GeoPointModel
+    ): Result<PathModel> {
+        return runCatching {
+            val response = tMapService.getWalkRoute(
+                startX = start.longitude,
+                startY = start.latitude,
+                endX = dest.longitude,
+                endY = dest.latitude
+            )
+
+            val json = JSONObject(response.string()).getJSONArray("features")
+                .getJSONObject(0)
+                .getJSONObject("properties")
+
+            val time = json.getInt("totalTime")
+            val distance = json.getInt("totalDistance")
+
+            PathModel(
+                routeType = RouteType.WALK,
                 time = time / 60,
                 distance = distance
             )
