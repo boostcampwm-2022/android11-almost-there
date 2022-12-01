@@ -65,39 +65,6 @@ class PromiseHistoryViewModel @Inject constructor(
                     _isLoading.value = false
                     _isError.value = true
                 }
-
-//                .map { list ->
-//                    list.filter { promise ->
-//                        if (promiseHistoryType == PromiseHistoryType.PAST) {
-//                            OffsetDateTime.now().isAfter(promise.endTime)
-//                        } else {
-//                            OffsetDateTime.now().isBefore(promise.endTime)
-//                        }
-//                    }
-//                }
-//                .onStart {
-//                    _isLoading.value = true
-//                }
-//                .onEach { list ->
-//                    val promises = mutableListOf<Promise>()
-//
-//                    list.onEach { promise ->
-//                        promiseRepository.getPromiseByCodeAndListen(promise.promiseCode)
-//                            .collect { result ->
-//                                result.onSuccess {
-//                                    promises.add(PromiseMapper.asUiModel(it))
-//                                }
-//                            }
-//                    }
-//
-//                    _promiseList.value = promises
-//                }
-//                .catch {
-//                    _isError.value = true
-//                }
-//                .onCompletion {
-//                    _isLoading.value = false
-//                }
         }
     }
 }
