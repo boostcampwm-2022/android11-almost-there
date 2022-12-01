@@ -131,4 +131,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="Caption" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:fontFamily">@font/sans400</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textColor">@color/almost_there_grey01</item>
+    </style>
+
 </resources>

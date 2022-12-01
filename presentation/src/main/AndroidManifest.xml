@@ -6,21 +6,21 @@
 
     <application>
         <activity
-            android:name=".ui.promises.PromisesActivity"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:exported="false" />
+            android:name=".ui.history.PromiseHistoryActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
         <activity
             android:name=".ui.gameresult.GameResultActivity"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
         <activity
             android:name=".ui.gaming.GamingActivity"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
         <activity
             android:name=".ui.promiseinfo.PromiseInfoActivity"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true"
@@ -36,16 +36,16 @@
             android:exported="false" />
         <activity
             android:name=".ui.creatingpromise.CreatingPromiseActivity"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
         <activity
             android:name=".ui.join.ProfileActivity"
             android:exported="false"
             android:launchMode="singleTop" />
         <activity
             android:name=".ui.join.JoinActivity"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
 
         <receiver android:name=".background.alarm.AlarmReceiver" />
         <receiver android:name=".background.alarm.AlarmTouchReceiver" />

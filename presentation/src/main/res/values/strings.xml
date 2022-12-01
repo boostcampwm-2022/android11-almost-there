@@ -78,4 +78,16 @@
     <string name="notification_start_title">게임이 진행중 입니다.</string>
     <string name="notification_start_content">자기장을 피해 약속 장소로 이동하세요.</string>
     <string name="unknown_error" />
+
+    <string name="past_promise_history">과거 약속 정보</string>
+    <string name="future_promise_history">미래 약속 정보</string>
+    <string name="rank_label">순위</string>
+    <string name="rank1">1위</string>
+    <string name="rank2">2위</string>
+    <string name="rank3">3위</string>
+    <string name="hp">HP</string>
+    <string name="empty_promises">약속 정보가 존재하지 않습니다.</string>
+    <string name="history_item_title">%s님 외 %d명</string>
+    <string name="history_item_state_before">%d분 후 시작</string>
+    <string name="history_item_state_ongoing">%d분 전</string>
 </resources>
