@@ -36,7 +36,9 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{@string/history_item_title(promise.data.host.data.name, promise.data.users.size - 1)}"
-                android:textAppearance="@style/Text16.Black.Bold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="김구라님 외 3명" />
@@ -45,10 +47,11 @@
                 android:id="@+id/promiseDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{promise.data.gameDateTime.toString()}"
-                android:textColor="@color/black"
+                android:textColor="@color/almost_there_grey01"
+                app:date_time="@{promise.data.promiseDateTime}"
                 app:layout_constraintStart_toStartOf="@id/users"
                 app:layout_constraintTop_toBottomOf="@id/users"
                 tools:text="2022년 11월 11일 11시 11분" />
@@ -61,7 +64,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{promise.data.promiseLocation.address}"
-                android:textColor="@color/black"
+                android:textColor="@color/almost_there_grey01"
                 app:layout_constraintStart_toStartOf="@id/users"
                 app:layout_constraintTop_toBottomOf="@id/promiseDate"
                 tools:text="경기도 성남시 분당구 판교역로 166" />
@@ -93,10 +96,10 @@
                 <LinearLayout
                     android:id="@+id/rankBadgeContainer"
                     android:layout_width="wrap_content"
-                    app:itemRankType="@{type}"
-                    app:itemRankPromise="@{promise}"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
+                    android:orientation="horizontal"
+                    app:itemRankPromise="@{promise}"
+                    app:itemRankType="@{type}" />
 
             </HorizontalScrollView>
 
@@ -114,7 +117,9 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textAppearance="@style/Text16.Black.Bold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:itemStatePromise="@{promise}"
                 app:itemStateType="@{type}"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -125,6 +130,7 @@
                 android:id="@+id/hpLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/hp"
