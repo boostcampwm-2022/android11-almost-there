@@ -82,11 +82,15 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         launch {
-                            viewModel.userLocationEvent.collectLatest {
-                                if (it != null) {
-                                    viewModel.setUserMarker(it)
-                                    removeTMapMarkerItem(it.token)
-                                    addTMapMarkerItem(viewModel.getUserMarker(it.token))
+                            viewModel.allUsers.collectLatest {
+                                it?.forEach { id ->
+                                    viewModel.userLocationMap[id]?.collectLatest { userLocation ->
+                                        if (userLocation != null) {
+                                            viewModel.setUserMarker(userLocation)
+                                            removeTMapMarkerItem(id)
+                                            addTMapMarkerItem(viewModel.getUserMarker(id))
+                                        }
+                                    }
                                 }
                             }
                         }
