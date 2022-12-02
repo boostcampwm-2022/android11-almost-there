@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.di.PromiseHistoryModule
 import com.woory.presentation.model.Promise
-import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.mapper.promise.asUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -43,7 +42,10 @@ class PromiseHistoryViewModel @Inject constructor(
 
             promiseRepository.getJoinedPromiseList()
                 .onSuccess { promises ->
-                    _promiseList.value =
+                    _isLoading.emit(false)
+                    _isError.emit(false)
+
+                    _promiseList.emit(
                         promises.filter { promise ->
                             if (promiseHistoryType == PromiseHistoryType.PAST) {
                                 OffsetDateTime.now().isAfter(promise.endTime)
@@ -55,15 +57,14 @@ class PromiseHistoryViewModel @Inject constructor(
                                 promiseRepository.getPromiseByCode(promise.promiseCode).getOrThrow()
                                     .asUiModel()
                             }
-                        }.awaitAll().toList().sortedBy { promise ->
-                            promise.data.gameDateTime
+                        }.awaitAll().toList().sortedByDescending { promise ->
+                            promise.data.promiseDateTime
                         }
-
-                    _isLoading.value = false
-                    _isError.value = false
+                    )
                 }.onFailure {
-                    _isLoading.value = false
-                    _isError.value = true
+                    _isLoading.emit(false)
+                    _isError.emit(true)
+                    _promiseList.emit(null)
                 }
         }
     }

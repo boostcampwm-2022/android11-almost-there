@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,9 +18,6 @@ import com.woory.presentation.ui.history.PromiseHistoryViewType
 import com.woory.presentation.ui.history.RankBadgeType
 import com.woory.presentation.ui.join.FormState
 import com.woory.presentation.util.getDip
-import org.threeten.bp.Duration
-import org.threeten.bp.OffsetDateTime
-import com.woory.presentation.ui.join.FormState
 
 @BindingAdapter("state_message")
 fun TextInputLayout.bindMessage(state: FormState) {
@@ -43,14 +39,6 @@ fun Button.bindEnabled(state: FormState) {
     isEnabled = state is FormState.Valid
 }
 
-@BindingAdapter("visibility")
-fun ProgressBar.bindVisibility(isLoading: Boolean) {
-    visibility = if (isLoading) {
-        View.VISIBLE
-    } else {
-        View.GONE
-    }
-}
 
 @BindingAdapter("backgroundColor")
 fun MaterialCardView.bindBackgroundColor(color: Color) {
@@ -71,14 +59,6 @@ fun RecyclerView.bindAdapter(adapter: RecyclerView.Adapter<*>) {
     }
 }
 
-@BindingAdapter("textVisibility")
-fun AppCompatTextView.bindVisibility(isGone: Boolean) {
-    visibility = if (isGone) {
-        View.GONE
-    } else {
-        View.VISIBLE
-    }
-}
 
 @BindingAdapter("itemBackgroundColor")
 fun MaterialCardView.bindItemBackgroundColor(type: PromiseHistoryViewType) {
@@ -89,41 +69,6 @@ fun MaterialCardView.bindItemBackgroundColor(type: PromiseHistoryViewType) {
     }
 
     setCardBackgroundColor(color)
-}
-
-@BindingAdapter("itemRankLabel")
-fun View.bindItemRankLabel(type: PromiseHistoryViewType) {
-    visibility = when (type) {
-        PromiseHistoryViewType.BEFORE -> View.GONE
-        else -> View.VISIBLE
-    }
-}
-
-@BindingAdapter(value = ["itemStateType", "itemStatePromise"], requireAll = true)
-fun AppCompatTextView.bindItemState(type: PromiseHistoryViewType, promise: Promise) {
-    val currentTime = OffsetDateTime.now()
-    val beforeStartTime = Duration.between(promise.data.gameDateTime, currentTime).toMinutes()
-    val beforeEndTime = Duration.between(currentTime, promise.data.promiseDateTime).toMinutes()
-
-    text = when (type) {
-        PromiseHistoryViewType.BEFORE -> context.getString(
-            R.string.history_item_state_before,
-            beforeStartTime
-        )
-        PromiseHistoryViewType.ONGOING -> context.getString(
-            R.string.history_item_state_ongoing,
-            beforeEndTime
-        )
-        PromiseHistoryViewType.END -> context.getString(R.string.promises_end)
-    }
-}
-
-@BindingAdapter("itemHP")
-fun View.bindItemHP(type: PromiseHistoryViewType) {
-    visibility = when (type) {
-        PromiseHistoryViewType.ONGOING -> View.VISIBLE
-        else -> View.GONE
-    }
 }
 
 @BindingAdapter(value = ["itemRankType", "itemRankPromise"], requireAll = true)
