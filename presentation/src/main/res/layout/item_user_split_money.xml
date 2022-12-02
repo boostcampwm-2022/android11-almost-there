@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="userPayment"
-            type="com.woory.presentation.model.UserPayment" />
+            name="userSplitMoney"
+            type="com.woory.presentation.model.user.gameresult.UserSplitMoneyItem.UserSplitMoney" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +20,7 @@
             style="@style/Text18.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(userPayment.rankingNumber)}"
+            android:text="@{String.valueOf(userSplitMoney.rankingNumber)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +36,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toEndOf="@id/tv_ranking_number"
             app:layout_constraintTop_toTopOf="@id/tv_ranking_number"
-            app:profileImage="@{userPayment.userData.profileImage}" />
+            app:profileImage="@{userSplitMoney.userData.profileImage}" />
 
         <TextView
             android:id="@+id/tv_nickname"
@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="@{userPayment.userData.name}"
+            android:text="@{userSplitMoney.userData.name}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/layout_character_img"
             app:layout_constraintTop_toTopOf="parent"
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="@{@string/payment(userPayment.payment)}"
+            android:text="@{@string/payment(userSplitMoney.moneyToPay)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

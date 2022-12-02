@@ -6,7 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.gameresult.CalculateFragment">
+        tools:context=".ui.gameresult.SplitMoneyFragment">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_container_my_payment"
@@ -108,7 +108,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_user_payment" />
+                tools:listitem="@layout/item_user_split_money" />
         </com.google.android.material.card.MaterialCardView>
 
         <Button
