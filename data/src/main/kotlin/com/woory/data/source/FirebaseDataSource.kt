@@ -44,4 +44,6 @@ interface FirebaseDataSource {
     suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
+
+    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>>
 }

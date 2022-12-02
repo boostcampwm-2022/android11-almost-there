@@ -1,6 +1,7 @@
 package com.woory.presentation.ui.gaming
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
@@ -23,8 +24,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -78,6 +81,17 @@ class GamingViewModel @Inject constructor(
                                 _magneticInfo.emit(magneticInFoModel.asUiModel())
                             }.onFailure { throwable ->
                                 _errorState.emit(throwable)
+                            }
+                        }
+                    }
+
+                    // TODO : 실시간 순위 가져오는 코드
+                    launch {
+                        repository.getGameRealtimeRanking(code).collect{ result ->
+                            result.onSuccess {
+
+                            }.onFailure {
+
                             }
                         }
                     }

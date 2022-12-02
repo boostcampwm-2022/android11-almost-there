@@ -104,4 +104,7 @@ class DefaultPromiseRepository @Inject constructor(
         token: String
     ): Flow<Result<AddedUserHpModel>> =
         firebaseDataSource.getUserHpAndListen(gameCode, token)
+
+    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
+        firebaseDataSource.getGameRealtimeRanking(gameCode)
 }
