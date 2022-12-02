@@ -46,6 +46,9 @@ class GamingViewModel @Inject constructor(
     private val _userLocationEvent: MutableStateFlow<UserLocation?> = MutableStateFlow(null)
     val userLocationEvent: StateFlow<UserLocation?> = _userLocationEvent.asStateFlow()
 
+    private val _allUsers: MutableStateFlow<List<String>?> = MutableStateFlow(null)
+    val allUsers: StateFlow<List<String>?> = _allUsers.asStateFlow()
+
     private val userMarkers: MutableMap<String, TMapMarkerItem> = mutableMapOf()
 
     val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
@@ -53,7 +56,7 @@ class GamingViewModel @Inject constructor(
     private val userImageMap: MutableMap<String, MutableStateFlow<UserProfileImage>> =
         mutableMapOf()
 
-    private val userLocationMap: MutableMap<String, MutableStateFlow<GeoPoint?>> = mutableMapOf()
+    val userLocationMap: MutableMap<String, MutableStateFlow<UserLocation?>> = mutableMapOf()
 
     val userNameMap: MutableMap<String, MutableStateFlow<String>> = mutableMapOf()
 
@@ -92,7 +95,7 @@ class GamingViewModel @Inject constructor(
                                 result.onSuccess { userLocationModel ->
                                     val uiLocationModel = userLocationModel.asUiModel()
                                     _userLocationEvent.emit(uiLocationModel)
-                                    userLocationMap[user.userId]?.emit(uiLocationModel.geoPoint)
+                                    userLocationMap[user.userId]?.emit(uiLocationModel)
                                 }
                             }
                         }
@@ -106,6 +109,7 @@ class GamingViewModel @Inject constructor(
                             }
                         }
                     }
+                    _allUsers.emit(uiModel.data.users.map { it.userId })
                 }.onFailure {
                     _errorState.emit(it)
                 }
@@ -129,7 +133,7 @@ class GamingViewModel @Inject constructor(
     suspend fun getAddress(id: String): String? =
         withContext(viewModelScope.coroutineContext) {
             userLocationMap[id]?.value?.let {
-                repository.getAddressByPoint(it.asDomain()).getOrNull()
+                repository.getAddressByPoint(it.geoPoint.asDomain()).getOrNull()
             }
         }
 
