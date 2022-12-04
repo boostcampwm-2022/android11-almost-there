@@ -96,8 +96,8 @@
     <string name="hp">HP</string>
     <string name="empty_promises">약속 정보가 존재하지 않습니다.</string>
     <string name="history_item_title">%s님 외 %d명</string>
-    <string name="history_item_state_before">%d분 후 시작</string>
-    <string name="history_item_state_ongoing">%d분 전</string>
+    <string name="history_item_state_before">%s 후 시작</string>
+    <string name="history_item_state_ongoing">%s 전</string>
     <string name="magnetic_radius_setting_title">자기장 반지름을 업데이트 하고 있습니다.</string>
     <string name="magnetic_radius_setting_content">게임 시작을 준비 해 주세요!</string>
     <string name="calculate">정산</string>
@@ -108,6 +108,13 @@
     <string name="my_payment_title">💸 내가 낼 금액은? 💸</string>
     <string name="payment">%,2d</string>
     <string name="modification_amount_due">정산 금액 수정 ✏️</string>
+    <string name="years_with_suffix">%d년</string>
+    <string name="months_with_suffix">%d월</string>
+    <string name="days_with_suffix">%d일</string>
+    <string name="hours_with_suffix">%d시간</string>
+    <string name="minutes_with_suffix">%d분</string>
+    <string name="seconds_with_suffix">%d초</string>
+    <string name="date_time_template">%d년 %d월 %d일 %d시 %d분</string>
     <string name="no_code_error">게임 코드가 없습니다.</string>
     <string name="ranking_format">%1$s 위</string>
     <string name="loading_text">...</string>

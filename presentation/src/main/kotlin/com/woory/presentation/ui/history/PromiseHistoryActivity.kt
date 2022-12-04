@@ -9,6 +9,7 @@ import androidx.navigation.navArgs
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityPromiseHistoryBinding
 import com.woory.presentation.ui.BaseActivity
+import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -36,8 +37,7 @@ class PromiseHistoryActivity :
                         PromiseInfoActivity.startActivity(this@PromiseHistoryActivity, promise.code)
                     }
                     PromiseHistoryViewType.ONGOING -> {
-                        // FIXME: 게임 진행중 화면으로 이동하도록 수정
-                        PromiseInfoActivity.startActivity(this@PromiseHistoryActivity, promise.code)
+                        GamingActivity.startActivity(this@PromiseHistoryActivity, promise.code)
                     }
                     PromiseHistoryViewType.END -> {
                         // FIXME: 게임 결과 화면으로 이동하도록 수정

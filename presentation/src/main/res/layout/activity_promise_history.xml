@@ -52,7 +52,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_toolbar"
-            app:visibility="@{vm.isLoading}" />
+            app:toGone="@{!vm.isLoading}" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_toolbar"
-            app:textVisibility="@{vm.isError}" />
+            app:toGone="@{vm.promiseList == null || !vm.isError}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
