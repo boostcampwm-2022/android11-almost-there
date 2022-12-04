@@ -4,24 +4,24 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.R
-import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
-import com.woory.presentation.model.mapper.alarm.asUiModel
+import com.woory.presentation.background.util.asPromiseAlarm
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.ui.gameresult.GameResultActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AlarmRestartService: LifecycleService() {
+class PromiseFinishService : LifecycleService() {
 
     @Inject
     lateinit var repository: PromiseRepository
-    private val alarmFunctions = AlarmFunctions(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -33,7 +33,7 @@ class AlarmRestartService: LifecycleService() {
         val notification = NotificationProvider.createNotificationBuilder(
             this,
             NotificationChannelProvider.PROMISE_READY_SERVICE_CHANNEL_ID,
-            getString(R.string.notification_alarm_restart),
+            getString(R.string.notification_finish_promise_title),
             null,
             NotificationCompat.PRIORITY_LOW,
             null
@@ -43,20 +43,34 @@ class AlarmRestartService: LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        lifecycle.coroutineScope.launch {
-            repository.getAllPromiseAlarms()
-                .onSuccess { promiseAlarmModels ->
-                    promiseAlarmModels.forEach { promiseAlarmModel ->
-                        alarmFunctions.registerAlarm(promiseAlarmModel.asUiModel())
-                    }
-                }
+        intent ?: throw IllegalArgumentException("intent is null")
+
+        val promiseAlarm = intent.asPromiseAlarm()
+
+        lifecycleScope.launch {
+            repository.setIsFinishedPromise(promiseAlarm.promiseCode)
                 .onFailure {
-                    Timber.tag("TAG").d("Error -> $it")
+                    Timber.tag("ERROR").d("Failure finish promise")
                 }
                 .also {
-                    stopSelf()
+                    stopService(promiseAlarm)
                 }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun stopService(promiseAlarm: PromiseAlarm) {
+        stopSelf()
+        notifyFinishNotification(promiseAlarm)
+    }
+
+    private fun notifyFinishNotification(promiseAlarm: PromiseAlarm) {
+        NotificationProvider.notifyActivityNotification(
+            this,
+            this.getString(R.string.notification_finished_title),
+            this.getString(R.string.notification_finished_content),
+            promiseAlarm,
+            GameResultActivity::class.java
+        )
     }
 }

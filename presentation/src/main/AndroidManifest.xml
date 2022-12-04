@@ -81,6 +81,11 @@
             android:name=".background.service.AlarmRestartService"
             android:enabled="true"
             android:exported="false" />
+
+        <service
+            android:name=".background.service.PromiseFinishService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>
