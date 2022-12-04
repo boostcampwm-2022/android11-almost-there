@@ -48,4 +48,6 @@ interface FirebaseDataSource {
     suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
 
     suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
+
+    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>>
 }

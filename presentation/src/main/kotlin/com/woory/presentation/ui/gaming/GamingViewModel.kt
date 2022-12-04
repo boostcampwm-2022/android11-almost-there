@@ -91,6 +91,17 @@ class GamingViewModel @Inject constructor(
                         }
                     }
 
+                    // TODO : 실시간 순위 가져오는 코드
+                    launch {
+                        promiseRepository.getGameRealtimeRanking(code).collect{ result ->
+                            result.onSuccess {
+
+                            }.onFailure {
+
+                            }
+                        }
+                    }
+
                     val uiModel = it.asUiModel()
                     uiModel.data.users.forEach { user ->
 

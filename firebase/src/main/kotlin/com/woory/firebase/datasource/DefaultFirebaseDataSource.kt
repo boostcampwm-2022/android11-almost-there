@@ -5,6 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
@@ -506,6 +507,38 @@ class DefaultFirebaseDataSource @Inject constructor(
                 }
                 trySend(result)
             }
+            awaitClose { subscription?.remove() }
+        }
+
+    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
+        callbackFlow {
+            var documentReference: Query? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .orderBy(HP_KEY)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                if (value == null) {
+                    return@addSnapshotListener
+                }
+
+                val result = runCatching {
+                    val changedResult =
+                        value.documents.map { it.toObject(AddedUserHpDocument::class.java) }
+                    changedResult.map {
+                        it?.asDomain() ?: throw UNMATCHED_STATE_EXCEPTION
+                    }
+                }
+                trySend(result)
+            }
+
             awaitClose { subscription?.remove() }
         }
 
