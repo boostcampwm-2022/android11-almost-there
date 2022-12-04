@@ -5,7 +5,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
@@ -270,7 +269,7 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
-        override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
+    override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
                 val task = fireStore
@@ -468,35 +467,45 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
-    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
+    override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+                    .update("arrived", true)
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
         callbackFlow {
-            var documentReference: Query? = null
+            var documentReference: DocumentReference? = null
 
             runCatching {
                 documentReference = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
-                    .orderBy(HP_KEY)
+                    .document(token)
             }.onFailure {
                 trySend(Result.failure(it))
             }
 
             val subscription = documentReference?.addSnapshotListener { value, _ ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
+                value ?: return@addSnapshotListener
 
                 val result = runCatching {
-                    val changedResult =
-                        value.documents.map { it.toObject(AddedUserHpDocument::class.java) }
-                    changedResult.map {
-                        it?.asDomain() ?: throw UNMATCHED_STATE_EXCEPTION
-                    }
+                    value.getBoolean("arrived") ?: throw UNMATCHED_STATE_EXCEPTION
                 }
                 trySend(result)
             }
-
             awaitClose { subscription?.remove() }
         }
 

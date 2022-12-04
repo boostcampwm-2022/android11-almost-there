@@ -7,7 +7,7 @@
 
         <variable
             name="userRanking"
-            type="com.woory.presentation.model.UserRanking" />
+            type="com.woory.presentation.model.user.gameresult.UserRanking" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

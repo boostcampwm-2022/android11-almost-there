@@ -12,8 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.woory.presentation.R
-import com.woory.presentation.background.service.PromiseGameService
-import com.woory.presentation.background.service.PromiseGameService.Companion.GAME_CODE_KEY
 import com.woory.presentation.databinding.ActivityGameResultBinding
 import com.woory.presentation.ui.BaseActivity
 import com.woory.presentation.util.PROMISE_CODE_KEY
@@ -50,8 +48,6 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
         viewModel.setGameCode(gameCode)
         bitmap?.let {
             viewModel.setDefaultMarker(it)
-
-
         }
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -64,18 +60,6 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
             requestPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
             return
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        startService(Intent(this, PromiseGameService::class.java).apply {
-            this.putExtra(GAME_CODE_KEY, viewModel.gameCode.value)
-        })
-    }
-
-    override fun onStop() {
-        super.onStop()
-        stopService(Intent(this, PromiseGameService::class.java))
     }
 
     companion object {

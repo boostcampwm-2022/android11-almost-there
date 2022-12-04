@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woory.presentation.databinding.ItemRankingBinding
-import com.woory.presentation.model.UserRanking
+import com.woory.presentation.model.user.gameresult.UserRanking
 
 class UserRankingAdapter : ListAdapter<UserRanking, UserRankingAdapter.ViewHolder>(diffUtil) {
 

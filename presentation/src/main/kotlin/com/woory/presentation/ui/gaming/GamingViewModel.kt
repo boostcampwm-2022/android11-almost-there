@@ -1,15 +1,14 @@
 package com.woory.presentation.ui.gaming
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.overlay.TMapMarkerItem2
 import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.AddedUserHp
-import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.UserProfileImage
@@ -25,15 +24,16 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class GamingViewModel @Inject constructor(
-    private val repository: PromiseRepository
+    private val promiseRepository: PromiseRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     private val _gameCode: MutableStateFlow<String> = MutableStateFlow("")
     val gameCode: StateFlow<String> = _gameCode.asStateFlow()
@@ -64,6 +64,11 @@ class GamingViewModel @Inject constructor(
 
     val userNameMap: MutableMap<String, MutableStateFlow<String>> = mutableMapOf()
 
+    val myUserInfo = runBlocking { userRepository.userPreferences.first() }
+
+    private val _isArrived: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isArrived: StateFlow<Boolean> = _isArrived.asStateFlow()
+
     fun setGameCode(code: String) {
         viewModelScope.launch {
             _gameCode.emit(code)
@@ -73,26 +78,15 @@ class GamingViewModel @Inject constructor(
     fun fetchPromiseData() {
         viewModelScope.launch {
             val code = gameCode.value
-            repository
+            promiseRepository
                 .getPromiseByCode(code)
                 .onSuccess {
                     launch {
-                        repository.getMagneticInfoByCodeAndListen(code).collect { result ->
+                        promiseRepository.getMagneticInfoByCodeAndListen(code).collect { result ->
                             result.onSuccess { magneticInFoModel ->
                                 _magneticInfo.emit(magneticInFoModel.asUiModel())
                             }.onFailure { throwable ->
                                 _errorState.emit(throwable)
-                            }
-                        }
-                    }
-
-                    // TODO : 실시간 순위 가져오는 코드
-                    launch {
-                        repository.getGameRealtimeRanking(code).collect{ result ->
-                            result.onSuccess {
-
-                            }.onFailure {
-
                             }
                         }
                     }
@@ -106,7 +100,7 @@ class GamingViewModel @Inject constructor(
                         userNameMap[user.userId] = MutableStateFlow(user.data.name)
 
                         launch {
-                            repository.getUserLocation(user.userId).collect { result ->
+                            promiseRepository.getUserLocation(user.userId).collect { result ->
                                 result.onSuccess { userLocationModel ->
                                     val uiLocationModel = userLocationModel.asUiModel()
                                     _userLocationEvent.emit(uiLocationModel)
@@ -117,9 +111,17 @@ class GamingViewModel @Inject constructor(
 
                         // TODO : 유저 hp 정보 받아오기
                         launch {
-                            repository.getUserHpAndListen(code, user.userId).collect { result ->
+                            promiseRepository.getUserHpAndListen(code, user.userId).collect { result ->
                                 result.onSuccess { addedUserHpModel ->
                                     userHpMap[user.userId]?.emit(addedUserHpModel.asUiState())
+                                }
+                            }
+                        }
+
+                        launch {
+                            promiseRepository.getPlayerArrived(code, myUserInfo.userID).collect() { result ->
+                                result.onSuccess { isArrived ->
+                                    _isArrived.emit(isArrived)
                                 }
                             }
                         }
@@ -148,7 +150,7 @@ class GamingViewModel @Inject constructor(
     suspend fun getAddress(id: String): String? =
         withContext(viewModelScope.coroutineContext) {
             userLocationMap[id]?.value?.let {
-                repository.getAddressByPoint(it.geoPoint.asDomain()).getOrNull()
+                promiseRepository.getAddressByPoint(it.geoPoint.asDomain()).getOrNull()
             }
         }
 
@@ -163,4 +165,6 @@ class GamingViewModel @Inject constructor(
     }
 
     fun getUserMarker(token: String): TMapMarkerItem2 = requireNotNull(userMarkers[token])
+
+    suspend fun setUserArrived(gameCode: String, token: String) = promiseRepository.setPlayerArrived(gameCode, token)
 }

@@ -4,6 +4,13 @@ import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import androidx.navigation.NavOptions
 import com.woory.presentation.R
+import com.woory.presentation.model.GeoPoint
+import java.text.DecimalFormat
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 val animRightToLeftNavOption = NavOptions.Builder().apply {
     setEnterAnim(R.anim.slide_in_from_right)
@@ -30,3 +37,10 @@ val textScaleAnimation = ScaleAnimation(
 }
 
 fun getHex(value: Int): String = "%02X".format(value)
+
+fun String.extractNumber(): Int = replace("[^0-9]".toRegex(), "").toInt()
+
+fun Int.getCommaNumber(): String {
+    val formatter = DecimalFormat("#,###")
+    return formatter.format(this)
+}

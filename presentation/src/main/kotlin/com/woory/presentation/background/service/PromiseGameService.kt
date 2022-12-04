@@ -23,8 +23,10 @@ import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
+import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
+import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.magnetic.asUiModel
@@ -32,7 +34,6 @@ import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.DistanceUtil
 import com.woory.presentation.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
-import com.woory.presentation.util.NO_GAME_CODE_EXCEPTION
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -53,6 +54,8 @@ class PromiseGameService : LifecycleService() {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    private val jobByGame = mutableMapOf<String, Job>()
 
     private val _userId: MutableStateFlow<String?> = MutableStateFlow(null)
     private val userId: StateFlow<String?> = _userId.asStateFlow()
@@ -106,7 +109,6 @@ class PromiseGameService : LifecycleService() {
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        startForeground()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -125,22 +127,21 @@ class PromiseGameService : LifecycleService() {
 
     @Throws(IllegalArgumentException::class)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent ?: throw IllegalArgumentException("has not intent")
+        startForeground(intent.asPromiseAlarm())
 
-        val gameCode = try {
-            intent?.asPromiseAlarm()?.promiseCode ?: throw NO_GAME_CODE_EXCEPTION
-        } catch (e: java.lang.Exception) {
-            intent?.getStringExtra(GAME_CODE_KEY) ?: throw NO_GAME_CODE_EXCEPTION
-        }
+        val promiseAlarm = intent.asPromiseAlarm()
+        val promiseCode = promiseAlarm.promiseCode
 
         val job = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val userToken = userId.value ?: return@repeatOnLifecycle
 
-                promiseRepository.checkReEntryOfGame(gameCode, userToken).onSuccess {
+                promiseRepository.checkReEntryOfGame(promiseCode, userToken).onSuccess {
                     when (it) {
                         true -> {
-                            promiseRepository.setUserInitialHpData(gameCode, userToken).onSuccess {
-                                promiseRepository.getPromiseByCode(gameCode)
+                            promiseRepository.setUserInitialHpData(promiseCode, userToken).onSuccess {
+                                promiseRepository.getPromiseByCode(promiseCode)
                                     .onSuccess { promiseModel ->
                                         val promiseUiModel = promiseModel.asUiModel()
                                         _gameTimeInitialValue.emit(
@@ -153,7 +154,7 @@ class PromiseGameService : LifecycleService() {
                                         // TODO : 자기장 flow 받아오기
                                         launch {
                                             promiseRepository.getMagneticInfoByCodeAndListen(
-                                                gameCode
+                                                promiseCode
                                             )
                                                 .collect { result ->
                                                     result.onSuccess { magneticInfoModel ->
@@ -169,7 +170,7 @@ class PromiseGameService : LifecycleService() {
                                         while (true) {
                                             delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
                                             promiseRepository.decreaseMagneticRadius(
-                                                gameCode,
+                                                promiseCode,
                                                 magneticZoneInitialRadius.value / gameTimeInitialValue.value
                                             )
 
@@ -179,30 +180,34 @@ class PromiseGameService : LifecycleService() {
                         }
                         // TODO : Service 에 다시 즐어왔을 때 로직 -> 게임에서 제외시켜버리기
                         false -> {
-                            promiseRepository.sendOutUser(gameCode, userToken)
+                            promiseRepository.sendOutUser(promiseCode, userToken)
                             stopUpdateLocation()
                         }
                     }
                 }.onFailure {
                     // TODO : 통신 실패시 로직 -> 게임에서 제외시켜버리기
-                    promiseRepository.sendOutUser(gameCode, userToken)
+                    promiseRepository.sendOutUser(promiseCode, userToken)
                     stopUpdateLocation()
                 }
             }
         }
 
-        jobByGame[gameCode] = job
+        jobByGame[promiseCode] = job
 
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun startForeground() {
-        val intent = Intent(this, GamingActivity::class.java)
+    private fun startForeground(promiseAlarm: PromiseAlarm) {
+        val intent = Intent(this, GamingActivity::class.java).apply {
+            putPromiseAlarm(promiseAlarm)
+        }
+
+        val randomCode = promiseAlarm.alarmCode + (1..1000000).random()
 
         val pendingIntent: PendingIntent = TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(intent)
             getPendingIntent(
-                NotificationProvider.PROMISE_START_NOTIFICATION_ID,
+                randomCode,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } ?: return
@@ -219,7 +224,7 @@ class PromiseGameService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationChannelProvider.providePromiseStartChannel(this)
         }
-        startForeground(NotificationProvider.PROMISE_START_NOTIFICATION_ID, notification)
+        startForeground(randomCode, notification)
     }
 
     private fun stopUpdateLocation() {
@@ -232,10 +237,5 @@ class PromiseGameService : LifecycleService() {
     override fun onDestroy() {
         super.onDestroy()
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-    }
-
-    companion object {
-        const val GAME_CODE_KEY = "code"
-        val jobByGame = mutableMapOf<String, Job>()
     }
 }

@@ -62,5 +62,7 @@ interface PromiseRepository {
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
 
-    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>>
+    suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
+
+    suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
 }

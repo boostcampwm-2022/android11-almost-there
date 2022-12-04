@@ -2,94 +2,86 @@ package com.woory.presentation.ui.gameresult
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woory.presentation.model.UserData
-import com.woory.presentation.model.UserPayment
-import com.woory.presentation.model.UserProfileImage
-import com.woory.presentation.model.UserRanking
+import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.UserRepository
+import com.woory.presentation.model.user.gameresult.UserRanking
+import com.woory.presentation.model.user.gameresult.UserSplitMoneyItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GameResultViewModel @Inject constructor() : ViewModel() {
+class GameResultViewModel @Inject constructor(
+    userRepository: UserRepository,
+    private val promiseRepository: PromiseRepository
+) : ViewModel() {
 
-    private val _userRankingList: MutableStateFlow<List<UserRanking>?> =
-        MutableStateFlow(null)
+    private val _gameCode: MutableStateFlow<String?> = MutableStateFlow(null)
+    val gameCode: StateFlow<String?> = _gameCode.asStateFlow()
+
+    private val _userRankingList: MutableStateFlow<List<UserRanking>?> = MutableStateFlow(null)
+
     val userRankingList: StateFlow<List<UserRanking>?> = _userRankingList.asStateFlow()
 
-    private val _myPayment: MutableStateFlow<Int> = MutableStateFlow(0)
-    val myPayment: StateFlow<Int> = _myPayment.asStateFlow()
+    private val userPreferences = userRepository.userPreferences
 
-    private val _userPaymentList: MutableStateFlow<List<UserPayment>?> =
+    private val _mySplitMoney: MutableStateFlow<Int?> = MutableStateFlow(null)
+    val mySplitMoney: StateFlow<Int?> = _mySplitMoney.asStateFlow()
+
+    private val _userSplitMoneyItems: MutableStateFlow<List<UserSplitMoneyItem>?> =
         MutableStateFlow(null)
-    val userPaymentAdapter: StateFlow<List<UserPayment>?> = _userPaymentList.asStateFlow()
 
-    init {
-        fetchUserRankingList()
-        loadUserPaymentList()
+    val userSplitMoneyItems: StateFlow<List<UserSplitMoneyItem>?> = _userSplitMoneyItems.asStateFlow()
+
+    private val _dataLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val dataLoading: StateFlow<Boolean> = _dataLoading.asStateFlow()
+
+    private val _errorEvent: MutableSharedFlow<Throwable> = MutableSharedFlow()
+    val errorEvent: SharedFlow<Throwable> = _errorEvent.asSharedFlow()
+
+    fun setGameCode(gameCode: String?) {
+        viewModelScope.launch {
+            _gameCode.emit(gameCode)
+        }
     }
 
-    private fun fetchUserRankingList() {
+    fun fetchUserRankingList() {
         viewModelScope.launch {
-            // TODO("테스트값")
-            val testUserRankingList = listOf(
-                UserRanking(
-                    userId = "1",
-                    userData = UserData("수진", UserProfileImage("#121212", 0)),
-                    85,
-                    1
-                ), UserRanking(
-                    userId = "2",
-                    userData = UserData("재우", UserProfileImage("#ff0000", 1)),
-                    50,
-                    1
-                ), UserRanking(
-                    userId = "3",
-                    userData = UserData("호현", UserProfileImage("#ff00ff", 2)),
-                    20,
-                    1
-                ), UserRanking(
-                    userId = "4",
-                    userData = UserData("도명", UserProfileImage("#00ffff", 3)),
-                    10,
-                    1
-                )
-            )
+
+            if (_gameCode.value == null) {
+                _errorEvent.emit(IllegalArgumentException("참여 코드가 없습니다."))
+                return@launch
+            }
+
+            _dataLoading.emit(true)
+
+            /**
+             * TODO("추후 수정")
+            promiseRepository.getGameResultByCode().onSuccess {
+
+            }.onFailture {
+
+            }
+             * */
+
+            val testUserRankingList = listOf<UserRanking>()
+            _dataLoading.emit(false)
             _userRankingList.emit(testUserRankingList)
         }
     }
 
-    private fun loadUserPaymentList() {
+    fun loadUserPaymentList(value: Int) {
         viewModelScope.launch {
-            // TODO("테스트값")
-            val testUserPaymentList = listOf(
-                UserPayment(
-                    userId = "1",
-                    userData = UserData("수진", UserProfileImage("#121212", 0)),
-                    1,
-                    10000
-                ), UserPayment(
-                    userId = "2",
-                    userData = UserData("재우", UserProfileImage("#ff0000", 1)),
-                    2,
-                    20000
-                ), UserPayment(
-                    userId = "3",
-                    userData = UserData("호현", UserProfileImage("#ff00ff", 2)),
-                    3,
-                    30000
-                ), UserPayment(
-                    userId = "4",
-                    userData = UserData("도명", UserProfileImage("#00ffff", 3)),
-                    4,
-                    40000
+            userPreferences.collectLatest { userPreferences ->
+                val userPayments =
+                    SplitMoneyLogic.calculatePayment(value, _userRankingList.value ?: emptyList())
+                val remain = UserSplitMoneyItem.Balance(value - userPayments.sumOf { it.moneyToPay })
+                _userSplitMoneyItems.emit(userPayments + remain)
+                _mySplitMoney.emit(
+                    userPayments.find { it.userId == userPreferences.userID }?.moneyToPay
                 )
-            )
-            _userPaymentList.emit(testUserPaymentList)
-            _myPayment.emit(testUserPaymentList[0].payment)
+            }
         }
     }
 }
