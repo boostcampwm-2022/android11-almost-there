@@ -30,6 +30,7 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
@@ -70,6 +71,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.vm = viewModel
 
         binding.layoutBottomSheet.layoutCharacterImg.profileImage = defaultProfileImage
         binding.layoutBottomSheet.vm = viewModel
@@ -131,6 +134,21 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                         }
                                     )
                                 }
+                            }
+                        }
+
+                        launch {
+                            viewModel.centerLocationToMe.collectLatest {
+                                Timber.tag("123123").d("enter")
+                                val myToken = viewModel.userId.value ?: return@collectLatest
+                                Timber.tag("123123").d(myToken)
+                                val location =
+                                    viewModel.getUserLocation(myToken) ?: return@collectLatest
+                                Timber.tag("123123").d(location.toString())
+                                setCenterPoint(
+                                    location.geoPoint.latitude,
+                                    location.geoPoint.longitude
+                                )
                             }
                         }
                     }

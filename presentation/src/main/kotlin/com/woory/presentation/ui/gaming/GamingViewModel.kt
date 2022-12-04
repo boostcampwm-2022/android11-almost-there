@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -46,9 +47,6 @@ class GamingViewModel @Inject constructor(
     private val _magneticInfo: MutableStateFlow<MagneticInfo?> = MutableStateFlow(null)
     val magneticInfo: StateFlow<MagneticInfo?> = _magneticInfo.asStateFlow()
 
-    private val _userLocationEvent: MutableStateFlow<UserLocation?> = MutableStateFlow(null)
-    val userLocationEvent: StateFlow<UserLocation?> = _userLocationEvent.asStateFlow()
-
     private val _allUsers: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val allUsers: StateFlow<List<String>?> = _allUsers.asStateFlow()
 
@@ -68,9 +66,23 @@ class GamingViewModel @Inject constructor(
     private val _isArrived: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isArrived: StateFlow<Boolean> = _isArrived.asStateFlow()
 
+    private val _centerLocationToMe: MutableSharedFlow<Unit> = MutableSharedFlow()
+    val centerLocationToMe: SharedFlow<Unit> = _centerLocationToMe.asSharedFlow()
+
+    private val _userId: MutableStateFlow<String?> = MutableStateFlow(null)
+    val userId: StateFlow<String?> = _userId.asStateFlow()
+
     fun setGameCode(code: String) {
         viewModelScope.launch {
             _gameCode.emit(code)
+        }
+    }
+
+    fun setUserId() {
+        viewModelScope.launch {
+            userRepository.userPreferences.collectLatest {
+                _userId.emit(it.userID)
+            }
         }
     }
 
@@ -102,7 +114,6 @@ class GamingViewModel @Inject constructor(
                             promiseRepository.getUserLocation(user.userId).collect { result ->
                                 result.onSuccess { userLocationModel ->
                                     val uiLocationModel = userLocationModel.asUiModel()
-                                    _userLocationEvent.emit(uiLocationModel)
                                     userLocationMap[user.userId]?.emit(uiLocationModel)
                                 }
                             }
@@ -166,7 +177,16 @@ class GamingViewModel @Inject constructor(
         )
     }
 
+    fun getUserLocation(token: String): UserLocation? = userLocationMap[token]?.value
+
     fun getUserMarker(token: String): TMapMarkerItem = requireNotNull(userMarkers[token])
 
-    suspend fun setUserArrived(gameCode: String, token: String) = promiseRepository.setPlayerArrived(gameCode, token)
+    suspend fun setUserArrived(gameCode: String, token: String) =
+        promiseRepository.setPlayerArrived(gameCode, token)
+
+    fun getMyLocation() {
+        viewModelScope.launch {
+            _centerLocationToMe.emit(Unit)
+        }
+    }
 }

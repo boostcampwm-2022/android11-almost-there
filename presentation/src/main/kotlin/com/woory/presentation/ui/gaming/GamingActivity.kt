@@ -11,12 +11,17 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityGameResultBinding
 import com.woory.presentation.ui.BaseActivity
 import com.woory.presentation.util.PROMISE_CODE_KEY
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity_gaming) {
@@ -46,6 +51,8 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.setGameCode(gameCode)
+        viewModel.setUserId()
+
         bitmap?.let {
             viewModel.setDefaultMarker(it)
         }
