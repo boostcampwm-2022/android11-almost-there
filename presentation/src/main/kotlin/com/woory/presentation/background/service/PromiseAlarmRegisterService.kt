@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
@@ -15,6 +16,7 @@ import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.model.mapper.alarm.asDomain
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,23 +46,22 @@ class PromiseAlarmRegisterService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
         intent ?: throw IllegalArgumentException("intent is null")
 
         val promiseAlarm = intent.asPromiseAlarm()
 
-        lifecycle.coroutineScope.launch {
+        lifecycleScope.launch {
             repository.setPromiseAlarmByPromiseAlarmModel(promiseAlarm.asDomain())
                 .onSuccess {
                     alarmFunctions.registerAlarm(promiseAlarm)
                 }
                 .onFailure {
-                    Log.d("ERROR", "Failure register alarm")
+                    Timber.tag("ERROR").d("Failure register alarm")
                 }
                 .also {
                     stopSelf()
                 }
         }
-        return START_NOT_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 }
