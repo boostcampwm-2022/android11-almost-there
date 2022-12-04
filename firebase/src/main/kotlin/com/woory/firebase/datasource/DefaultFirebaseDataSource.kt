@@ -476,7 +476,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
                     .document(token)
-                    .update("arrived", true)
+                    .update(USER_ARRIVED_KEY, true)
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -503,7 +503,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 value ?: return@addSnapshotListener
 
                 val result = runCatching {
-                    value.getBoolean("arrived") ?: throw UNMATCHED_STATE_EXCEPTION
+                    value.getBoolean(USER_ARRIVED_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
                 }
                 trySend(result)
             }
@@ -542,6 +542,45 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
+    override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .update("finished", true)
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+
+                val result = runCatching {
+                    value.getBoolean(FINISHED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
+                }
+                trySend(result)
+            }
+
+            awaitClose { subscription?.remove() }
+        }
+
     private fun isFirstAccess(prevTime: Timestamp): Boolean =
         System.currentTimeMillis() - prevTime.asMillis() >= 1000 * (MAGNETIC_FIELD_UPDATE_TERM_SECOND - 1)
 
@@ -555,6 +594,8 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val RADIUS_KEY = "radius"
         private const val LOST_KEY = "lost"
         private const val TIMESTAMP_KEY = "timeStamp"
+        private const val USER_ARRIVED_KEY = "arrived"
+        private const val FINISHED_PROMISE_KEY = "finished"
         private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
         private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")
     }
