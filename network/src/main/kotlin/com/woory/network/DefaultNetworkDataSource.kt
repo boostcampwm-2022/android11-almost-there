@@ -18,7 +18,7 @@ class DefaultNetworkDataSource @Inject constructor(
             tMapService.getReverseGeoCoding(
                 lat = geoPoint.latitude.toString(),
                 lon = geoPoint.longitude.toString()
-            ).toString()
+            ).addressInfo.fullAddress
         }
     }
 

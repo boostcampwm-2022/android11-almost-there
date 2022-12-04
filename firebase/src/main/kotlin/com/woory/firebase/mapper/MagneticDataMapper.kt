@@ -5,19 +5,23 @@ import com.woory.data.model.GeoPointModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.firebase.model.MagneticInfoDocument
 import com.woory.firebase.util.TimeConverter.asOffsetDate
+import com.woory.firebase.util.TimeConverter.asTimeStamp
 
 object MagneticDataMapper : ModelMapper<MagneticInfoModel, MagneticInfoDocument> {
     override fun asModel(domain: MagneticInfoModel): MagneticInfoDocument =
         MagneticInfoDocument(
-            GeoPoint(
+            gameCode = domain.gameCode,
+            centerPoint = GeoPoint(
                 domain.centerPoint.latitude,
                 domain.centerPoint.longitude
             ),
-            domain.radius
+            radius = domain.radius,
+            timeStamp = domain.updatedAt.asTimeStamp()
         )
 
     override fun asDomain(model: MagneticInfoDocument): MagneticInfoModel =
         MagneticInfoModel(
+            model.gameCode,
             GeoPointModel(
                 model.centerPoint.latitude,
                 model.centerPoint.longitude

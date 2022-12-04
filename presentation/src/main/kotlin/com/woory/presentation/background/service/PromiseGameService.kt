@@ -5,9 +5,7 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Build
-import android.os.IBinder
 import android.os.Looper
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
@@ -24,18 +22,25 @@ import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
+import com.woory.presentation.background.util.asPromiseAlarm
+import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
+import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asDomain
+import com.woory.presentation.model.mapper.magnetic.asUiModel
+import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.ui.gaming.GamingActivity
-import com.woory.presentation.util.TimeConverter.asMillis
-import com.woory.presentation.util.TimeConverter.asOffsetDateTime
+import com.woory.presentation.util.DistanceUtil
+import com.woory.presentation.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
@@ -45,129 +50,164 @@ import javax.inject.Inject
 class PromiseGameService : LifecycleService() {
 
     @Inject
-    lateinit var repository: PromiseRepository
+    lateinit var promiseRepository: PromiseRepository
 
     @Inject
     lateinit var userRepository: UserRepository
 
+    private val jobByGame = mutableMapOf<String, Job>()
+
     private val _userId: MutableStateFlow<String?> = MutableStateFlow(null)
     private val userId: StateFlow<String?> = _userId.asStateFlow()
 
-    private val _magneticInfo: MutableStateFlow<MagneticInfo?> = MutableStateFlow(null)
-    private val magneticInfo: StateFlow<MagneticInfo?> = _magneticInfo.asStateFlow()
+    private val _magneticZoneInitialRadius: MutableStateFlow<Double> = MutableStateFlow(10000.0)
+    private val magneticZoneInitialRadius: StateFlow<Double> =
+        _magneticZoneInitialRadius.asStateFlow()
 
-    private val _hp: MutableStateFlow<Int> = MutableStateFlow(defaultHpValue)
-    val hp: StateFlow<Int> = _hp.asStateFlow()
+    private val _gameTimeInitialValue: MutableStateFlow<Int> = MutableStateFlow(1)
+    private val gameTimeInitialValue: StateFlow<Int> = _gameTimeInitialValue.asStateFlow()
+
+    private val _magneticZoneInfo: MutableStateFlow<MagneticInfo?> = MutableStateFlow(null)
+    private val magneticZoneInfo: StateFlow<MagneticInfo?> = _magneticZoneInfo.asStateFlow()
+
 
     private val _location: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
     val location: StateFlow<GeoPoint?> = _location.asStateFlow()
 
-    private val client: FusedLocationProviderClient by lazy {
+    private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(this)
     }
 
-    private val callback = object : LocationCallback() {
+    private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult) {
             super.onLocationResult(p0)
             val loc = p0.lastLocation
-            loc?.let {
+            loc?.let { location ->
                 lifecycleScope.launch {
+                    val curLocation = GeoPoint(location.latitude, location.longitude)
                     userId.value?.let { id ->
-                        repository.setUserLocation(
-                            UserLocation(id, GeoPoint(it.latitude, it.longitude), OffsetDateTime.now().asMillis()).asDomain()
+                        promiseRepository.setUserLocation(
+                            UserLocation(id, curLocation, System.currentTimeMillis()).asDomain()
                         )
+
+                        magneticZoneInfo.value?.let {
+                            if (DistanceUtil.getDistance(it.centerPoint, curLocation) > it.radius) {
+                                promiseRepository.decreaseUserHp(it.gameCode, id)
+                                    .onSuccess { updatedHp ->
+                                        if (updatedHp == 0L) {
+                                            stopUpdateLocation()
+                                        }
+                                    }
+                            }
+                        }
                     }
-//                    _location.emit(GeoPoint(it.latitude, it.longitude))
                 }
             }
         }
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
-        super.onBind(intent)
-        return null
     }
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        startForeground()
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userRepository.userPreferences.collect {
+                userRepository.userPreferences.collectLatest {
                     _userId.emit(it.userID)
                 }
             }
         }
-        client.requestLocationUpdates(
+
+        fusedLocationProviderClient.requestLocationUpdates(
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000 * 20).build(),
-            callback,
+            locationCallback,
             Looper.getMainLooper()
         )
     }
 
+    @Throws(IllegalArgumentException::class)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent ?: throw IllegalArgumentException("has not intent")
+        startForeground(intent.asPromiseAlarm())
 
-        lifecycleScope.launch {
+        val promiseAlarm = intent.asPromiseAlarm()
+        val promiseCode = promiseAlarm.promiseCode
+
+        val job = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val gameCode = intent?.getStringExtra(GAME_CODE_KEY) ?: return@repeatOnLifecycle
+                val userToken = userId.value ?: return@repeatOnLifecycle
 
-                repository.updateMagneticRadius(gameCode, 20.0)
+                promiseRepository.checkReEntryOfGame(promiseCode, userToken).onSuccess {
+                    when (it) {
+                        true -> {
+                            promiseRepository.setUserInitialHpData(promiseCode, userToken).onSuccess {
+                                promiseRepository.getPromiseByCode(promiseCode)
+                                    .onSuccess { promiseModel ->
+                                        val promiseUiModel = promiseModel.asUiModel()
+                                        _gameTimeInitialValue.emit(
+                                            extractTimeDifference(
+                                                promiseUiModel.data.gameDateTime,
+                                                promiseUiModel.data.promiseDateTime
+                                            )
+                                        )
 
-                repository.getPromiseByCode(gameCode).onSuccess {
-                    Timber.tag("123123").d("Promies Success")
-                    val curTime = System.currentTimeMillis().asOffsetDateTime()
-                    repository.getMagneticInfoByCode(gameCode).onSuccess { magneticInfo ->
-                        when {
-                            // 첫 업데이트 일 때
-                            magneticInfo.updatedAt < curTime.minusSeconds(30) -> {
-                                Timber.tag("123123").d("first")
-                                while (true) {
-                                    Timber.tag("123123").d("updated first")
-                                    delay(1000 * 30)
-                                    repository.decreaseMagneticRadius(gameCode)
-                                }
-                            }
+                                        // TODO : 자기장 flow 받아오기
+                                        launch {
+                                            promiseRepository.getMagneticInfoByCodeAndListen(
+                                                promiseCode
+                                            )
+                                                .collect { result ->
+                                                    result.onSuccess { magneticInfoModel ->
+                                                        val uiModel = magneticInfoModel.asUiModel()
+                                                        _magneticZoneInfo.emit(uiModel)
+                                                    }.onFailure { throwable ->
+                                                        Timber.tag("123123").d(throwable)
+                                                    }
+                                                }
+                                        }
 
-                            // 이후 업데이트 일 때
-                            else -> {
-                                Timber.tag("123123").d("second")
-                                val timeToSleep =
-                                    magneticInfo.updatedAt.plusMinutes(1)
-                                        .asMillis() - System.currentTimeMillis()
-                                delay(timeToSleep)
-                                while (true) {
-                                    Timber.tag("123123").d("updated second")
-                                    delay(1000 * 30)
-                                    repository.decreaseMagneticRadius(gameCode)
-                                }
+                                        // TODO : 주기적으로 자기장 update 하기
+                                        while (true) {
+                                            delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
+                                            promiseRepository.decreaseMagneticRadius(
+                                                promiseCode,
+                                                magneticZoneInitialRadius.value / gameTimeInitialValue.value
+                                            )
+
+                                        }
+                                    }
                             }
                         }
-
-                        // TODO : HP 업데이트
-
-                    }.onFailure {
-                        makeToast("자기장 로딩에 실패했습니다.")
-                        return@repeatOnLifecycle
+                        // TODO : Service 에 다시 즐어왔을 때 로직 -> 게임에서 제외시켜버리기
+                        false -> {
+                            promiseRepository.sendOutUser(promiseCode, userToken)
+                            stopUpdateLocation()
+                        }
                     }
                 }.onFailure {
-                    Timber.tag("123123").d("Promies Fail")
-                    makeToast("게임 로딩에 실패했습니다.")
-                    return@repeatOnLifecycle
+                    // TODO : 통신 실패시 로직 -> 게임에서 제외시켜버리기
+                    promiseRepository.sendOutUser(promiseCode, userToken)
+                    stopUpdateLocation()
                 }
             }
         }
 
+        jobByGame[promiseCode] = job
+
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun startForeground() {
-        val intent = Intent(this, GamingActivity::class.java)
+    private fun startForeground(promiseAlarm: PromiseAlarm) {
+        val intent = Intent(this, GamingActivity::class.java).apply {
+            putPromiseAlarm(promiseAlarm)
+        }
+
+        val randomCode = promiseAlarm.alarmCode + (1..1000000).random()
 
         val pendingIntent: PendingIntent = TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(intent)
             getPendingIntent(
-                NotificationProvider.PROMISE_START_NOTIFICATION_ID,
+                randomCode,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } ?: return
@@ -184,15 +224,18 @@ class PromiseGameService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationChannelProvider.providePromiseStartChannel(this)
         }
-        startForeground(NotificationProvider.PROMISE_START_NOTIFICATION_ID, notification)
+        startForeground(randomCode, notification)
     }
 
-    private fun makeToast(text: String) {
-        Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
+    private fun stopUpdateLocation() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
-    companion object {
-        const val GAME_CODE_KEY = "code"
-        private const val defaultHpValue = 100
+    private fun extractTimeDifference(startTime: OffsetDateTime, endTime: OffsetDateTime) =
+        ((endTime.toEpochSecond() - startTime.toEpochSecond()) / 60).toInt()
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 }

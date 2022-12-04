@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,8 @@ import com.woory.presentation.ui.history.PromiseHistoryViewType
 import com.woory.presentation.ui.history.RankBadgeType
 import com.woory.presentation.ui.join.FormState
 import com.woory.presentation.util.getDip
+import org.threeten.bp.Duration
+import org.threeten.bp.OffsetDateTime
 
 @BindingAdapter("state_message")
 fun TextInputLayout.bindMessage(state: FormState) {
@@ -39,6 +42,14 @@ fun Button.bindEnabled(state: FormState) {
     isEnabled = state is FormState.Valid
 }
 
+@BindingAdapter("visibility")
+fun ProgressBar.bindVisibility(isLoading: Boolean) {
+    visibility = if (isLoading) {
+        View.VISIBLE
+    } else {
+        View.GONE
+    }
+}
 
 @BindingAdapter("backgroundColor")
 fun MaterialCardView.bindBackgroundColor(color: Color) {
@@ -59,6 +70,14 @@ fun RecyclerView.bindAdapter(adapter: RecyclerView.Adapter<*>) {
     }
 }
 
+@BindingAdapter("textVisibility")
+fun AppCompatTextView.bindVisibility(isGone: Boolean) {
+    visibility = if (isGone) {
+        View.GONE
+    } else {
+        View.VISIBLE
+    }
+}
 
 @BindingAdapter("itemBackgroundColor")
 fun MaterialCardView.bindItemBackgroundColor(type: PromiseHistoryViewType) {

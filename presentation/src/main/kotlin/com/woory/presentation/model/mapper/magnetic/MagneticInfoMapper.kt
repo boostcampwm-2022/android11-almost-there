@@ -9,6 +9,7 @@ import com.woory.presentation.model.mapper.UiModelMapper
 object MagneticInfoMapper : UiModelMapper<MagneticInfo, MagneticInfoModel> {
     override fun asUiModel(domain: MagneticInfoModel): MagneticInfo =
         MagneticInfo(
+            domain.gameCode,
             GeoPoint(
                 domain.centerPoint.latitude,
                 domain.centerPoint.longitude
@@ -19,6 +20,7 @@ object MagneticInfoMapper : UiModelMapper<MagneticInfo, MagneticInfoModel> {
 
     override fun asDomain(uiModel: MagneticInfo): MagneticInfoModel =
         MagneticInfoModel(
+            uiModel.gameCode,
             GeoPointModel(
                 uiModel.centerPoint.latitude,
                 uiModel.centerPoint.longitude

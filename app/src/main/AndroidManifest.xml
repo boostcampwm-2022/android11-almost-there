@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true"/>
+
     <application
         android:name=".AlmostThereApp"
         android:allowBackup="true"

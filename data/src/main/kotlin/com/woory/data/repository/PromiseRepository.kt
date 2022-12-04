@@ -1,5 +1,6 @@
 package com.woory.data.repository
 
+import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.LocationSearchModel
 import com.woory.data.model.MagneticInfoModel
@@ -49,5 +50,19 @@ interface PromiseRepository {
 
     suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
 
-    suspend fun decreaseMagneticRadius(gameCode: String)
+    suspend fun decreaseMagneticRadius(gameCode: String, minusValue: Double): Result<Unit>
+
+    suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean>
+
+    suspend fun sendOutUser(gameCode: String, token: String): Result<Unit>
+
+    suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit>
+
+    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
+
+    suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
+
+    suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
+
+    suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
 }

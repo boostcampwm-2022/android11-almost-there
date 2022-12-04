@@ -1,5 +1,6 @@
 package com.woory.data.repository
 
+import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.GeoPointModel
 import com.woory.data.model.LocationSearchModel
 import com.woory.data.model.MagneticInfoModel
@@ -83,6 +84,33 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit> =
         firebaseDataSource.updateMagneticRadius(gameCode, radius)
 
-    override suspend fun decreaseMagneticRadius(gameCode: String) =
-        firebaseDataSource.decreaseMagneticRadius(gameCode)
+    override suspend fun decreaseMagneticRadius(
+        gameCode: String,
+        minusValue: Double
+    ): Result<Unit> =
+        firebaseDataSource.decreaseMagneticRadius(gameCode, minusValue)
+
+    override suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean> =
+        firebaseDataSource.checkReEntryOfGame(gameCode, token)
+
+    override suspend fun sendOutUser(gameCode: String, token: String): Result<Unit> =
+        firebaseDataSource.sendOutUser(gameCode, token)
+
+    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
+        firebaseDataSource.setUserInitialHpData(gameCode, token)
+
+    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long> =
+        firebaseDataSource.decreaseUserHp(gameCode, token)
+
+    override suspend fun getUserHpAndListen(
+        gameCode: String,
+        token: String
+    ): Flow<Result<AddedUserHpModel>> =
+        firebaseDataSource.getUserHpAndListen(gameCode, token)
+
+    override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
+        firebaseDataSource.setPlayerArrived(gameCode, token)
+
+    override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
+        firebaseDataSource.getPlayerArrived(gameCode, token)
 }
