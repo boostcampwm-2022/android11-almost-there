@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="10dp">
+
+        <ImageView
+            android:id="@+id/container_body"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/bg_speech_bubble_body"
+            app:layout_constraintBottom_toTopOf="@id/view_tail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:alpha="0.8"
+            tools:tint="@color/purple_200" />
+
+        <include
+            android:id="@+id/layout_marker"
+            layout="@layout/layout_character_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/bg_speech_bubble_body"
+            app:layout_constraintBottom_toBottomOf="@id/container_body"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/container_body"
+            app:layout_constraintStart_toStartOf="@id/container_body"
+            app:layout_constraintTop_toTopOf="@id/container_body" />
+
+        <ImageView
+            android:id="@+id/view_tail"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginTop="-5dp"
+            android:src="@drawable/bg_speech_bubble_tail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_body"
+            android:alpha="0.8"
+            tools:tint="@color/purple_200" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

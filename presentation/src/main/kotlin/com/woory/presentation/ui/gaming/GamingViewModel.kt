@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.skt.tmap.overlay.TMapMarkerItem2
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.model.AddedUserHp
 import com.woory.presentation.model.GeoPoint
@@ -52,7 +53,7 @@ class GamingViewModel @Inject constructor(
     private val _allUsers: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val allUsers: StateFlow<List<String>?> = _allUsers.asStateFlow()
 
-    private val userMarkers: MutableMap<String, TMapMarkerItem> = mutableMapOf()
+    private val userMarkers: MutableMap<String, TMapMarkerItem2> = mutableMapOf()
 
     val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
 
@@ -151,12 +152,9 @@ class GamingViewModel @Inject constructor(
             }
         }
 
-    fun setUserMarker(newData: UserLocation) {
+    fun setUserMarker(newData: UserLocation, markerItem2: TMapMarkerItem2) {
         if (userMarkers[newData.token] == null) {
-            userMarkers[newData.token] = TMapMarkerItem().apply {
-                id = newData.token
-                icon = userDefaultMarker.value
-            }
+            userMarkers[newData.token] = markerItem2
         }
 
         requireNotNull(userMarkers[newData.token]).tMapPoint = TMapPoint(
@@ -164,5 +162,5 @@ class GamingViewModel @Inject constructor(
         )
     }
 
-    fun getUserMarker(token: String): TMapMarkerItem = requireNotNull(userMarkers[token])
+    fun getUserMarker(token: String): TMapMarkerItem2 = requireNotNull(userMarkers[token])
 }
