@@ -1,11 +1,13 @@
 package com.woory.presentation.ui.gaming
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PointF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.drawToBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,9 +19,11 @@ import com.skt.tmap.TMapView
 import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapCircle
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.skt.tmap.overlay.TMapMarkerItem2
 import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
+import com.woory.presentation.databinding.CustomviewCharaterMarkerBinding
 import com.woory.presentation.databinding.FragmentGamingBinding
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
@@ -94,9 +98,15 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                 it?.forEach { id ->
                                     viewModel.userLocationMap[id]?.collectLatest { userLocation ->
                                         if (userLocation != null) {
-                                            viewModel.setUserMarker(userLocation)
+                                            val marker = TMapMarkerItem2(id).apply {
+                                                tMapPoint = TMapPoint(userLocation.geoPoint.latitude, userLocation.geoPoint.longitude)
+                                                iconList = viewModel.getUserImage(id)?.let { userProfileImage ->
+                                                    arrayListOf(getUserMarker(userProfileImage))
+                                                } ?: arrayListOf()
+                                            }
+                                            viewModel.setUserMarker(userLocation, marker)
                                             removeTMapMarkerItem(id)
-                                            addTMapMarkerItem(viewModel.getUserMarker(id))
+                                            addTMapMarkerItem2Icon(viewModel.getUserMarker(id))
 
                                             viewModel.isArrived.collectLatest() { isArrived ->
                                                 if (isArrived) return@collectLatest
@@ -202,6 +212,21 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     private fun makeSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun getUserMarker(userProfileImage: UserProfileImage): Bitmap {
+        val markerBinding: CustomviewCharaterMarkerBinding =
+            CustomviewCharaterMarkerBinding.inflate(
+                layoutInflater, binding.root as ViewGroup?, false
+            )
+        markerBinding.viewTail.setColorFilter(Color.parseColor(userProfileImage.color))
+        markerBinding.containerBody.setColorFilter(Color.parseColor(userProfileImage.color))
+        markerBinding.layoutMarker.profileImage = userProfileImage
+        markerBinding.lifecycleOwner = this
+        val view = markerBinding.root
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+        return view.drawToBitmap()
     }
 
     private fun alertShakeDialog(userLocation: GeoPoint, dest: GeoPoint) {

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.skt.tmap.overlay.TMapMarkerItem2
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.AddedUserHp
@@ -38,9 +39,6 @@ class GamingViewModel @Inject constructor(
     private val _gameCode: MutableStateFlow<String> = MutableStateFlow("")
     val gameCode: StateFlow<String> = _gameCode.asStateFlow()
 
-    private val _userDefaultMarker: MutableStateFlow<Bitmap?> = MutableStateFlow(null)
-    private val userDefaultMarker: StateFlow<Bitmap?> = _userDefaultMarker.asStateFlow()
-
     private val _errorState: MutableSharedFlow<Throwable> = MutableSharedFlow()
     val errorState: SharedFlow<Throwable> = _errorState.asSharedFlow()
 
@@ -50,7 +48,7 @@ class GamingViewModel @Inject constructor(
     private val _allUsers: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val allUsers: StateFlow<List<String>?> = _allUsers.asStateFlow()
 
-    private val userMarkers: MutableMap<String, TMapMarkerItem> = mutableMapOf()
+    private val userMarkers: MutableMap<String, TMapMarkerItem2> = mutableMapOf()
 
     val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
 
@@ -102,6 +100,17 @@ class GamingViewModel @Inject constructor(
                         }
                     }
 
+                    // TODO : 실시간 순위 가져오는 코드
+                    launch {
+                        promiseRepository.getGameRealtimeRanking(code).collect{ result ->
+                            result.onSuccess {
+
+                            }.onFailure {
+
+                            }
+                        }
+                    }
+
                     val uiModel = it.asUiModel()
                     uiModel.data.users.forEach { user ->
 
@@ -143,12 +152,6 @@ class GamingViewModel @Inject constructor(
         }
     }
 
-    fun setDefaultMarker(marker: Bitmap) {
-        viewModelScope.launch {
-            _userDefaultMarker.emit(marker)
-        }
-    }
-
     fun getUserImage(id: String): UserProfileImage? = userImageMap[id]?.value
 
     fun getUserRanking(id: String): Int? {
@@ -164,12 +167,9 @@ class GamingViewModel @Inject constructor(
             }
         }
 
-    fun setUserMarker(newData: UserLocation) {
+    fun setUserMarker(newData: UserLocation, markerItem2: TMapMarkerItem2) {
         if (userMarkers[newData.token] == null) {
-            userMarkers[newData.token] = TMapMarkerItem().apply {
-                id = newData.token
-                icon = userDefaultMarker.value
-            }
+            userMarkers[newData.token] = markerItem2
         }
 
         requireNotNull(userMarkers[newData.token]).tMapPoint = TMapPoint(
@@ -179,7 +179,7 @@ class GamingViewModel @Inject constructor(
 
     fun getUserLocation(token: String): UserLocation? = userLocationMap[token]?.value
 
-    fun getUserMarker(token: String): TMapMarkerItem = requireNotNull(userMarkers[token])
+    fun getUserMarker(token: String): TMapMarkerItem2 = requireNotNull(userMarkers[token])
 
     suspend fun setUserArrived(gameCode: String, token: String) =
         promiseRepository.setPlayerArrived(gameCode, token)

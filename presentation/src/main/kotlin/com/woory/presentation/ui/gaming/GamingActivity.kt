@@ -53,9 +53,6 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
         viewModel.setGameCode(gameCode)
         viewModel.setUserId()
 
-        bitmap?.let {
-            viewModel.setDefaultMarker(it)
-        }
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
