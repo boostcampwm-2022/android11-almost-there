@@ -114,4 +114,6 @@
     <string name="won_symbol">₩</string>
     <string name="amount_due_helper_text">최대 500만원까지 입력 가능</string>
     <string name="balance">잔액</string>
+    <string name="shake_device_description">흔들어서 도착을 알려주세요!</string>
+    <string name="shake_arrive_button">터치하여 도착 🏁</string>
 </resources>

@@ -36,22 +36,6 @@ val textScaleAnimation = ScaleAnimation(
     repeatMode = Animation.REVERSE
 }
 
-fun getDistance(start: GeoPoint, end: GeoPoint): Double {
-    val sLat = start.latitude
-    val sLon = start.longitude
-    val eLat = end.latitude
-    val eLon = end.longitude
-
-    val earthRadius = 6378.137
-    val dLat = eLat * Math.PI / 180 - sLat * Math.PI / 180
-    val dLon = eLon * Math.PI / 180 - sLon * Math.PI / 180
-    val a = sin(dLat / 2) * sin(dLat / 2) +
-            cos(sLat * Math.PI / 180) * cos(dLat * Math.PI / 180) * sin(dLon / 2) * sin(dLon / 2)
-    val c = 2 * atan2(sqrt(a), sqrt(1-a))
-    val d = earthRadius * c
-    return d * 1000
-}
-
 fun getHex(value: Int): String = "%02X".format(value)
 
 fun String.extractNumber(): Int = replace("[^0-9]".toRegex(), "").toInt()
