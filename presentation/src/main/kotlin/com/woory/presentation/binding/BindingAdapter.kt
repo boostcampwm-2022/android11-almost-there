@@ -90,41 +90,6 @@ fun MaterialCardView.bindItemBackgroundColor(type: PromiseHistoryViewType) {
     setCardBackgroundColor(color)
 }
 
-@BindingAdapter("itemRankLabel")
-fun View.bindItemRankLabel(type: PromiseHistoryViewType) {
-    visibility = when (type) {
-        PromiseHistoryViewType.BEFORE -> View.GONE
-        else -> View.VISIBLE
-    }
-}
-
-@BindingAdapter(value = ["itemStateType", "itemStatePromise"], requireAll = true)
-fun AppCompatTextView.bindItemState(type: PromiseHistoryViewType, promise: Promise) {
-    val currentTime = OffsetDateTime.now()
-    val beforeStartTime = Duration.between(promise.data.gameDateTime, currentTime).toMinutes()
-    val beforeEndTime = Duration.between(currentTime, promise.data.promiseDateTime).toMinutes()
-
-    text = when (type) {
-        PromiseHistoryViewType.BEFORE -> context.getString(
-            R.string.history_item_state_before,
-            beforeStartTime
-        )
-        PromiseHistoryViewType.ONGOING -> context.getString(
-            R.string.history_item_state_ongoing,
-            beforeEndTime
-        )
-        PromiseHistoryViewType.END -> context.getString(R.string.promises_end)
-    }
-}
-
-@BindingAdapter("itemHP")
-fun View.bindItemHP(type: PromiseHistoryViewType) {
-    visibility = when (type) {
-        PromiseHistoryViewType.ONGOING -> View.VISIBLE
-        else -> View.GONE
-    }
-}
-
 @BindingAdapter(value = ["itemRankType", "itemRankPromise"], requireAll = true)
 fun LinearLayout.bindRank(type: PromiseHistoryViewType, promise: Promise) {
     this.removeAllViews()
