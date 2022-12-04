@@ -61,4 +61,8 @@ interface PromiseRepository {
     suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
+
+    suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
+
+    suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
 }

@@ -269,7 +269,7 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
-        override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
+    override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
                 val task = fireStore
@@ -463,6 +463,48 @@ class DefaultFirebaseDataSource @Inject constructor(
                 }.onFailure {
                     trySend(Result.failure(it))
                 }
+            }
+            awaitClose { subscription?.remove() }
+        }
+
+    override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+                    .update("arrived", true)
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .document(token)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+
+                val result = runCatching {
+                    value.getBoolean("arrived") ?: throw UNMATCHED_STATE_EXCEPTION
+                }
+                trySend(result)
             }
             awaitClose { subscription?.remove() }
         }
