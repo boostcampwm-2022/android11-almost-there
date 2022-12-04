@@ -3,22 +3,26 @@ package com.woory.presentation.ui.gameresult
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.woory.presentation.databinding.ItemRankingBinding
 import com.woory.presentation.model.user.gameresult.UserRanking
+import com.woory.presentation.ui.customview.topitemresize.TopItemResizeAdapter
 
-class UserRankingAdapter : ListAdapter<UserRanking, UserRankingAdapter.ViewHolder>(diffUtil) {
+class UserRankingAdapter : TopItemResizeAdapter<UserRanking, ItemRankingBinding, UserRankingAdapter.ItemViewHolder>(diffUtil) {
 
-    class ViewHolder(private val binding: ItemRankingBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: UserRanking) {
+    class ItemViewHolder(private val binding: ItemRankingBinding): TopItemResizeAdapter.ItemViewHolder<UserRanking, ItemRankingBinding>(binding) {
+        override fun bind(item: UserRanking) {
             binding.userRanking = item
+        }
+        override fun onHighlight(binding: ItemRankingBinding) {
+            binding.isHighlight = true
+        }
+        override fun onNotHighlight(binding: ItemRankingBinding) {
+            binding.isHighlight = false
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        return ItemViewHolder(
             ItemRankingBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -27,7 +31,7 @@ class UserRankingAdapter : ListAdapter<UserRanking, UserRankingAdapter.ViewHolde
         )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
