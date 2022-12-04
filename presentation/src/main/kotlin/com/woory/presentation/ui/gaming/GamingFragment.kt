@@ -21,8 +21,11 @@ import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGamingBinding
+import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.util.DistanceUtil.getDistance
+import com.woory.presentation.util.TAG
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -42,6 +45,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     private val defaultProfileImage by lazy {
         UserProfileImage("#000000", 0)
     }
+
+    private val shakeDialog = ShakeDeviceFragment()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,6 +94,16 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                             viewModel.setUserMarker(userLocation)
                                             removeTMapMarkerItem(id)
                                             addTMapMarkerItem(viewModel.getUserMarker(id))
+
+                                            viewModel.isArrived.collectLatest() { isArrived ->
+                                                if (isArrived) return@collectLatest
+                                                if (userLocation.token == viewModel.myUserInfo.userID) {
+                                                    viewModel.magneticInfo.collectLatest { magneticInfo ->
+                                                        magneticInfo ?: throw IllegalArgumentException("is MagneticInfo null")
+                                                        alertShakeDialog(userLocation.geoPoint, magneticInfo.centerPoint)
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -171,7 +186,26 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 
+    private fun alertShakeDialog(userLocation: GeoPoint, dest: GeoPoint) {
+        val distance = getDistance(
+            userLocation,
+            dest
+        )
+
+        if (distance < ARRIVE_STANDARD_LENGTH && !shakeDialog.isVisible) {
+            shakeDialog.show(
+                parentFragmentManager,
+                shakeDialog.TAG
+            )
+        } else {
+            if (shakeDialog.isVisible) {
+                shakeDialog.dismiss()
+            }
+        }
+    }
+
     companion object {
         private const val MAGNETIC_CIRCLE_KEY = "Magnetic"
+        private const val ARRIVE_STANDARD_LENGTH = 20
     }
 }

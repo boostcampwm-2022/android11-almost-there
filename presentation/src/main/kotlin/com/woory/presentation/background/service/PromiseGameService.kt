@@ -23,8 +23,10 @@ import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
+import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
+import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.magnetic.asUiModel
@@ -106,7 +108,6 @@ class PromiseGameService : LifecycleService() {
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        startForeground()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -125,6 +126,8 @@ class PromiseGameService : LifecycleService() {
 
     @Throws(IllegalArgumentException::class)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent ?: throw java.lang.IllegalArgumentException("...")
+        startForeground(intent.asPromiseAlarm())
 
         val gameCode = try {
             intent?.asPromiseAlarm()?.promiseCode ?: throw NO_GAME_CODE_EXCEPTION
@@ -196,13 +199,17 @@ class PromiseGameService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun startForeground() {
-        val intent = Intent(this, GamingActivity::class.java)
+    private fun startForeground(promiseAlarm: PromiseAlarm) {
+        val intent = Intent(this, GamingActivity::class.java).apply {
+            putPromiseAlarm(promiseAlarm)
+        }
+
+        val randomCode = promiseAlarm.alarmCode + (1..1000000).random()
 
         val pendingIntent: PendingIntent = TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(intent)
             getPendingIntent(
-                NotificationProvider.PROMISE_START_NOTIFICATION_ID,
+                randomCode,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } ?: return
@@ -219,7 +226,7 @@ class PromiseGameService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationChannelProvider.providePromiseStartChannel(this)
         }
-        startForeground(NotificationProvider.PROMISE_START_NOTIFICATION_ID, notification)
+        startForeground(randomCode, notification)
     }
 
     private fun stopUpdateLocation() {
