@@ -24,6 +24,8 @@ class AlarmFunctions(private val context: Context) {
         }.asMillis()
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        initBroadcastPendingIntent(promiseAlarm.alarmCode)
+
         val receiverIntent = Intent(context, AlarmReceiver::class.java)
         receiverIntent.apply {
             putPromiseAlarm(promiseAlarm)
@@ -31,7 +33,7 @@ class AlarmFunctions(private val context: Context) {
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            promiseAlarm.alarmCode + (1..100000).random(),
+            promiseAlarm.alarmCode,
             receiverIntent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -56,4 +58,11 @@ class AlarmFunctions(private val context: Context) {
 
         alarmManager.cancel(pendingIntent)
     }
+
+    private fun initBroadcastPendingIntent(alarmCode: Int) = PendingIntent.getBroadcast(
+        context,
+        alarmCode,
+        Intent(context, AlarmReceiver::class.java),
+        PendingIntent.FLAG_IMMUTABLE
+    ).cancel()
 }

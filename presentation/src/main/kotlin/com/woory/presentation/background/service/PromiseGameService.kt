@@ -20,6 +20,7 @@ import com.google.android.gms.location.Priority
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
+import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
@@ -211,16 +212,18 @@ class PromiseGameService : LifecycleService() {
     }
 
     private fun startForeground(promiseAlarm: PromiseAlarm) {
+        if (jobByGame.values.isNotEmpty()) {
+            return
+        }
+
         val intent = Intent(this, GamingActivity::class.java).apply {
             putPromiseAlarm(promiseAlarm)
         }
 
-        val randomCode = promiseAlarm.alarmCode + (1..1000000).random()
-
         val pendingIntent: PendingIntent = TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(intent)
             getPendingIntent(
-                randomCode,
+                promiseAlarm.alarmCode,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } ?: return
@@ -237,7 +240,7 @@ class PromiseGameService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationChannelProvider.providePromiseStartChannel(this)
         }
-        startForeground(randomCode, notification)
+        startForeground(promiseAlarm.alarmCode, notification)
     }
 
     private fun stopUpdateLocation() {
