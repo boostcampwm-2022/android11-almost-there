@@ -13,6 +13,7 @@ import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGameResultBinding
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.customview.topitemresize.TopItemResizeScrollListener
+import com.woory.presentation.util.festive
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -30,6 +31,7 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
         setUpClickListener()
         setUpRecyclerView()
         observeData()
+        playKonfetti()
     }
 
     private fun setUpToolbar() {
@@ -87,5 +89,9 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
                 }
             }
         }
+    }
+
+    private fun playKonfetti() {
+        binding.konfetti.start(festive())
     }
 }
