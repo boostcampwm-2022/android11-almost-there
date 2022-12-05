@@ -5,12 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.*
+import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.model.mapper.user.asDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,6 +41,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _promise: MutableStateFlow<Promise?> = MutableStateFlow(null)
     val promise: StateFlow<Promise?> = _promise.asStateFlow()
+
+    private val _promiseSettingEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
+    val promiseSettingEvent: SharedFlow<PromiseAlarm> = _promiseSettingEvent.asSharedFlow()
 
     private val _error: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val error: StateFlow<Boolean> = _error.asStateFlow()
@@ -112,6 +119,19 @@ class ProfileViewModel @Inject constructor(
                         _isLoading.value = false
                         _error.value = true
                     }
+            }
+        }
+    }
+
+    fun setPromiseAlarm() {
+        viewModelScope.launch {
+            val promise = promise.value
+            promise ?: return@launch
+
+            promiseRepository.setPromiseAlarmByPromiseModel(promise.asDomain()).onSuccess {
+                promiseRepository.getPromiseAlarm(promise.code).onSuccess { promiseAlarmModel ->
+                    _promiseSettingEvent.emit(promiseAlarmModel.asUiModel())
+                }
             }
         }
     }
