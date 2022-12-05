@@ -42,7 +42,7 @@ class DefaultRouteRepository @Inject constructor(
                     getCarRoute(start, dest),
                     getWalkRoute(start, dest)
                 ).map { it.getOrDefault(defaultPathModel) }
-                    .filter { it.time != 0 }.maxOfOrNull { it.time } ?: -1
+                    .filter { it.time != 0 }.minOfOrNull { it.time } ?: -1
             }
         }
     }

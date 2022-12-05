@@ -45,6 +45,22 @@ object TimeUtils {
             ""
         }
 
+    fun getStringInMinuteToDay(
+        context: Context,
+        time: Int
+    ): String {
+        val minute = time % 60
+        val hour = (time / 60) % 24
+        val day = (time / (60 * 24))
+
+        val sb = java.lang.StringBuilder()
+        if (day > 0) sb.append(getTimeStringWithSuffix(context, DateTimeType.DAY, day))
+        if (hour > 0) sb.append(getTimeStringWithSuffix(context, DateTimeType.HOUR, hour))
+        if (minute > 0) sb.append(getTimeStringWithSuffix(context, DateTimeType.MINUTE, minute))
+
+        return sb.toString()
+    }
+
     enum class DateTimeType(@StringRes private val withSuffixResId: Int) {
         YEAR(R.string.years_with_suffix),
         MONTH(R.string.months_with_suffix),
