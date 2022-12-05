@@ -62,10 +62,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.errorState.collectLatest {
-                        makeSnackBar(it.message ?: resources.getString(R.string.unknown_error))
-                    }
+                viewModel.errorState.collectLatest {
+                    makeSnackBar(it.message ?: resources.getString(R.string.unknown_error))
                 }
             }
         }
@@ -98,22 +96,37 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                 it?.forEach { id ->
                                     viewModel.userLocationMap[id]?.collectLatest { userLocation ->
                                         if (userLocation != null) {
-                                            val marker = TMapMarkerItem2(id).apply {
-                                                tMapPoint = TMapPoint(userLocation.geoPoint.latitude, userLocation.geoPoint.longitude)
-                                                iconList = viewModel.getUserImage(id)?.let { userProfileImage ->
-                                                    arrayListOf(getUserMarker(userProfileImage))
-                                                } ?: arrayListOf()
+                                            launch {
+                                                val marker = TMapMarkerItem().apply {
+                                                    this.id = id
+                                                    tMapPoint = TMapPoint(
+                                                        userLocation.geoPoint.latitude,
+                                                        userLocation.geoPoint.longitude
+                                                    )
+                                                    icon = viewModel.getUserImage(id)
+                                                        ?.let { userProfileImage ->
+                                                            getUserMarker(userProfileImage)
+                                                        }
+                                                }
+                                                viewModel.setUserMarker(userLocation, marker)
+                                                removeTMapMarkerItem(id)
+                                                addTMapMarkerItem(viewModel.getUserMarker(id))
                                             }
-                                            viewModel.setUserMarker(userLocation, marker)
-                                            removeTMapMarkerItem(id)
-                                            addTMapMarkerItem2Icon(viewModel.getUserMarker(id))
 
-                                            viewModel.isArrived.collectLatest() { isArrived ->
-                                                if (isArrived) return@collectLatest
-                                                if (userLocation.token == viewModel.myUserInfo.userID) {
-                                                    viewModel.magneticInfo.collectLatest { magneticInfo ->
-                                                        magneticInfo ?: throw IllegalArgumentException("is MagneticInfo null")
-                                                        alertShakeDialog(userLocation.geoPoint, magneticInfo.centerPoint)
+                                            launch {
+                                                viewModel.isArrived.collectLatest { isArrived ->
+                                                    if (isArrived) return@collectLatest
+                                                    if (userLocation.token == viewModel.myUserInfo.userID) {
+                                                        viewModel.magneticInfo.collectLatest { magneticInfo ->
+                                                            magneticInfo
+                                                                ?: throw IllegalArgumentException(
+                                                                    "is MagneticInfo null"
+                                                                )
+                                                            alertShakeDialog(
+                                                                userLocation.geoPoint,
+                                                                magneticInfo.centerPoint
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }
@@ -149,12 +162,9 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                         launch {
                             viewModel.centerLocationToMe.collectLatest {
-                                Timber.tag("123123").d("enter")
                                 val myToken = viewModel.userId.value ?: return@collectLatest
-                                Timber.tag("123123").d(myToken)
                                 val location =
                                     viewModel.getUserLocation(myToken) ?: return@collectLatest
-                                Timber.tag("123123").d(location.toString())
                                 setCenterPoint(
                                     location.geoPoint.latitude,
                                     location.geoPoint.longitude
@@ -163,30 +173,29 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                         }
                     }
                 }
-            }
-
-            setOnClickListenerCallback(object : OnClickListenerCallback {
-                override fun onPressDown(
-                    p0: ArrayList<TMapMarkerItem>?,
-                    p1: ArrayList<TMapPOIItem>?,
-                    p2: TMapPoint?,
-                    p3: PointF?
-                ) {
-                    if (p0?.isNotEmpty() == true) {
-                        showBottomSheet(p0[0].id)
-                    } else {
-                        dismissBottomSheet()
+                setOnClickListenerCallback(object : OnClickListenerCallback {
+                    override fun onPressDown(
+                        p0: ArrayList<TMapMarkerItem>?,
+                        p1: ArrayList<TMapPOIItem>?,
+                        p2: TMapPoint?,
+                        p3: PointF?
+                    ) {
+                        if (p0?.isNotEmpty() == true) {
+                            showBottomSheet(p0[0].id)
+                        } else {
+                            dismissBottomSheet()
+                        }
                     }
-                }
 
-                override fun onPressUp(
-                    p0: ArrayList<TMapMarkerItem>?,
-                    p1: ArrayList<TMapPOIItem>?,
-                    p2: TMapPoint?,
-                    p3: PointF?
-                ) {
-                }
-            })
+                    override fun onPressUp(
+                        p0: ArrayList<TMapMarkerItem>?,
+                        p1: ArrayList<TMapPOIItem>?,
+                        p2: TMapPoint?,
+                        p3: PointF?
+                    ) {
+                    }
+                })
+            }
         }
 
         binding.containerMap.addView(mapView)
@@ -201,8 +210,17 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         binding.layoutBottomSheet.rank = viewModel.getUserRanking(id)
 
         lifecycleScope.launch {
-            val address = viewModel.getAddress(id) ?: getString(R.string.unknown_error)
-            binding.layoutBottomSheet.tvLocation.text = address
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    val address = viewModel.getAddress(id) ?: getString(R.string.unknown_error)
+                    binding.layoutBottomSheet.tvLocation.text = address
+                }
+                launch {
+                    val remainTime = viewModel.getRemainTime() ?: -1
+                    binding.layoutBottomSheet.tvExpectedTime.text =
+                        getString(R.string.minutes_with_suffix, remainTime)
+                }
+            }
         }
     }
 

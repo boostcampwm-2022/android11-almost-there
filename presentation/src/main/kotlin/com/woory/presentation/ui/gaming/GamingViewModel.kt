@@ -1,12 +1,12 @@
 package com.woory.presentation.ui.gaming
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.overlay.TMapMarkerItem2
 import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.RouteRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.AddedUserHp
 import com.woory.presentation.model.MagneticInfo
@@ -35,6 +35,7 @@ import javax.inject.Inject
 class GamingViewModel @Inject constructor(
     private val promiseRepository: PromiseRepository,
     private val userRepository: UserRepository,
+    private val routeRepository: RouteRepository
 ) : ViewModel() {
     private val _gameCode: MutableStateFlow<String> = MutableStateFlow("")
     val gameCode: StateFlow<String> = _gameCode.asStateFlow()
@@ -48,7 +49,7 @@ class GamingViewModel @Inject constructor(
     private val _allUsers: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val allUsers: StateFlow<List<String>?> = _allUsers.asStateFlow()
 
-    private val userMarkers: MutableMap<String, TMapMarkerItem2> = mutableMapOf()
+    private val userMarkers: MutableMap<String, TMapMarkerItem> = mutableMapOf()
 
     val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
 
@@ -167,7 +168,7 @@ class GamingViewModel @Inject constructor(
             }
         }
 
-    fun setUserMarker(newData: UserLocation, markerItem2: TMapMarkerItem2) {
+    fun setUserMarker(newData: UserLocation, markerItem2: TMapMarkerItem) {
         if (userMarkers[newData.token] == null) {
             userMarkers[newData.token] = markerItem2
         }
@@ -179,7 +180,7 @@ class GamingViewModel @Inject constructor(
 
     fun getUserLocation(token: String): UserLocation? = userLocationMap[token]?.value
 
-    fun getUserMarker(token: String): TMapMarkerItem2 = requireNotNull(userMarkers[token])
+    fun getUserMarker(token: String): TMapMarkerItem = requireNotNull(userMarkers[token])
 
     suspend fun setUserArrived(gameCode: String, token: String) =
         promiseRepository.setPlayerArrived(gameCode, token)
@@ -189,4 +190,21 @@ class GamingViewModel @Inject constructor(
             _centerLocationToMe.emit(Unit)
         }
     }
+
+    suspend fun getRemainTime(): Int? =
+        withContext(viewModelScope.coroutineContext) {
+            userId.value?.let { id ->
+                getUserLocation(id)?.geoPoint?.let { myPoint ->
+                    magneticInfo.value?.centerPoint?.let { centerPoint ->
+                        routeRepository.getMinimumTime(
+                            myPoint.asDomain(),
+                            centerPoint.asDomain()
+                        )
+                            .getOrDefault(-1)
+                    }
+                }
+            }
+
+        }
+
 }
