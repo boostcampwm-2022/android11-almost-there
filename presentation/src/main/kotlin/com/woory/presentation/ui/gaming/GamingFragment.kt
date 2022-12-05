@@ -42,8 +42,12 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     private lateinit var mapView: TMapView
 
-    private val behavior by lazy {
+    private val profileBehavior by lazy {
         BottomSheetBehavior.from(binding.layoutBottomSheet.layoutBottomSheet)
+    }
+
+    private val promiseInfoBehavior by lazy {
+        BottomSheetBehavior.from(binding.layoutBottomSheetPromise.layoutBottomSheet)
     }
 
     private val viewModel: GamingViewModel by activityViewModels()
@@ -86,6 +90,10 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         binding.layoutBottomSheet.layoutCharacterImg.profileImage = defaultProfileImage
         binding.layoutBottomSheet.vm = viewModel
         binding.layoutBottomSheet.lifecycleOwner = viewLifecycleOwner
+
+        binding.layoutBottomSheetPromise.vm = viewModel
+        binding.layoutBottomSheetPromise.lifecycleOwner = viewLifecycleOwner
+        binding.layoutBottomSheetPromise.pattern = "yyyy:MM:hh hh:mm"
 
         dismissBottomSheet()
 
@@ -145,10 +153,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                             viewModel.magneticInfo.collectLatest {
                                 if (it != null) {
                                     removeAllTMapCircle()
-                                    setCenterPoint(
-                                        it.centerPoint.latitude,
-                                        it.centerPoint.longitude
-                                    )
                                     addTMapCircle(
                                         TMapCircle(
                                             MAGNETIC_CIRCLE_KEY,
@@ -184,6 +188,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                     location.geoPoint.latitude,
                                     location.geoPoint.longitude
                                 )
+                                mapView.zoomLevel = 100
                             }
                         }
 
@@ -216,14 +221,21 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                     ) {
                     }
                 })
+                binding.layoutPromiseInfo.setOnClickListener {
+                    showPromiseInfo()
+                }
             }
         }
 
         binding.containerMap.addView(mapView)
     }
 
+    private fun showPromiseInfo(){
+        promiseInfoBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
     private fun showBottomSheet(id: String) {
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        profileBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         val image = viewModel.getUserImage(id) ?: defaultProfileImage
         binding.layoutBottomSheet.layoutCharacterImg.profileImage = image
@@ -239,14 +251,15 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                 launch {
                     val remainTime = viewModel.getRemainTime() ?: -1
                     binding.layoutBottomSheet.tvExpectedTime.text =
-                        getString(R.string.minutes_with_suffix, remainTime)
+                        TimeUtils.getStringInMinuteToDay(requireContext(), remainTime)
                 }
             }
         }
     }
 
     private fun dismissBottomSheet() {
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        profileBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        promiseInfoBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun makeSnackBar(text: String) {
@@ -258,10 +271,12 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             CustomviewCharaterMarkerBinding.inflate(
                 layoutInflater, binding.root as ViewGroup?, false
             )
+
         markerBinding.viewTail.setColorFilter(Color.parseColor(userProfileImage.color))
         markerBinding.containerBody.setColorFilter(Color.parseColor(userProfileImage.color))
         markerBinding.layoutMarker.profileImage = userProfileImage
         markerBinding.lifecycleOwner = this
+
         val view = markerBinding.root
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)

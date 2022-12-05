@@ -92,5 +92,9 @@
             android:id="@+id/layout_bottom_sheet"
             layout="@layout/bottomsheet_gaming" />
 
+        <include
+            android:id="@+id/layout_bottom_sheet_promise"
+            layout="@layout/bottomsheet_gaming_promise_info" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
