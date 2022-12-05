@@ -43,8 +43,6 @@ class AlarmRestartService: LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-
         lifecycle.coroutineScope.launch {
             repository.getAllPromiseAlarms()
                 .onSuccess { promiseAlarmModels ->
@@ -59,6 +57,6 @@ class AlarmRestartService: LifecycleService() {
                     stopSelf()
                 }
         }
-        return START_NOT_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 }

@@ -2,29 +2,26 @@ package com.woory.presentation.background.service
 
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.presentation.R
-import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
-import com.woory.presentation.model.mapper.alarm.asDomain
+import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.ui.gameresult.GameResultActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PromiseAlarmRegisterService : LifecycleService() {
+class PromiseFinishService : LifecycleService() {
 
     @Inject
     lateinit var repository: PromiseRepository
-    private val alarmFunctions = AlarmFunctions(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +33,7 @@ class PromiseAlarmRegisterService : LifecycleService() {
         val notification = NotificationProvider.createNotificationBuilder(
             this,
             NotificationChannelProvider.PROMISE_READY_SERVICE_CHANNEL_ID,
-            getString(R.string.notification_ready_progress_title),
+            getString(R.string.notification_finish_promise_title),
             null,
             NotificationCompat.PRIORITY_LOW,
             null
@@ -51,17 +48,29 @@ class PromiseAlarmRegisterService : LifecycleService() {
         val promiseAlarm = intent.asPromiseAlarm()
 
         lifecycleScope.launch {
-            repository.setPromiseAlarmByPromiseAlarmModel(promiseAlarm.asDomain())
-                .onSuccess {
-                    alarmFunctions.registerAlarm(promiseAlarm)
-                }
+            repository.setIsFinishedPromise(promiseAlarm.promiseCode)
                 .onFailure {
-                    Timber.tag("ERROR").d("Failure register alarm")
+                    Timber.tag("ERROR").d("Failure finish promise")
                 }
                 .also {
-                    stopSelf()
+                    stopService(promiseAlarm)
                 }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun stopService(promiseAlarm: PromiseAlarm) {
+        stopSelf()
+        notifyFinishNotification(promiseAlarm)
+    }
+
+    private fun notifyFinishNotification(promiseAlarm: PromiseAlarm) {
+        NotificationProvider.notifyActivityNotification(
+            this,
+            this.getString(R.string.notification_finished_title),
+            this.getString(R.string.notification_finished_content),
+            promiseAlarm,
+            GameResultActivity::class.java
+        )
     }
 }

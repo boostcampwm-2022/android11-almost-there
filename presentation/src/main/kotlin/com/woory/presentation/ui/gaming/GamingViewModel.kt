@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
-import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.overlay.TMapMarkerItem2
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
@@ -24,6 +23,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -53,6 +53,12 @@ class GamingViewModel @Inject constructor(
     private val _allUsers: MutableStateFlow<List<String>?> = MutableStateFlow(null)
     val allUsers: StateFlow<List<String>?> = _allUsers.asStateFlow()
 
+    private val _isArrived: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isArrived: StateFlow<Boolean> = _isArrived.asStateFlow()
+
+    private val _isFinished: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFinished: StateFlow<Boolean> = _isFinished.asStateFlow()
+
     private val userMarkers: MutableMap<String, TMapMarkerItem2> = mutableMapOf()
 
     val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
@@ -65,9 +71,6 @@ class GamingViewModel @Inject constructor(
     val userNameMap: MutableMap<String, MutableStateFlow<String>> = mutableMapOf()
 
     val myUserInfo = runBlocking { userRepository.userPreferences.first() }
-
-    private val _isArrived: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isArrived: StateFlow<Boolean> = _isArrived.asStateFlow()
 
     fun setGameCode(code: String) {
         viewModelScope.launch {
@@ -133,6 +136,14 @@ class GamingViewModel @Inject constructor(
                             promiseRepository.getPlayerArrived(code, myUserInfo.userID).collect() { result ->
                                 result.onSuccess { isArrived ->
                                     _isArrived.emit(isArrived)
+                                }
+                            }
+                        }
+
+                        launch {
+                            promiseRepository.getIsFinishedPromise(code).collectLatest { result ->
+                                result.onSuccess { isFinished ->
+                                    _isFinished.emit(isFinished)
                                 }
                             }
                         }

@@ -10,7 +10,8 @@ data class PromiseDocument(
     val host: PromiseParticipantField = PromiseParticipantField(),
     val gameTime: Timestamp = Timestamp(1, 1),
     val promiseTime: Timestamp = Timestamp(1, 1),
-    val users: List<PromiseParticipantField> = listOf()
+    val users: List<PromiseParticipantField> = listOf(),
+    val finished: Boolean = false
 )
 
 data class PromiseParticipantField(
