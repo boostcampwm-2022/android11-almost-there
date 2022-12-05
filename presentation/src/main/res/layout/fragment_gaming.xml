@@ -8,6 +8,8 @@
         <variable
             name="vm"
             type="com.woory.presentation.ui.gaming.GamingViewModel" />
+
+        <import type="com.woory.presentation.util.TimeUtils"/>
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

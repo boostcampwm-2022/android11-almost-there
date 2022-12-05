@@ -9,6 +9,7 @@ import com.woory.data.repository.RouteRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.AddedUserHp
 import com.woory.presentation.model.MagneticInfo
+import com.woory.presentation.model.Promise
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.model.gaming.UserRanking
@@ -77,6 +78,9 @@ class GamingViewModel @Inject constructor(
     private val _ranking: MutableStateFlow<List<UserRanking>> = MutableStateFlow(listOf())
     val ranking: StateFlow<List<UserRanking>> = _ranking.asStateFlow()
 
+    private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
+    val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
+
     fun setDefaultImage(profileImage: UserProfileImage) {
         viewModelScope.launch {
             _userDefaultImage.emit(profileImage)
@@ -103,6 +107,7 @@ class GamingViewModel @Inject constructor(
             promiseRepository
                 .getPromiseByCode(code)
                 .onSuccess {
+                    _promiseModel.emit(it.asUiModel())
                     launch {
                         promiseRepository.getMagneticInfoByCodeAndListen(code)
                             .collectLatest { result ->
@@ -119,8 +124,8 @@ class GamingViewModel @Inject constructor(
                         promiseRepository.getGameRealtimeRanking(code).collectLatest { result ->
                             result.onSuccess { list ->
                                 _ranking.emit(list.filter {
-                                        !it.lost && !it.arrived
-                                    }
+                                    !it.lost && !it.arrived
+                                }
                                     .map { addedUserHpModel ->
                                         val id = addedUserHpModel.userId
                                         UserRanking(
@@ -133,8 +138,6 @@ class GamingViewModel @Inject constructor(
                                             hp = addedUserHpModel.hp
                                         )
                                     })
-                            }.onFailure {
-
                             }
                         }
                     }

@@ -28,7 +28,9 @@ import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.DistanceUtil.getDistance
+import com.woory.presentation.util.NO_MAGNETIC_INFO_EXCEPTION
 import com.woory.presentation.util.TAG
+import com.woory.presentation.util.TimeUtils
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -123,9 +125,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                                     if (userLocation.token == viewModel.myUserInfo.userID) {
                                                         viewModel.magneticInfo.collectLatest { magneticInfo ->
                                                             magneticInfo
-                                                                ?: throw IllegalArgumentException(
-                                                                    "is MagneticInfo null"
-                                                                )
+                                                                ?: throw NO_MAGNETIC_INFO_EXCEPTION
                                                             alertShakeDialog(
                                                                 userLocation.geoPoint,
                                                                 magneticInfo.centerPoint
@@ -161,6 +161,15 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                             lineColor = Color.RED
                                         }
                                     )
+
+                                    viewModel.promiseModel.value?.let { promise ->
+                                        binding.tvTime.text =
+                                            TimeUtils.getDurationStringInMinuteToDay(
+                                                requireContext(),
+                                                it.updatedAt,
+                                                promise.data.promiseDateTime
+                                            )
+                                    }
                                 }
                             }
                         }
