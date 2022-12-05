@@ -52,6 +52,9 @@ class GamingViewModel @Inject constructor(
 
     private val userMarkers: MutableMap<String, TMapMarkerItem> = mutableMapOf()
 
+    private val _isFinished: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFinished: StateFlow<Boolean> = _isFinished.asStateFlow()
+
     val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
 
     private val userImageMap: MutableMap<String, MutableStateFlow<UserProfileImage>> =
@@ -176,6 +179,14 @@ class GamingViewModel @Inject constructor(
                                         _isArrived.emit(isArrived)
                                     }
                                 }
+                        }
+
+                        launch {
+                            promiseRepository.getIsFinishedPromise(code).collectLatest { result ->
+                                result.onSuccess { isFinished ->
+                                    _isFinished.emit(isFinished)
+                                }
+                            }
                         }
                     }
                     _allUsers.emit(uiModel.data.users.map { it.userId })

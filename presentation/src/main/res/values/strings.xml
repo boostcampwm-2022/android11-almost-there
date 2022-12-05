@@ -86,6 +86,9 @@
     <string name="notification_ready_complete_title">게임 준비 완료</string>
     <string name="notification_ready_complete_content">게임 준비가 완료되었습니다. 약속 정보를 확인하려면 터치하세요.</string>
     <string name="notification_alarm_restart">알람 재 등록중</string>
+    <string name="notification_finish_promise_title">게임 종료 중</string>
+    <string name="notification_finished_title">게임 종료!</string>
+    <string name="notification_finished_content">게임이 종료되었습니다. 게임 결과를 확인하려면 터치하세요.</string>
     <string name="unknown_error" />
     <string name="past_promise_history">과거 약속 정보</string>
     <string name="future_promise_history">미래 약속 정보</string>

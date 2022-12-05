@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.R
 import com.woory.presentation.background.service.PromiseAlarmRegisterService
+import com.woory.presentation.background.service.PromiseFinishService
 import com.woory.presentation.background.service.PromiseGameService
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.background.util.putPromiseAlarm
@@ -31,8 +33,15 @@ class AlarmReceiver : BroadcastReceiver() {
                 onReceivePromiseStart(context, promiseAlarm)
             }
             AlarmState.END -> {
-
+                onReceivePromiseEnd(context, promiseAlarm)
             }
+        }
+    }
+
+    private fun onReceivePromiseEnd(context: Context, promiseAlarm: PromiseAlarm) {
+        Intent(context, PromiseFinishService::class.java).run {
+            putPromiseAlarm(promiseAlarm)
+            context.startServiceBp(this)
         }
     }
 

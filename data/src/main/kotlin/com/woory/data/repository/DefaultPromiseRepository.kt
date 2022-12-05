@@ -112,4 +112,10 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
         firebaseDataSource.getGameRealtimeRanking(gameCode)
+
+    override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
+        firebaseDataSource.setIsFinishedPromise(gameCode)
+
+    override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
+        firebaseDataSource.getIsFinishedPromise(gameCode)
 }

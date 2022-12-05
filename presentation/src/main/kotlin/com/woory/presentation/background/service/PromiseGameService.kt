@@ -20,6 +20,7 @@ import com.google.android.gms.location.Priority
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
+import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
@@ -69,7 +70,6 @@ class PromiseGameService : LifecycleService() {
 
     private val _magneticZoneInfo: MutableStateFlow<MagneticInfo?> = MutableStateFlow(null)
     private val magneticZoneInfo: StateFlow<MagneticInfo?> = _magneticZoneInfo.asStateFlow()
-
 
     private val _location: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
     val location: StateFlow<GeoPoint?> = _location.asStateFlow()
@@ -133,50 +133,64 @@ class PromiseGameService : LifecycleService() {
         val promiseAlarm = intent.asPromiseAlarm()
         val promiseCode = promiseAlarm.promiseCode
 
-        val job = lifecycleScope.launch {
+        val gameJob = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val userToken = userId.value ?: return@repeatOnLifecycle
 
                 promiseRepository.checkReEntryOfGame(promiseCode, userToken).onSuccess {
                     when (it) {
                         true -> {
-                            promiseRepository.setUserInitialHpData(promiseCode, userToken).onSuccess {
-                                promiseRepository.getPromiseByCode(promiseCode)
-                                    .onSuccess { promiseModel ->
-                                        val promiseUiModel = promiseModel.asUiModel()
-                                        _gameTimeInitialValue.emit(
-                                            extractTimeDifference(
-                                                promiseUiModel.data.gameDateTime,
-                                                promiseUiModel.data.promiseDateTime
+                            promiseRepository.setUserInitialHpData(promiseCode, userToken)
+                                .onSuccess {
+                                    promiseRepository.getPromiseByCode(promiseCode)
+                                        .onSuccess { promiseModel ->
+                                            val promiseUiModel = promiseModel.asUiModel()
+                                            _gameTimeInitialValue.emit(
+                                                extractTimeDifference(
+                                                    promiseUiModel.data.gameDateTime,
+                                                    promiseUiModel.data.promiseDateTime
+                                                )
                                             )
-                                        )
 
-                                        // TODO : 자기장 flow 받아오기
-                                        launch {
-                                            promiseRepository.getMagneticInfoByCodeAndListen(
-                                                promiseCode
-                                            )
-                                                .collect { result ->
-                                                    result.onSuccess { magneticInfoModel ->
-                                                        val uiModel = magneticInfoModel.asUiModel()
-                                                        _magneticZoneInfo.emit(uiModel)
-                                                    }.onFailure { throwable ->
-                                                        Timber.tag("123123").d(throwable)
+                                            // TODO : 자기장 flow 받아오기
+                                            launch {
+                                                promiseRepository.getMagneticInfoByCodeAndListen(
+                                                    promiseCode
+                                                )
+                                                    .collect { result ->
+                                                        result.onSuccess { magneticInfoModel ->
+                                                            val uiModel =
+                                                                magneticInfoModel.asUiModel()
+                                                            _magneticZoneInfo.emit(uiModel)
+                                                        }.onFailure { throwable ->
+                                                            Timber.tag("123123").d(throwable)
+                                                        }
+                                                    }
+                                            }
+
+                                            launch {
+                                                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                                    promiseRepository.getIsFinishedPromise(promiseCode).collectLatest { result ->
+                                                        result.onSuccess { isFinished ->
+                                                            if (isFinished) {
+                                                                stopGame(promiseCode)
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                        }
+                                            }
 
-                                        // TODO : 주기적으로 자기장 update 하기
-                                        while (true) {
-                                            delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
-                                            promiseRepository.decreaseMagneticRadius(
-                                                promiseCode,
-                                                magneticZoneInitialRadius.value / gameTimeInitialValue.value
-                                            )
+                                            // TODO : 주기적으로 자기장 update 하기
+                                            while (true) {
+                                                delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
+                                                promiseRepository.decreaseMagneticRadius(
+                                                    promiseCode,
+                                                    magneticZoneInitialRadius.value / gameTimeInitialValue.value
+                                                )
 
+                                            }
                                         }
-                                    }
-                            }
+                                }
                         }
                         // TODO : Service 에 다시 즐어왔을 때 로직 -> 게임에서 제외시켜버리기
                         false -> {
@@ -192,22 +206,24 @@ class PromiseGameService : LifecycleService() {
             }
         }
 
-        jobByGame[promiseCode] = job
+        jobByGame[promiseCode] = gameJob
 
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun startForeground(promiseAlarm: PromiseAlarm) {
+        if (jobByGame.values.isNotEmpty()) {
+            return
+        }
+
         val intent = Intent(this, GamingActivity::class.java).apply {
             putPromiseAlarm(promiseAlarm)
         }
 
-        val randomCode = promiseAlarm.alarmCode + (1..1000000).random()
-
         val pendingIntent: PendingIntent = TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(intent)
             getPendingIntent(
-                randomCode,
+                promiseAlarm.alarmCode,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } ?: return
@@ -224,7 +240,7 @@ class PromiseGameService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationChannelProvider.providePromiseStartChannel(this)
         }
-        startForeground(randomCode, notification)
+        startForeground(promiseAlarm.alarmCode, notification)
     }
 
     private fun stopUpdateLocation() {
@@ -233,6 +249,17 @@ class PromiseGameService : LifecycleService() {
 
     private fun extractTimeDifference(startTime: OffsetDateTime, endTime: OffsetDateTime) =
         ((endTime.toEpochSecond() - startTime.toEpochSecond()) / 60).toInt()
+
+    private fun stopGame(promiseCode: String) {
+        jobByGame.run {
+            get(promiseCode)?.cancel()
+            remove(promiseCode)
+        }
+
+        if (jobByGame.values.isEmpty()) {
+            stopSelf()
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
