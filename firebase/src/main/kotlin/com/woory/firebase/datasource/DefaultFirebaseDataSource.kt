@@ -10,7 +10,6 @@ import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
-import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
