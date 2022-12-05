@@ -548,7 +548,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
-                    .update("finished", true)
+                    .update(FINISHED_PROMISE_KEY, true)
             }
 
             when (val exception = result.exceptionOrNull()) {

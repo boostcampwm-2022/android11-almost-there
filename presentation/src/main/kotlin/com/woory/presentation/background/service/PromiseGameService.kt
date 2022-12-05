@@ -55,8 +55,7 @@ class PromiseGameService : LifecycleService() {
     @Inject
     lateinit var userRepository: UserRepository
 
-    private val jobByGame = mutableMapOf<String, Job?>()
-    private val isFinishedMap = mutableMapOf<String, Job?>()
+    private val jobByGame = mutableMapOf<String, Job>()
 
     private val _userId: MutableStateFlow<String?> = MutableStateFlow(null)
     private val userId: StateFlow<String?> = _userId.asStateFlow()
@@ -168,6 +167,18 @@ class PromiseGameService : LifecycleService() {
                                                     }
                                             }
 
+                                            launch {
+                                                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                                    promiseRepository.getIsFinishedPromise(promiseCode).collectLatest { result ->
+                                                        result.onSuccess { isFinished ->
+                                                            if (isFinished) {
+                                                                stopGame(promiseCode)
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
                                             // TODO : 주기적으로 자기장 update 하기
                                             while (true) {
                                                 delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
@@ -194,20 +205,7 @@ class PromiseGameService : LifecycleService() {
             }
         }
 
-        val finishJob = lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                promiseRepository.getIsFinishedPromise(promiseCode).collectLatest { result ->
-                    result.onSuccess { isFinished ->
-                        if (isFinished) {
-                            stopGame(promiseCode)
-                        }
-                    }
-                }
-            }
-        }
-
         jobByGame[promiseCode] = gameJob
-        isFinishedMap[promiseCode] = finishJob
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -250,13 +248,12 @@ class PromiseGameService : LifecycleService() {
         ((endTime.toEpochSecond() - startTime.toEpochSecond()) / 60).toInt()
 
     private fun stopGame(promiseCode: String) {
-        jobByGame[promiseCode]?.cancel()
-        isFinishedMap[promiseCode]?.cancel()
+        jobByGame.run {
+            get(promiseCode)?.cancel()
+            remove(promiseCode)
+        }
 
-        jobByGame[promiseCode] = null
-        isFinishedMap[promiseCode] = null
-
-        if (isFinishedMap.values.filterNotNull().isEmpty()) {
+        if (jobByGame.values.isEmpty()) {
             stopSelf()
         }
     }
