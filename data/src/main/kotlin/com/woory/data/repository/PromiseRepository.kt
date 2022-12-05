@@ -32,6 +32,8 @@ interface PromiseRepository {
 
     suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>>
 
+    suspend fun getUserHPList(gameToken: String): Result<List<AddedUserHpModel>>
+
     suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel>
 
     suspend fun getAllPromiseAlarms(): Result<List<PromiseAlarmModel>>

@@ -468,6 +468,22 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
+    override suspend fun getUserHpList(gameCode: String): Result<List<AddedUserHpModel>> =
+        withContext(scope.coroutineContext) {
+            runCatching {
+                fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .get()
+                    .await()
+                    .map {
+                        it.toObject(AddedUserHpDocument::class.java)
+                            .asDomain()
+                    }
+            }
+        }
+
+
     override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {

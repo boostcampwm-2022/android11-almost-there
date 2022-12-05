@@ -66,6 +66,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>> =
         firebaseDataSource.getUserHpById(userId, gameToken)
 
+    override suspend fun getUserHPList(gameToken: String): Result<List<AddedUserHpModel>> =
+        firebaseDataSource.getUserHpList(gameToken)
+
     override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
         firebaseDataSource.addPlayer(code, user)
 
