@@ -57,14 +57,11 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         firebaseDataSource.setUserLocation(userLocationModel)
 
-    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
+    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
         firebaseDataSource.setUserHp(gameToken, userHpModel)
 
     override suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>> =
         firebaseDataSource.getUserLocationById(userId)
-
-    override suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>> =
-        firebaseDataSource.getUserHpById(userId, gameToken)
 
     override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
         firebaseDataSource.addPlayer(code, user)

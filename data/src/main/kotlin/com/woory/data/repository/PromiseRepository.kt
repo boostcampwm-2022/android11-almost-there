@@ -24,13 +24,11 @@ interface PromiseRepository {
 
     suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
 
-    suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
+    suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit>
 
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 
     suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>>
-
-    suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>>
 
     suspend fun getPromiseAlarm(promiseCode: String): Result<PromiseAlarmModel>
 

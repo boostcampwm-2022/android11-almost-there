@@ -21,7 +21,6 @@ import com.woory.firebase.mapper.extractMagnetic
 import com.woory.firebase.model.AddedUserHpDocument
 import com.woory.firebase.model.MagneticInfoDocument
 import com.woory.firebase.model.PromiseDocument
-import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
 import com.woory.firebase.util.InviteCodeUtil
 import com.woory.firebase.util.TimeConverter.asMillis
@@ -170,46 +169,14 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
         }
 
-    override suspend fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(LOCATION_COLLECTION_NAME)
-                    .document(gameToken)
-                    .collection(HP_COLLECTION_NAME)
-                    .document(id)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, error ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
-                runCatching {
-                    val result = value.toObject(UserHpDocument::class.java)
-                    result?.let {
-                        trySend(Result.success(it.asDomain()))
-                    } ?: UNMATCHED_STATE_EXCEPTION
-                }.onFailure {
-                    trySend(Result.failure(it))
-                }
-            }
-
-            awaitClose { subscription?.remove() }
-        }
-
-    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
+    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
                 val res = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameToken)
                     .collection(HP_COLLECTION_NAME)
-                    .document(userHpModel.id)
+                    .document(userHpModel.userId)
                     .set(userHpModel.asModel())
             }
 
