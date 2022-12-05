@@ -163,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="20dp"
-                            android:text="@{vm.promiseModel != null ? vm.promiseModel.data.promiseDateTime.toString() : defaultString }" />
+                            android:text="@{vm.promiseTime}" />
 
                     </LinearLayout>
 
@@ -186,7 +186,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="20dp"
-                            android:text="@{vm.promiseModel != null ? vm.promiseModel.data.gameDateTime.toString() : defaultString }" />
+                            android:text="@{vm.gameTime}" />
 
                     </LinearLayout>
 

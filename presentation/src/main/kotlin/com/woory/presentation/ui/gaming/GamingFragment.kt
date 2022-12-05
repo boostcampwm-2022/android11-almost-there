@@ -30,6 +30,7 @@ import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.DistanceUtil.getDistance
 import com.woory.presentation.util.NO_MAGNETIC_INFO_EXCEPTION
 import com.woory.presentation.util.TAG
+import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.TimeUtils
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
@@ -166,7 +167,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                         binding.tvTime.text =
                                             TimeUtils.getDurationStringInMinuteToDay(
                                                 requireContext(),
-                                                it.updatedAt,
+                                                System.currentTimeMillis().asOffsetDateTime(),
                                                 promise.data.promiseDateTime
                                             )
                                     }
