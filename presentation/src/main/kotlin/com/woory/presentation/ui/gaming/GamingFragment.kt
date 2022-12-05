@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -60,6 +62,10 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     private val rankingAdapter by lazy {
         GamingRankingAdapter()
+    }
+
+    private val markerImage by lazy {
+        ContextCompat.getDrawable(requireActivity(), R.drawable.ic_destination_flag)?.toBitmap()
     }
 
     override fun onCreateView(
@@ -165,6 +171,17 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                             areaColor = Color.RED
                                             lineColor = Color.RED
                                         }
+                                    )
+
+                                    removeTMapMarkerItem(PROMISE_LOCATION_MARKER_ID)
+                                    addTMapMarkerItem(TMapMarkerItem().apply {
+                                        id = PROMISE_LOCATION_MARKER_ID
+                                        icon = markerImage
+                                        tMapPoint = TMapPoint(
+                                            it.centerPoint.latitude,
+                                            it.centerPoint.longitude
+                                        )
+                                    }
                                     )
 
                                     viewModel.promiseModel.value?.let { promise ->
@@ -304,5 +321,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     companion object {
         private const val MAGNETIC_CIRCLE_KEY = "Magnetic"
         private const val ARRIVE_STANDARD_LENGTH = 20
+        private const val PROMISE_LOCATION_MARKER_ID = "PromiseLocation"
     }
 }

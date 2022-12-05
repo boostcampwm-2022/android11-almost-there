@@ -3,9 +3,13 @@ package com.woory.presentation.ui.promiseinfo
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -23,6 +27,7 @@ import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class PromiseInfoFragment :
@@ -39,7 +44,8 @@ class PromiseInfoFragment :
     }
 
     private val markerImage by lazy {
-        ContextCompat.getDrawable(requireActivity(), R.drawable.bg_speech_bubble)?.toBitmap()
+        ContextCompat.getDrawable(requireActivity(), R.drawable.ic_destination_flag)?.toBitmap()
+//        ResourcesCompat.getDrawable(resources, R.drawable.ic_destination_flag, null)?.toBitmap()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

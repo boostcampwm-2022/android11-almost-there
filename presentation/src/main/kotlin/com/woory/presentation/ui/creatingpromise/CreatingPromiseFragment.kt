@@ -129,7 +129,7 @@ class CreatingPromiseFragment :
                     viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
 //                        alarmFunctions.registerAlarm(promiseAlarm)
 
-                        // Todo :: 테스트용 코드{
+                         //Todo :: 테스트용 코드{
                         alarmFunctions.registerAlarm(
                             PromiseAlarm(
                                 alarmCode = promiseAlarm.alarmCode,
