@@ -19,7 +19,6 @@ import com.skt.tmap.TMapView
 import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapCircle
 import com.skt.tmap.overlay.TMapMarkerItem
-import com.skt.tmap.overlay.TMapMarkerItem2
 import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
@@ -34,7 +33,6 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
@@ -52,6 +50,10 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     }
 
     private val shakeDialog = ShakeDeviceFragment()
+
+    private val rankingAdapter by lazy {
+        GamingRankingAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,6 +77,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+
+        binding.rvRanking.adapter = rankingAdapter
 
         binding.layoutBottomSheet.layoutCharacterImg.profileImage = defaultProfileImage
         binding.layoutBottomSheet.vm = viewModel
@@ -135,6 +139,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                 }
                             }
                         }
+
                         launch {
                             viewModel.magneticInfo.collectLatest {
                                 if (it != null) {
@@ -169,6 +174,12 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                     location.geoPoint.latitude,
                                     location.geoPoint.longitude
                                 )
+                            }
+                        }
+
+                        launch {
+                            viewModel.ranking.collectLatest {
+                                rankingAdapter.submitList(it.chunked(3)[0])
                             }
                         }
                     }

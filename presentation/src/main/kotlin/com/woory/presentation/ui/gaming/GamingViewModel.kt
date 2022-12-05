@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.overlay.TMapMarkerItem
-import com.skt.tmap.overlay.TMapMarkerItem2
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.RouteRepository
 import com.woory.data.repository.UserRepository
@@ -12,6 +11,7 @@ import com.woory.presentation.model.AddedUserHp
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.gaming.UserRanking
 import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.location.asUiModel
 import com.woory.presentation.model.mapper.magnetic.asUiModel
@@ -71,6 +71,18 @@ class GamingViewModel @Inject constructor(
     private val _userId: MutableStateFlow<String?> = MutableStateFlow(null)
     val userId: StateFlow<String?> = _userId.asStateFlow()
 
+    private val _userDefaultImage: MutableStateFlow<UserProfileImage?> = MutableStateFlow(null)
+    private val userDefaultImage: StateFlow<UserProfileImage?> = _userDefaultImage.asStateFlow()
+
+    private val _ranking: MutableStateFlow<List<UserRanking>> = MutableStateFlow(listOf())
+    val ranking: StateFlow<List<UserRanking>> = _ranking.asStateFlow()
+
+    fun setDefaultImage(profileImage: UserProfileImage) {
+        viewModelScope.launch {
+            _userDefaultImage.emit(profileImage)
+        }
+    }
+
     fun setGameCode(code: String) {
         viewModelScope.launch {
             _gameCode.emit(code)
@@ -92,20 +104,35 @@ class GamingViewModel @Inject constructor(
                 .getPromiseByCode(code)
                 .onSuccess {
                     launch {
-                        promiseRepository.getMagneticInfoByCodeAndListen(code).collect { result ->
-                            result.onSuccess { magneticInFoModel ->
-                                _magneticInfo.emit(magneticInFoModel.asUiModel())
-                            }.onFailure { throwable ->
-                                _errorState.emit(throwable)
+                        promiseRepository.getMagneticInfoByCodeAndListen(code)
+                            .collectLatest { result ->
+                                result.onSuccess { magneticInFoModel ->
+                                    _magneticInfo.emit(magneticInFoModel.asUiModel())
+                                }.onFailure { throwable ->
+                                    _errorState.emit(throwable)
+                                }
                             }
-                        }
                     }
 
                     // TODO : 실시간 순위 가져오는 코드
                     launch {
-                        promiseRepository.getGameRealtimeRanking(code).collect{ result ->
-                            result.onSuccess {
-
+                        promiseRepository.getGameRealtimeRanking(code).collectLatest { result ->
+                            result.onSuccess { list ->
+                                _ranking.emit(list.filter {
+                                        !it.lost && !it.arrived
+                                    }
+                                    .map { addedUserHpModel ->
+                                        val id = addedUserHpModel.userId
+                                        UserRanking(
+                                            userId = id,
+                                            rank = list.indexOf(addedUserHpModel) + 1,
+                                            profileImage = getUserImage(id) ?: requireNotNull(
+                                                userDefaultImage.value
+                                            ),
+                                            userName = userNameMap[id]?.value ?: "",
+                                            hp = addedUserHpModel.hp
+                                        )
+                                    })
                             }.onFailure {
 
                             }
@@ -121,7 +148,7 @@ class GamingViewModel @Inject constructor(
                         userNameMap[user.userId] = MutableStateFlow(user.data.name)
 
                         launch {
-                            promiseRepository.getUserLocation(user.userId).collect { result ->
+                            promiseRepository.getUserLocation(user.userId).collectLatest { result ->
                                 result.onSuccess { userLocationModel ->
                                     val uiLocationModel = userLocationModel.asUiModel()
                                     userLocationMap[user.userId]?.emit(uiLocationModel)
@@ -131,19 +158,21 @@ class GamingViewModel @Inject constructor(
 
                         // TODO : 유저 hp 정보 받아오기
                         launch {
-                            promiseRepository.getUserHpAndListen(code, user.userId).collect { result ->
-                                result.onSuccess { addedUserHpModel ->
-                                    userHpMap[user.userId]?.emit(addedUserHpModel.asUiState())
+                            promiseRepository.getUserHpAndListen(code, user.userId)
+                                .collectLatest { result ->
+                                    result.onSuccess { addedUserHpModel ->
+                                        userHpMap[user.userId]?.emit(addedUserHpModel.asUiState())
+                                    }
                                 }
-                            }
                         }
 
                         launch {
-                            promiseRepository.getPlayerArrived(code, myUserInfo.userID).collect() { result ->
-                                result.onSuccess { isArrived ->
-                                    _isArrived.emit(isArrived)
+                            promiseRepository.getPlayerArrived(code, myUserInfo.userID)
+                                .collectLatest { result ->
+                                    result.onSuccess { isArrived ->
+                                        _isArrived.emit(isArrived)
+                                    }
                                 }
-                            }
                         }
                     }
                     _allUsers.emit(uiModel.data.users.map { it.userId })
@@ -206,5 +235,4 @@ class GamingViewModel @Inject constructor(
             }
 
         }
-
 }
