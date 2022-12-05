@@ -212,6 +212,10 @@ class PromiseGameService : LifecycleService() {
     }
 
     private fun startForeground(promiseAlarm: PromiseAlarm) {
+        if (jobByGame.values.isNotEmpty()) {
+            return
+        }
+
         val intent = Intent(this, GamingActivity::class.java).apply {
             putPromiseAlarm(promiseAlarm)
         }
