@@ -94,6 +94,9 @@ dependencies {
     // Lottie
     implementation("com.airbnb.android:lottie:5.2.0")
 
+    // Konfetti
+    implementation ("nl.dionsegijn:konfetti-xml:2.0.2")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.0")
