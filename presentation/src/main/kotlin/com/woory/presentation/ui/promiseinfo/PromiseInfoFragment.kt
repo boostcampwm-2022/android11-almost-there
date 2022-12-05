@@ -73,10 +73,6 @@ class PromiseInfoFragment :
             clipBoard.setPrimaryClip(clip)
             makeSnackBar(getString(R.string.copy_complete))
         }
-
-        binding.btnDummyStartGame.setOnClickListener {
-            GamingActivity.startActivity(requireContext(), viewModel.gameCode.value)
-        }
     }
 
     private fun setUpMapView() {

@@ -28,16 +28,6 @@
             android:backgroundTint="@{vm.uiState instanceof PromiseUiState.Loading ? @color/loading_indicator_color : @color/white}"
             tools:context=".ui.promiseinfo.PromiseInfoFragment">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_dummy_start_game"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textSize="20sp"
-                android:text="시작"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <ProgressBar
                 android:id="@+id/ic_loading"
                 android:layout_width="wrap_content"
