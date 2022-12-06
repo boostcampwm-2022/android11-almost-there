@@ -10,6 +10,7 @@ import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
+import com.woory.data.model.UserRankingModel
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -125,4 +126,51 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
         firebaseDataSource.getIsFinishedPromise(gameCode)
+
+    override suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>> {
+        return runCatching {
+            val userHps = firebaseDataSource.getUserHpList(gameCode).getOrThrow()
+            val userProfiles = firebaseDataSource.getUserInfoList(gameCode).getOrThrow().associate {
+                it.userId to it.data
+            }
+
+            val mapUserRankingModel = { addedUserHpModel: AddedUserHpModel, rankingNumber: Int ->
+                UserRankingModel(
+                    addedUserHpModel.userId,
+                    userProfiles[addedUserHpModel.userId]
+                        ?: throw NullPointerException("userProfiles 의 key 값이 비어있습니다."),
+                    hp = addedUserHpModel.hp,
+                    rankingNumber = rankingNumber
+                )
+            }
+
+            val arrivedPartition = userHps.partition { it.arrived }
+            val firstRankingUser = arrivedPartition.first.sortedByDescending { it.hp }.map {
+                mapUserRankingModel(it, 1)
+            }
+
+            val lostPartition = arrivedPartition.second.partition { it.lost }
+
+            val temp = lostPartition.second.sortedByDescending { it.hp }
+                .mapIndexed { index, addedUserHpModel ->
+                    mapUserRankingModel(
+                        addedUserHpModel,
+                        index + 2
+                    )
+                }
+            val middleRankingUser = temp.mapIndexed { index, userRankingModel ->
+                if (index != 0 && temp[index - 1].hp == userRankingModel.hp) {
+                    userRankingModel.copy(rankingNumber = temp[index - 1].rankingNumber)
+                } else {
+                    userRankingModel
+                }
+            }
+
+            val lastRankingUser = lostPartition.first.map {
+                mapUserRankingModel(it, middleRankingUser.last().rankingNumber + 1)
+            }
+
+            firstRankingUser + middleRankingUser + lastRankingUser
+        }
+    }
 }

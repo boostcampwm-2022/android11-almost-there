@@ -10,6 +10,7 @@ import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
+import com.woory.data.model.UserRankingModel
 import kotlinx.coroutines.flow.Flow
 
 interface PromiseRepository {
@@ -73,4 +74,6 @@ interface PromiseRepository {
     suspend fun setIsFinishedPromise(gameCode: String): Result<Unit>
 
     suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>>
+
+    suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>>
 }
