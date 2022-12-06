@@ -26,6 +26,7 @@ import com.woory.firebase.util.TimeConverter.asMillis
 import com.woory.firebase.util.TimeConverter.asTimeStamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -116,7 +117,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore.runBatch { batch ->
                     batch.set(promiseCollection, promiseDataModel.asModel(generatedCode))
                     batch.set(magneticCollection, promiseDataModel.extractMagnetic(generatedCode))
-                }
+                }.await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -159,7 +160,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection(LOCATION_COLLECTION_NAME)
                     .document(userLocationModel.id)
-                    .set(userLocationModel.asModel())
+                    .set(userLocationModel.asModel()).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -176,7 +177,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameToken)
                     .collection(HP_COLLECTION_NAME)
                     .document(userHpModel.userId)
-                    .set(userHpModel.asModel())
+                    .set(userHpModel.asModel()).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -278,7 +279,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     transaction.update(reference, mapOf(RADIUS_KEY to maxValue))
                 }.addOnFailureListener {
                     throw it
-                }
+                }.await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -311,7 +312,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                             )
                         )
                     }
-                }
+                }.await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -348,7 +349,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                 fireStore.runTransaction {
                     it.update(reference, mapOf(LOST_KEY to true, HP_KEY to 0))
-                }
+                }.await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -368,7 +369,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                             userId = token,
                             updatedAt = System.currentTimeMillis().asTimeStamp()
                         )
-                    )
+                    ).await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -391,7 +392,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     userHp = snapShot.getLong(HP_KEY) ?: return@runTransaction
 
                     transaction.update(reference, mapOf(HP_KEY to userHp - 1))
-                }
+                }.await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -442,7 +443,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
                     .document(token)
-                    .update(USER_ARRIVED_KEY, true)
+                    .update(USER_ARRIVED_KEY, true).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -515,6 +516,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .update(FINISHED_PROMISE_KEY, true)
+                    .await()
             }
 
             when (val exception = result.exceptionOrNull()) {

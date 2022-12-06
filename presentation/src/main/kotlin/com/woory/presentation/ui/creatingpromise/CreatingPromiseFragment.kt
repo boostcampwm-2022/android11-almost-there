@@ -136,7 +136,7 @@ class CreatingPromiseFragment :
                                 promiseCode = promiseAlarm.promiseCode,
                                 state = promiseAlarm.state,
                                 startTime = OffsetDateTime.now().plusSeconds(10),
-                                endTime = OffsetDateTime.now().plusSeconds(30)
+                                endTime = OffsetDateTime.now().plusDays(1)
                             )
                         )
 
