@@ -42,6 +42,10 @@ interface FirebaseDataSource {
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
 
+    suspend fun getUserHpList(gameCode: String): Result<List<AddedUserHpModel>>
+
+    suspend fun getUserInfoList(gameCode: String): Result<List<UserModel>>
+
     suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
 
     suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
