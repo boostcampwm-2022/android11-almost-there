@@ -5,8 +5,3 @@ data class UserLocationModel(
     val location: GeoPointModel,
     val updatedAt: Long,
 )
-
-data class UserHpModel(
-    val id: String,
-    val hp: Int
-)

@@ -10,7 +10,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
+import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.ActivityProfileBinding
+import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.BaseActivity
 import com.woory.presentation.ui.main.MainActivity
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
@@ -24,6 +26,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
 
     internal val viewModel: ProfileViewModel by viewModels()
 
+    private val alarmFunctions = AlarmFunctions(this)
     private var code: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,11 +98,33 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.success.collectLatest { isSuccess ->
                     if (isSuccess) {
-                        val code = viewModel.promise.value?.code ?: return@collectLatest
-
-                        PromiseInfoActivity.startActivity(this@ProfileActivity, code)
-                        finish()
+                        viewModel.setPromiseAlarm()
                     }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
+                    val promise = viewModel.promise.value
+                    val code = promise?.code ?: return@collectLatest
+
+//                    alarmFunctions.registerAlarm(promiseAlarm)
+
+                    // Todo::테스트용 코드 {
+                    alarmFunctions.registerAlarm(
+                        PromiseAlarm(
+                            alarmCode = promiseAlarm.alarmCode,
+                            promiseCode = promiseAlarm.promiseCode,
+                            state = promiseAlarm.state,
+                            startTime = OffsetDateTime.now().plusSeconds(10),
+                            endTime = OffsetDateTime.now().plusSeconds(30)
+                        )
+                    )
+
+                    PromiseInfoActivity.startActivity(this@ProfileActivity, code)
+                    finish()
                 }
             }
         }

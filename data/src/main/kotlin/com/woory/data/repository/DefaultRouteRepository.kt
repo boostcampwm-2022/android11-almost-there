@@ -28,4 +28,22 @@ class DefaultRouteRepository @Inject constructor(
             }
         }
     }
+
+    override suspend fun getMinimumTime(
+        start: GeoPointModel,
+        dest: GeoPointModel
+    ): Result<Int> {
+        return runCatching {
+            val defaultPathModel = PathModel(RouteType.NONE, 0, 0)
+
+            with(networkDataSource) {
+                arrayOf(
+                    getPublicTransitRoute(start, dest),
+                    getCarRoute(start, dest),
+                    getWalkRoute(start, dest)
+                ).map { it.getOrDefault(defaultPathModel) }
+                    .filter { it.time != 0 }.minOfOrNull { it.time } ?: -1
+            }
+        }
+    }
 }
