@@ -20,7 +20,6 @@ import com.google.android.gms.location.Priority
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.R
-import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
@@ -34,7 +33,6 @@ import com.woory.presentation.model.mapper.magnetic.asUiModel
 import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.DistanceUtil
-import com.woory.presentation.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -61,11 +59,12 @@ class PromiseGameService : LifecycleService() {
     private val _userId: MutableStateFlow<String?> = MutableStateFlow(null)
     private val userId: StateFlow<String?> = _userId.asStateFlow()
 
-    private val _magneticZoneInitialRadius: MutableStateFlow<Double> = MutableStateFlow(10000.0)
+    private val _magneticZoneInitialRadius: MutableStateFlow<Double> = MutableStateFlow(
+        INITIAL_MAGNETIC_FIELD_RADIUS)
     private val magneticZoneInitialRadius: StateFlow<Double> =
         _magneticZoneInitialRadius.asStateFlow()
 
-    private val _gameTimeInitialValue: MutableStateFlow<Int> = MutableStateFlow(1)
+    private val _gameTimeInitialValue: MutableStateFlow<Int> = MutableStateFlow(INITIAL_GAME_TIME)
     private val gameTimeInitialValue: StateFlow<Int> = _gameTimeInitialValue.asStateFlow()
 
     private val _magneticZoneInfo: MutableStateFlow<MagneticInfo?> = MutableStateFlow(null)
@@ -92,12 +91,14 @@ class PromiseGameService : LifecycleService() {
 
                         magneticZoneInfo.value?.let {
                             if (DistanceUtil.getDistance(it.centerPoint, curLocation) > it.radius) {
-                                promiseRepository.decreaseUserHp(it.gameCode, id)
-                                    .onSuccess { updatedHp ->
-                                        if (updatedHp == 0L) {
-                                            stopUpdateLocation()
+                                launch {
+                                    promiseRepository.decreaseUserHp(it.gameCode, id)
+                                        .onSuccess { updatedHp ->
+                                            if (updatedHp <= 0L) {
+                                                stopUpdateLocation()
+                                            }
                                         }
-                                    }
+                                }
                             }
                         }
                     }
@@ -119,7 +120,10 @@ class PromiseGameService : LifecycleService() {
         }
 
         fusedLocationProviderClient.requestLocationUpdates(
-            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000 * 20).build(),
+            LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                1000 * LOCATION_UPDATE_SECOND_INTERVAL
+            ).build(),
             locationCallback,
             Looper.getMainLooper()
         )
@@ -162,8 +166,6 @@ class PromiseGameService : LifecycleService() {
                                                             val uiModel =
                                                                 magneticInfoModel.asUiModel()
                                                             _magneticZoneInfo.emit(uiModel)
-                                                        }.onFailure { throwable ->
-                                                            Timber.tag("123123").d(throwable)
                                                         }
                                                     }
                                             }
@@ -182,7 +184,7 @@ class PromiseGameService : LifecycleService() {
 
                                             // TODO : 주기적으로 자기장 update 하기
                                             while (true) {
-                                                delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
+                                                delay((1000 * MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL).toLong())
                                                 promiseRepository.decreaseMagneticRadius(
                                                     promiseCode,
                                                     magneticZoneInitialRadius.value / gameTimeInitialValue.value
@@ -263,6 +265,13 @@ class PromiseGameService : LifecycleService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+        stopUpdateLocation()
+    }
+
+    companion object {
+        private const val LOCATION_UPDATE_SECOND_INTERVAL = 20L
+        private const val MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL = 30
+        private const val INITIAL_MAGNETIC_FIELD_RADIUS = 10000.0
+        private const val INITIAL_GAME_TIME = 1
     }
 }

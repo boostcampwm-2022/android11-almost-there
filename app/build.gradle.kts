@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,6 +20,9 @@ android {
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val projectProperties = readProperties(file("../local.properties"))
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", projectProperties["KAKAO_NATIVE_APP_KEY"] as String)
 
         buildTypes {
             getByName("release") {
@@ -44,6 +49,12 @@ android {
     }
 }
 
+fun readProperties(propertiesFile: File) = Properties().apply {
+    propertiesFile.inputStream().use { fis ->
+        load(fis)
+    }
+}
+
 dependencies {
     // Modules
     implementation(project(":presentation"))
@@ -64,6 +75,9 @@ dependencies {
 
     // ThreeThen
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+
+    // Kakao Message
+    implementation("com.kakao.sdk:v2-share:2.11.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")

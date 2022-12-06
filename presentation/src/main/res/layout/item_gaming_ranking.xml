@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="userRanking"
+            type="com.woory.presentation.model.gaming.UserRanking" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        android:elevation="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/tv_ranking_number"
+                style="@style/Text24.Black.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{String.valueOf(userRanking.rank)}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1" />
+
+            <include
+                android:id="@+id/layout_character_img"
+                layout="@layout/layout_character_img"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_ranking_number"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/tv_ranking_number"
+                app:layout_constraintTop_toTopOf="@id/tv_ranking_number"
+                app:profileImage="@{userRanking.profileImage}" />
+
+            <TextView
+                android:id="@+id/tv_nickname"
+                style="@style/Text10.Black.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@{userRanking.userName}"
+                app:layout_constraintBottom_toTopOf="@id/hpbar"
+                app:layout_constraintStart_toEndOf="@id/layout_character_img"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="김또깡" />
+
+            <com.woory.presentation.ui.customview.HPBar
+                android:id="@+id/hpbar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:backgroundVisible="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_ranking_number"
+                app:layout_constraintStart_toStartOf="@id/tv_nickname"
+                app:layout_constraintTop_toBottomOf="@+id/tv_nickname"
+                app:maxValue="100"
+                app:minValue="0"
+                app:textVisible="false"
+                app:value="@{userRanking.hp}"
+                tools:value="50" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

@@ -10,7 +10,6 @@ import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
-import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
@@ -21,13 +20,13 @@ import com.woory.firebase.mapper.extractMagnetic
 import com.woory.firebase.model.AddedUserHpDocument
 import com.woory.firebase.model.MagneticInfoDocument
 import com.woory.firebase.model.PromiseDocument
-import com.woory.firebase.model.UserHpDocument
 import com.woory.firebase.model.UserLocationDocument
 import com.woory.firebase.util.InviteCodeUtil
 import com.woory.firebase.util.TimeConverter.asMillis
 import com.woory.firebase.util.TimeConverter.asTimeStamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -118,7 +117,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore.runBatch { batch ->
                     batch.set(promiseCollection, promiseDataModel.asModel(generatedCode))
                     batch.set(magneticCollection, promiseDataModel.extractMagnetic(generatedCode))
-                }
+                }.await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -161,7 +160,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection(LOCATION_COLLECTION_NAME)
                     .document(userLocationModel.id)
-                    .set(userLocationModel.asModel())
+                    .set(userLocationModel.asModel()).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -170,47 +169,15 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
         }
 
-    override suspend fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(LOCATION_COLLECTION_NAME)
-                    .document(gameToken)
-                    .collection(HP_COLLECTION_NAME)
-                    .document(id)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, error ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
-                runCatching {
-                    val result = value.toObject(UserHpDocument::class.java)
-                    result?.let {
-                        trySend(Result.success(it.asDomain()))
-                    } ?: UNMATCHED_STATE_EXCEPTION
-                }.onFailure {
-                    trySend(Result.failure(it))
-                }
-            }
-
-            awaitClose { subscription?.remove() }
-        }
-
-    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
+    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
                 val res = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameToken)
                     .collection(HP_COLLECTION_NAME)
-                    .document(userHpModel.id)
-                    .set(userHpModel.asModel())
+                    .document(userHpModel.userId)
+                    .set(userHpModel.asModel()).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -312,7 +279,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     transaction.update(reference, mapOf(RADIUS_KEY to maxValue))
                 }.addOnFailureListener {
                     throw it
-                }
+                }.await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -345,7 +312,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                             )
                         )
                     }
-                }
+                }.await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -382,7 +349,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                 fireStore.runTransaction {
                     it.update(reference, mapOf(LOST_KEY to true, HP_KEY to 0))
-                }
+                }.await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -402,7 +369,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                             userId = token,
                             updatedAt = System.currentTimeMillis().asTimeStamp()
                         )
-                    )
+                    ).await()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> Result.success(Unit)
@@ -425,7 +392,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     userHp = snapShot.getLong(HP_KEY) ?: return@runTransaction
 
                     transaction.update(reference, mapOf(HP_KEY to userHp - 1))
-                }
+                }.await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -476,7 +443,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
                     .document(token)
-                    .update(USER_ARRIVED_KEY, true)
+                    .update(USER_ARRIVED_KEY, true).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -549,6 +516,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .update(FINISHED_PROMISE_KEY, true)
+                    .await()
             }
 
             when (val exception = result.exceptionOrNull()) {
