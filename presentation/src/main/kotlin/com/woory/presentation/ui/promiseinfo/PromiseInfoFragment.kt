@@ -3,13 +3,9 @@ package com.woory.presentation.ui.promiseinfo
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -23,11 +19,9 @@ import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentPromiseInfoBinding
 import com.woory.presentation.ui.BaseFragment
-import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class PromiseInfoFragment :
@@ -45,7 +39,6 @@ class PromiseInfoFragment :
 
     private val markerImage by lazy {
         ContextCompat.getDrawable(requireActivity(), R.drawable.ic_destination_flag)?.toBitmap()
-//        ResourcesCompat.getDrawable(resources, R.drawable.ic_destination_flag, null)?.toBitmap()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,6 +71,10 @@ class PromiseInfoFragment :
             val clip = ClipData.newPlainText("", viewModel.gameCode.value)
             clipBoard.setPrimaryClip(clip)
             makeSnackBar(getString(R.string.copy_complete))
+        }
+
+        binding.btnCodeShare.setOnClickListener {
+//            shareCode(viewModel.gameCode.value)
         }
     }
 
@@ -122,11 +119,59 @@ class PromiseInfoFragment :
         }
     }
 
+    // TODO : 카카오톡 공유 코드
+//    private fun shareCode(code: String) {
+//        val defaultFeed = FeedTemplate(
+//            content = Content(
+//                title = "오늘 먹고싶은 것",
+//                description = "오늘은 달달한게 땡긴다",
+//                imageUrl = "https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png",
+//                link = Link(
+//                    mobileWebUrl = "https://woory-almost-there.com/main"
+//                )
+//            ),
+//            buttons = listOf(
+//                Button(
+//                    "앱으로 보기",
+//                    Link(
+//                        androidExecutionParams = mapOf("key1" to "value1"),
+//                    )
+//                )
+//            )
+//        )
+//
+//        if (ShareClient.instance.isKakaoTalkSharingAvailable(requireContext())) {
+//
+//            ShareClient.instance.shareDefault(
+//                requireContext(),
+//                defaultFeed
+//            ) { sharingResult, error ->
+//                if (error != null) {
+//
+//                } else if (sharingResult != null) {
+//                    startActivity(sharingResult.intent)
+//                }
+//            }
+//        } else {
+//            val sharerUrl = WebSharerClient.instance.makeDefaultUrl(defaultFeed)
+//            try {
+//                KakaoCustomTabsClient.openWithDefault(requireContext(), sharerUrl)
+//            } catch (e: UnsupportedOperationException) {
+//            }
+//
+//            try {
+//                KakaoCustomTabsClient.open(requireContext(), sharerUrl)
+//            } catch (e: ActivityNotFoundException) {
+//            }
+//        }
+//    }
+
     private fun makeSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {
         private const val PROMISE_LOCATION_MARKER_ID = "promiseLocation"
+        private const val TAG = "123123"
     }
 }

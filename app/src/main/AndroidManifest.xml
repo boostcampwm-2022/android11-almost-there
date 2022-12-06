@@ -14,6 +14,10 @@
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true"/>
 
+    <queries>
+        <package android:name="com.kakao.talk"/>
+    </queries>
+
     <application
         android:name=".AlmostThereApp"
         android:allowBackup="true"
@@ -38,6 +42,9 @@
             <meta-data
                 android:name="com.woory.almostthere.initializer.ThreeTenInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.woory.almostthere.initializer.KakaoSdkInitializer"
+                android:value="androidx.startup"/>
         </provider>
 
     </application>
