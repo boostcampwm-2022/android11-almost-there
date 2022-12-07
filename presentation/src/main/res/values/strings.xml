@@ -5,7 +5,7 @@
     <string name="past_promise">끝났어</string>
     <string name="past_promise_hint"><![CDATA[< 끝난 약속]]></string>
     <string name="future_promise">곧이야</string>
-    <string name="future_promise_hint"><![CDATA[예정인 약속 >]]></string>
+    <string name="future_promise_hint"><![CDATA[예정 약속 >]]></string>
     <string name="join_promise">가는중</string>
     <string name="join_promise_hint"><![CDATA[< 약속 참여]]></string>
     <string name="set_promise">만날래</string>

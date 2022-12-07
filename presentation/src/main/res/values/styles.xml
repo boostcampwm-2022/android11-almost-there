@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!--  Text Style  -->
     <style name="Text72">
         <item name="fontFamily">@font/sans400</item>
@@ -150,6 +149,19 @@
         <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:textColor">@color/almost_there_grey01</item>
+    </style>
+
+    <!-- Main MenuCardView -->
+    <style name="MenuCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialCardView.Cut</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MaterialCardView.Cut" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeTopRight">50dp</item>
+        <item name="cornerSizeBottomLeft">40dp</item>
+        <item name="cornerSizeBottomRight">10dp</item>
     </style>
 
 </resources>
