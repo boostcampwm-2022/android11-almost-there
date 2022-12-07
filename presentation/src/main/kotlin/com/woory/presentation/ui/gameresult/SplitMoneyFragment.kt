@@ -44,7 +44,7 @@ class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.frag
     }
 
     private fun setUpButtonClickListener() {
-        binding.btnInputAmountDue.setOnClickListener {
+        binding.btnInputAmountDue.btnSubmit.setOnClickListener {
             showAmountDueDialog()
         }
     }
