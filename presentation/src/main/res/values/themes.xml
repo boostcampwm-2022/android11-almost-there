@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.AlmostThere" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -10,13 +10,16 @@
         <item name="colorSecondaryVariant">@color/almost_there_primary_dark</item>
         <item name="colorOnSecondary">@color/almost_there_black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/cream</item>
     </style>
 
-    <style name="Theme.AlmostThere.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/almost_there_primary</item>
+    <style name="Theme.AlmostThere.Splash">
         <item name="android:background">@color/splash_background</item>
     </style>
 
