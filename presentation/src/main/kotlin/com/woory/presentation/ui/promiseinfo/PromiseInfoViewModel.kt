@@ -3,8 +3,14 @@ package com.woory.presentation.ui.promiseinfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.RouteRepository
+import com.woory.data.repository.UserRepository
+import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.Promise
+import com.woory.presentation.model.UserLocation
+import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.promise.PromiseMapper
+import com.woory.presentation.util.TimeConverter.asMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,13 +18,18 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.threeten.bp.Duration
+import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class PromiseInfoViewModel @Inject constructor(
-    private val repository: PromiseRepository
+    private val promiseRepository: PromiseRepository,
+    private val userRepository: UserRepository,
+    private val routeRepository: RouteRepository,
 ) : ViewModel() {
     private val _gameCode: MutableStateFlow<String> = MutableStateFlow("")
     val gameCode: StateFlow<String> = _gameCode.asStateFlow()
@@ -55,7 +66,7 @@ class PromiseInfoViewModel @Inject constructor(
             val code = gameCode.value
             _uiState.emit(PromiseUiState.Loading)
 
-            repository.getPromiseByCodeAndListen(code).collect {
+            promiseRepository.getPromiseByCodeAndListen(code).collect {
                 it.onSuccess {
                     val promiseModel = PromiseMapper.asUiModel(it)
 
@@ -83,6 +94,49 @@ class PromiseInfoViewModel @Inject constructor(
                     _errorState.emit(throwable)
                 }
             }
+        }
+    }
+
+    fun setUserCurrentLocation(startGeoPoint: GeoPoint) {
+        viewModelScope.launch {
+            userRepository.userPreferences.collectLatest {
+                val userToken = it.userID
+                val currentUserLocation =
+                    UserLocation(userToken, startGeoPoint, OffsetDateTime.now().asMillis())
+                promiseRepository.setUserLocation(currentUserLocation.asDomain())
+                    .onFailure { throwable ->
+                        _uiState.emit(PromiseUiState.Fail)
+                        _errorState.emit(throwable)
+                    }
+            }
+        }
+    }
+
+    fun setPromiseMagneticRadius(startGeoPoint: GeoPoint) {
+        viewModelScope.launch {
+            val promise = promiseModel.value ?: return@launch
+
+            val gameDuration =
+                Duration.between(promise.data.gameDateTime, promise.data.promiseDateTime)
+                    .toMinutes()
+            val destGeoPoint = promiseModel.value?.data?.promiseLocation?.geoPoint ?: return@launch
+
+            routeRepository.getMaximumVelocity(
+                startGeoPoint.asDomain(),
+                destGeoPoint.asDomain()
+            )
+                .onSuccess { velocity ->
+                    val maxRadius = velocity * gameDuration
+                    promiseRepository.updateMagneticRadius(promise.code, maxRadius)
+                        .onFailure { throwable ->
+                            _uiState.emit(PromiseUiState.Fail)
+                            _errorState.emit(throwable)
+                        }
+                }
+                .onFailure { throwable ->
+                    _uiState.emit(PromiseUiState.Fail)
+                    _errorState.emit(throwable)
+                }
         }
     }
 }
