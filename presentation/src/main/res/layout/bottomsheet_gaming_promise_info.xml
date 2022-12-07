@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="org.threeten.bp.format.DateTimeFormatter" />
+
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.gaming.GamingViewModel" />
+
+        <variable
+            name="pattern"
+            type="java.lang.String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_sheet"
+        android:padding="10dp"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.4" />
+
+        <TextView
+            android:id="@+id/tv_promise_location_const"
+            style="@style/Text18.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="@string/promise_location"
+            app:drawableStartCompat="@drawable/ic_location"
+            app:layout_constraintEnd_toEndOf="@id/guideline_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_promise_location"
+            style="@style/Text18.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.promiseModel.data.promiseLocation.address}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_promise_location_const"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintTop_toTopOf="@id/tv_promise_location_const" />
+
+        <TextView
+            android:id="@+id/tv_promise_time_const"
+            style="@style/Text18.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="@string/promise_time"
+            app:drawableStartCompat="@drawable/ic_time"
+            app:layout_constraintEnd_toEndOf="@id/guideline_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_location_const" />
+
+        <TextView
+            android:id="@+id/tv_promise_time"
+            style="@style/Text18.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.promiseModel.data.promiseDateTime.format(DateTimeFormatter.ofPattern(pattern))}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_promise_time_const"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintTop_toTopOf="@id/tv_promise_time_const" />
+
+        <TextView
+            android:id="@+id/tv_promise_people_const"
+            style="@style/Text18.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="@string/promise_people_count"
+            app:drawableStartCompat="@drawable/ic_people"
+            app:layout_constraintEnd_toEndOf="@id/guideline_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_time_const" />
+
+        <TextView
+            android:id="@+id/tv_promise_people"
+            style="@style/Text18.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(vm.promiseModel.data.users.size())}"
+            app:layout_constraintBottom_toBottomOf="@id/tv_promise_people_const"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintTop_toTopOf="@id/tv_promise_people_const" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -17,9 +17,6 @@
             name="rank"
             type="Integer" />
 
-        <!--        <variable-->
-        <!--            name="profile"-->
-        <!--            type="com.woory.presentation.model.mapper.gaming.BottomSheetProfile" />-->
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

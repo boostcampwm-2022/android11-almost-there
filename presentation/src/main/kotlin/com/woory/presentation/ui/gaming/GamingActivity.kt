@@ -9,14 +9,17 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.lifecycleScope
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityGameResultBinding
+import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseActivity
+import com.woory.presentation.ui.gameresult.GameResultActivity
 import com.woory.presentation.util.PROMISE_CODE_KEY
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity_gaming) {
@@ -26,8 +29,8 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
 
     private val viewModel: GamingViewModel by viewModels()
 
-    private val bitmap by lazy {
-        ContextCompat.getDrawable(this, R.drawable.bg_speech_bubble)?.toBitmap()
+    private val defaultProfileImage by lazy {
+        UserProfileImage("#000000", 0)
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -45,10 +48,11 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setOnListenIsFinished()
         viewModel.setGameCode(gameCode)
-        bitmap?.let {
-            viewModel.setDefaultMarker(it)
-        }
+        viewModel.setUserId()
+        viewModel.setDefaultImage(defaultProfileImage)
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -59,6 +63,17 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
         ) {
             requestPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
             return
+        }
+    }
+
+    private fun setOnListenIsFinished() {
+        lifecycleScope.launch {
+            viewModel.isFinished.collectLatest { isFinised ->
+                if (isFinised) {
+                    GameResultActivity.startActivity(this@GamingActivity,  gameCode)
+                    finish()
+                }
+            }
         }
     }
 

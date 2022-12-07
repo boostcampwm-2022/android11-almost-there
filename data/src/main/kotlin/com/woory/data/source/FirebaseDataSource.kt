@@ -4,7 +4,6 @@ import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
 import com.woory.data.model.PromiseModel
-import com.woory.data.model.UserHpModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +20,7 @@ interface FirebaseDataSource {
 
     suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
 
-    suspend fun getUserHpById(id: String, gameToken: String): Flow<Result<UserHpModel>>
-
-    suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
+    suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit>
 
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 
@@ -45,9 +42,17 @@ interface FirebaseDataSource {
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
 
+    suspend fun getUserHpList(gameCode: String): Result<List<AddedUserHpModel>>
+
+    suspend fun getUserInfoList(gameCode: String): Result<List<UserModel>>
+
     suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
 
     suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
 
     suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>>
+
+    suspend fun setIsFinishedPromise(gameCode: String): Result<Unit>
+
+    suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>>
 }

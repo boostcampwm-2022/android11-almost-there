@@ -59,7 +59,7 @@ class LocationSearchFragment :
     }
 
     private val bitmap by lazy {
-        ContextCompat.getDrawable(requireContext(), R.drawable.ic_goal_marker)?.toBitmap()
+        ContextCompat.getDrawable(requireContext(), R.drawable.ic_destination_flag)?.toBitmap()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,12 +104,13 @@ class LocationSearchFragment :
                                 val longitude = it.geoPoint.longitude
 
                                 val marker = TMapMarkerItem().apply {
-                                    id = "1231234"
+                                    id = MARKER_ID
                                     icon = bitmap
                                     tMapPoint = TMapPoint(latitude, longitude)
                                 }
 
                                 mapView.apply {
+                                    removeTMapMarkerItem(MARKER_ID)
                                     setCenterPoint(latitude, longitude)
                                     addTMapMarkerItem(marker)
                                 }
@@ -173,5 +174,6 @@ class LocationSearchFragment :
     companion object {
         private const val DEFAULT_ZOOM_LEVEL = 15
         private const val CURRENT_LOCATION_TEXT = ""
+        private const val MARKER_ID = "searchedDestination"
     }
 }

@@ -1,15 +1,6 @@
 package com.woory.data.repository
 
-import com.woory.data.model.AddedUserHpModel
-import com.woory.data.model.GeoPointModel
-import com.woory.data.model.LocationSearchModel
-import com.woory.data.model.MagneticInfoModel
-import com.woory.data.model.PromiseAlarmModel
-import com.woory.data.model.PromiseDataModel
-import com.woory.data.model.PromiseModel
-import com.woory.data.model.UserHpModel
-import com.woory.data.model.UserLocationModel
-import com.woory.data.model.UserModel
+import com.woory.data.model.*
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -57,14 +48,11 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         firebaseDataSource.setUserLocation(userLocationModel)
 
-    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
+    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
         firebaseDataSource.setUserHp(gameToken, userHpModel)
 
     override suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>> =
         firebaseDataSource.getUserLocationById(userId)
-
-    override suspend fun getUserHp(userId: String, gameToken: String): Flow<Result<UserHpModel>> =
-        firebaseDataSource.getUserHpById(userId, gameToken)
 
     override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
         firebaseDataSource.addPlayer(code, user)
@@ -116,4 +104,58 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
         firebaseDataSource.getGameRealtimeRanking(gameCode)
+
+    override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
+        firebaseDataSource.setIsFinishedPromise(gameCode)
+
+    override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
+        firebaseDataSource.getIsFinishedPromise(gameCode)
+
+
+    override suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>> {
+        return runCatching {
+            val userHps = firebaseDataSource.getUserHpList(gameCode).getOrThrow()
+            val userProfiles = firebaseDataSource.getUserInfoList(gameCode).getOrThrow().associate {
+                it.userId to it.data
+            }
+
+            val mapUserRankingModel = { addedUserHpModel: AddedUserHpModel, rankingNumber: Int ->
+                UserRankingModel(
+                    addedUserHpModel.userId,
+                    userProfiles[addedUserHpModel.userId]
+                        ?: throw NullPointerException("userProfiles 의 key 값이 비어있습니다."),
+                    hp = addedUserHpModel.hp,
+                    rankingNumber = rankingNumber
+                )
+            }
+
+            val arrivedPartition = userHps.partition { it.arrived }
+            val firstRankingUser = arrivedPartition.first.sortedByDescending { it.hp }.map {
+                mapUserRankingModel(it, 1)
+            }
+
+            val lostPartition = arrivedPartition.second.partition { it.lost }
+
+            val temp = lostPartition.second.sortedByDescending { it.hp }
+                .mapIndexed { index, addedUserHpModel ->
+                    mapUserRankingModel(
+                        addedUserHpModel,
+                        index + 2
+                    )
+                }
+            val middleRankingUser = temp.mapIndexed { index, userRankingModel ->
+                if (index != 0 && temp[index - 1].hp == userRankingModel.hp) {
+                    userRankingModel.copy(rankingNumber = temp[index - 1].rankingNumber)
+                } else {
+                    userRankingModel
+                }
+            }
+
+            val lastRankingUser = lostPartition.first.map {
+                mapUserRankingModel(it, middleRankingUser.last().rankingNumber + 1)
+            }
+
+            firstRankingUser + middleRankingUser + lastRankingUser
+        }
+    }
 }

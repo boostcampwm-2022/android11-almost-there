@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
+import com.woory.presentation.model.mapper.user.asUiModel
 import com.woory.presentation.model.user.gameresult.UserRanking
 import com.woory.presentation.model.user.gameresult.UserSplitMoneyItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +33,8 @@ class GameResultViewModel @Inject constructor(
     private val _userSplitMoneyItems: MutableStateFlow<List<UserSplitMoneyItem>?> =
         MutableStateFlow(null)
 
-    val userSplitMoneyItems: StateFlow<List<UserSplitMoneyItem>?> = _userSplitMoneyItems.asStateFlow()
+    val userSplitMoneyItems: StateFlow<List<UserSplitMoneyItem>?> =
+        _userSplitMoneyItems.asStateFlow()
 
     private val _dataLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val dataLoading: StateFlow<Boolean> = _dataLoading.asStateFlow()
@@ -49,25 +51,21 @@ class GameResultViewModel @Inject constructor(
     fun fetchUserRankingList() {
         viewModelScope.launch {
 
-            if (_gameCode.value == null) {
+            val gameCode = _gameCode.value ?: run {
                 _errorEvent.emit(IllegalArgumentException("참여 코드가 없습니다."))
                 return@launch
             }
 
             _dataLoading.emit(true)
-
-            /**
-             * TODO("추후 수정")
-            promiseRepository.getGameResultByCode().onSuccess {
-
-            }.onFailture {
-
+            promiseRepository.getUserRankings(gameCode).onSuccess {
+                val rankings =
+                    it.map { userRankingModel -> userRankingModel.asUiModel() }
+                _dataLoading.emit(false)
+                _userRankingList.emit(rankings)
+            }.onFailure {
+                _errorEvent.emit(IllegalArgumentException("참여 코드에 해당하는 결과가 없습니다."))
             }
-             * */
-
-            val testUserRankingList = listOf<UserRanking>()
             _dataLoading.emit(false)
-            _userRankingList.emit(testUserRankingList)
         }
     }
 
@@ -76,7 +74,8 @@ class GameResultViewModel @Inject constructor(
             userPreferences.collectLatest { userPreferences ->
                 val userPayments =
                     SplitMoneyLogic.calculatePayment(value, _userRankingList.value ?: emptyList())
-                val remain = UserSplitMoneyItem.Balance(value - userPayments.sumOf { it.moneyToPay })
+                val remain =
+                    UserSplitMoneyItem.Balance(value - userPayments.sumOf { it.moneyToPay })
                 _userSplitMoneyItems.emit(userPayments + remain)
                 _mySplitMoney.emit(
                     userPayments.find { it.userId == userPreferences.userID }?.moneyToPay

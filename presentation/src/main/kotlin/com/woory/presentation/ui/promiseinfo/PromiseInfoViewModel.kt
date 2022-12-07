@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +36,12 @@ class PromiseInfoViewModel @Inject constructor(
     private val _host: MutableStateFlow<String> = MutableStateFlow("")
     private val host: StateFlow<String> = _host.asStateFlow()
 
+    private val _gameTime: MutableStateFlow<String> = MutableStateFlow("")
+    val gameTime: StateFlow<String> = _gameTime.asStateFlow()
+
+    private val _promiseTime: MutableStateFlow<String> = MutableStateFlow("")
+    val promiseTime: StateFlow<String> = _promiseTime.asStateFlow()
+
     fun setGameCode(code: String) {
         viewModelScope.launch {
             _gameCode.emit(code)
@@ -51,6 +58,22 @@ class PromiseInfoViewModel @Inject constructor(
             repository.getPromiseByCodeAndListen(code).collect {
                 it.onSuccess {
                     val promiseModel = PromiseMapper.asUiModel(it)
+
+                    _gameTime.emit(
+                        promiseModel.data.gameDateTime.format(
+                            DateTimeFormatter.ofPattern(
+                                "yyyy.MM.dd hh:mm"
+                            )
+                        )
+                    )
+                    _promiseTime.emit(
+                        promiseModel.data.promiseDateTime.format(
+                            DateTimeFormatter.ofPattern(
+                                "yyyy.MM.dd hh:mm"
+                            )
+                        )
+                    )
+
                     _uiState.emit(PromiseUiState.Success)
                     _promiseModel.emit(promiseModel)
                     _host.emit(promiseModel.data.host.userId)

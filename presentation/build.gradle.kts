@@ -19,6 +19,7 @@ android {
 
         val projectProperties = readProperties(file("../local.properties"))
         buildConfigField("String", "MAP_API_KEY", projectProperties["MAP_API_KEY"] as String)
+        manifestPlaceholders["KAKAO_APP_KEY"] = projectProperties["KAKAO_NATIVE_APP_KEY"] as String
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -96,6 +97,9 @@ dependencies {
 
     // Konfetti
     implementation ("nl.dionsegijn:konfetti-xml:2.0.2")
+
+    // Kakao Message
+    implementation("com.kakao.sdk:v2-share:2.11.2")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
