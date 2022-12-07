@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.woory.presentation.ui.creatingpromise.LocationSearchResult" />
+            type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResult" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

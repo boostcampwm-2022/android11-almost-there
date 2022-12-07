@@ -1,4 +1,4 @@
-package com.woory.presentation.ui.creatingpromise
+package com.woory.presentation.ui.creatingpromise.locationsearch
 
 import android.Manifest
 import android.annotation.SuppressLint

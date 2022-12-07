@@ -1,4 +1,4 @@
-package com.woory.presentation.ui.creatingpromise
+package com.woory.presentation.ui.creatingpromise.locationsearch
 
 import android.os.Bundle
 import android.view.View
