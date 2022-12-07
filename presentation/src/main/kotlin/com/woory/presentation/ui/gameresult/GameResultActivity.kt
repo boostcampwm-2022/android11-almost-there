@@ -25,7 +25,7 @@ class GameResultActivity : BaseActivity<ActivityGameResultBinding>(R.layout.acti
 
     private fun setUpToolbar() {
         setSupportActionBar(binding.containerToolbar.toolbar)
-        binding.containerToolbar.toolbar.title = getString(R.string.promise_creation)
+        binding.containerToolbar.toolbar.title = getString(R.string.calculate)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)
