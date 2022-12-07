@@ -1,16 +1,56 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
-    <style name="Theme.AlmostThere" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.AlmostThere" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/almost_there_primary_dark</item>
+        <item name="colorPrimaryVariant">@color/almost_there_primary</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/almost_there_primary_light</item>
+        <item name="colorSecondaryVariant">@color/almost_there_primary</item>
+        <item name="colorOnSecondary">@color/almost_there_black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.AlmostThere.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/almost_there_primary</item>
+        <item name="android:background">@color/splash_background</item>
+    </style>
+
+    <style name="AlmostThere" />
+
+    <style name="AlmostThere.Main" />
+
+    <style name="AlmostThere.Clickable">
+        <item name="android:textSize">40sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="AlmostThere.Clickable.Left">
+        <item name="android:layout_marginStart">20dp</item>
+    </style>
+
+    <style name="AlmostThere.Clickable.Left.Main">
+        <item name="android:layout_marginTop">40dp</item>
+    </style>
+
+    <style name="AlmostThere.Clickable.Left.Specific">
+        <item name="android:layout_marginTop">60dp</item>
+    </style>
+
+    <style name="AlmostThere.Clickable.Right">
+        <item name="android:layout_marginEnd">20dp</item>
+    </style>
+
+    <style name="AlmostThere.Clickable.Right.Main">
+        <item name="android:layout_marginTop">40dp</item>
+    </style>
+
+    <style name="AlmostThere.Clickable.Right.Specific">
+        <item name="android:layout_marginTop">60dp</item>
     </style>
 </resources>
