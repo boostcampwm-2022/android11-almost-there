@@ -95,6 +95,7 @@ class LocationSearchFragment :
             setOnMapReadyListener {
                 zoomLevel = DEFAULT_ZOOM_LEVEL
                 fragmentViewModel.setIsMapReady(true)
+                binding.iconCenterLocationMarker.visibility = View.VISIBLE
 
                 requestPermissions(
                     arrayOf(

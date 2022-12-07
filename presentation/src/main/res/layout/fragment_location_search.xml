@@ -51,6 +51,7 @@
             android:layout_width="wrap_content"
             app:queryBackground="@color/white"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:src="@drawable/ic_destination_flag"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
