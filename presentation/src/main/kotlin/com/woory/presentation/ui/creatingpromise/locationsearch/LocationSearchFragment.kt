@@ -4,6 +4,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.PointF
+import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -46,6 +51,25 @@ class LocationSearchFragment :
         LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
+    private val locationManager by lazy {
+        requireContext().getSystemService(LocationManager::class.java)
+    }
+
+    private val connectivityManager by lazy {
+        requireContext().getSystemService(ConnectivityManager::class.java)
+    }
+
+    private val networkCallback by lazy {
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                viewLifecycleOwner.lifecycleScope.launch{
+                    setUpMapView()
+                }
+            }
+        }
+    }
+
     private lateinit var mapView: TMapView
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -65,7 +89,7 @@ class LocationSearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpMapView()
+//        setUpMapView()
         setUpButton()
         binding.vm = fragmentViewModel
         binding.activityVm = activityViewModel
@@ -87,6 +111,16 @@ class LocationSearchFragment :
                 }
             }
         }
+        registerNetworkCallback()
+    }
+
+    private fun registerNetworkCallback(){
+        val request = NetworkRequest.Builder().build()
+        connectivityManager.registerNetworkCallback(request, networkCallback)
+    }
+
+    private fun unregisterNetworkCallback(){
+        connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
     private fun setUpMapView() {
@@ -100,7 +134,8 @@ class LocationSearchFragment :
                 requestPermissions(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_NETWORK_STATE
                     )
                 )
 
@@ -176,11 +211,15 @@ class LocationSearchFragment :
 
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-            if (activityViewModel.choosedLocation.value == null) {
-                activityViewModel.setChoosedLocation(
-                    GeoPoint(it.latitude, it.longitude)
-                )
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+                if (activityViewModel.choosedLocation.value == null) {
+                    activityViewModel.setChoosedLocation(
+                        GeoPoint(it.latitude, it.longitude)
+                    )
+                }
+            }.addOnFailureListener {
+                showSnackBar(it.message ?: DEFAULT_TEXT)
             }
         }
     }
@@ -193,6 +232,7 @@ class LocationSearchFragment :
         super.onDestroyView()
         fragmentViewModel.setIsMapReady(false)
         activityViewModel.setLocationName("")
+        unregisterNetworkCallback()
     }
 
     companion object {
