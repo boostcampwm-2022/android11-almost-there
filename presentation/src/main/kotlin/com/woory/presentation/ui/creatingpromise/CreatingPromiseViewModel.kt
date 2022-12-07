@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.Color
+import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.Location
 import com.woory.presentation.model.ProfileImage
 import com.woory.presentation.model.PromiseAlarm
@@ -33,7 +34,6 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,8 +80,8 @@ class CreatingPromiseViewModel @Inject constructor(
     val locationSearchResult: StateFlow<List<LocationSearchResult>> =
         _locationSearchResult.asStateFlow()
 
-    private val _choosedLocation: MutableStateFlow<Location?> = MutableStateFlow(null)
-    val choosedLocation: StateFlow<Location?> = _choosedLocation.asStateFlow()
+    private val _choosedLocation: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
+    val choosedLocation: StateFlow<GeoPoint?> = _choosedLocation.asStateFlow()
 
     private val _locationSearchUiState: MutableStateFlow<PromiseUiState> =
         MutableStateFlow(PromiseUiState.Loading)
@@ -176,9 +176,9 @@ class CreatingPromiseViewModel @Inject constructor(
         _locationSearchResult.emit(lst)
     }
 
-    fun chooseLocation(location: Location) {
+    fun setChoosedLocation(getPoint: GeoPoint) {
         viewModelScope.launch {
-            _choosedLocation.emit(location)
+            _choosedLocation.emit(getPoint)
         }
     }
 }

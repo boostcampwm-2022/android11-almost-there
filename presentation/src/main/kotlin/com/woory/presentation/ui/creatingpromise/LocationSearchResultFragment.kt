@@ -48,7 +48,7 @@ class LocationSearchResultFragment :
     }
 
     private fun setSearchedLocation(location: LocationSearchResult) {
-        viewModel.chooseLocation(
+        viewModel.setChoosedLocation(
             Location(location.location, location.address)
         )
         findNavController().popBackStack()

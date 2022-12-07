@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
+import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
@@ -20,15 +21,17 @@ import androidx.navigation.fragment.findNavController
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchBinding
 import com.woory.presentation.model.GeoPoint
-import com.woory.presentation.model.Location
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
+import com.woory.presentation.util.animRightToLeftNavOption
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -76,75 +79,103 @@ class LocationSearchFragment :
                 zoomLevel = DEFAULT_ZOOM_LEVEL
                 viewModel.setIsMapReady(true)
 
-                if (ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(
-                        requireContext(),
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    setCurrentLocation()
-                } else {
-                    requestPermissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
                     )
-                }
+                )
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.choosedLocation.collect {
+                        viewModel.choosedLocation.collectLatest {
                             if (it != null) {
 
-                                val latitude = it.geoPoint.latitude
-                                val longitude = it.geoPoint.longitude
+                                val latitude = it.latitude
+                                val longitude = it.longitude
 
-                                val marker = TMapMarkerItem().apply {
-                                    id = MARKER_ID
-                                    icon = bitmap
-                                    tMapPoint = TMapPoint(latitude, longitude)
-                                }
+//                                val marker = TMapMarkerItem().apply {
+//                                    id = MARKER_ID
+//                                    icon = bitmap
+//                                    tMapPoint = TMapPoint(latitude, longitude)
+//                                }
 
                                 mapView.apply {
-                                    removeTMapMarkerItem(MARKER_ID)
+//                                    removeTMapMarkerItem(MARKER_ID)
                                     setCenterPoint(latitude, longitude)
-                                    addTMapMarkerItem(marker)
+//                                    addTMapMarkerItem(marker)
                                 }
                             }
                         }
                     }
-                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.choosedLocation.collect {
-                            if (it != null) {
-                                setCenterPoint(
-                                    it.geoPoint.latitude,
-                                    it.geoPoint.longitude
-                                )
-                            }
-                        }
-                    }
+//                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                        viewModel.choosedLocation.collect {
+//                            if (it != null) {
+//                                setCenterPoint(
+//                                    it.latitude,
+//                                    it.longitude
+//                                )
+//                            }
+//                        }
+//                    }
                 }
             }
+
+            setOnClickListenerCallback(object : TMapView.OnClickListenerCallback {
+                override fun onPressDown(
+                    p0: ArrayList<TMapMarkerItem>?,
+                    p1: ArrayList<TMapPOIItem>?,
+                    p2: TMapPoint?,
+                    p3: PointF?
+                ) {
+                    binding.iconCenterLocationMarker.alpha = 0.5f
+                }
+
+                override fun onPressUp(
+                    p0: ArrayList<TMapMarkerItem>?,
+                    p1: ArrayList<TMapPOIItem>?,
+                    centerPoint: TMapPoint?,
+                    p3: PointF?
+                ) {
+                    centerPoint?.let {
+                        binding.iconCenterLocationMarker.alpha = 1f
+                        viewModel.setChoosedLocation(GeoPoint(it.latitude, it.longitude))
+                    }
+                }
+            })
         }
 
         binding.containerMapview.addView(mapView)
     }
 
+    private fun requestPermissions(permissions: Array<String>) {
+        val permissionResult = permissions
+            .map {
+                ActivityCompat.checkSelfPermission(requireContext(), it) ==
+                        PackageManager.PERMISSION_GRANTED
+            }
+            .reduce { a, b -> a && b }
+
+        if (permissionResult) setCurrentLocation()
+        else requestPermissionLauncher.launch(permissions)
+    }
+
     private fun setUpButton() {
         binding.btnSearchLocation.setOnClickListener {
-            findNavController().navigate(R.id.nav_location_search_graf)
+            findNavController().navigate(
+                R.id.nav_location_search_graf,
+                null,
+                animRightToLeftNavOption
+            )
         }
 
-        binding.btnSubmit.setOnClickListener {
+        // TODO : 장소 결정 로직 추가
+        binding.btnSubmit.root.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.choosedLocation.collect {
-                    if (it != null) {
-                        viewModel.setPromiseLocation(it)
-                    }
+                viewModel.choosedLocation.collectLatest {
+//                    if (it != null) {
+//                        viewModel.setPromiseLocation(it)
+//                    }
                 }
             }
             findNavController().popBackStack()
@@ -156,11 +187,8 @@ class LocationSearchFragment :
     private fun setCurrentLocation() {
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
             if (viewModel.choosedLocation.value == null) {
-                viewModel.chooseLocation(
-                    Location(
-                        GeoPoint(it.latitude, it.longitude),
-                        CURRENT_LOCATION_TEXT
-                    )
+                viewModel.setChoosedLocation(
+                    GeoPoint(it.latitude, it.longitude)
                 )
             }
         }
