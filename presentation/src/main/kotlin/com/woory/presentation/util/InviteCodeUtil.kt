@@ -1,5 +1,7 @@
 package com.woory.presentation.util
 
+import com.woory.presentation.ui.join.FormState
+
 object InviteCodeUtil {
 
     private const val MAX_INVITE_CODE_LENGTH = 7
@@ -17,5 +19,11 @@ object InviteCodeUtil {
         return builder.toString()
     }
 
-    fun String.isValidInviteCode(): Boolean = matches(inviteCodeRegex)
+    fun getCodeState(code: String): FormState = if (code.isEmpty()) {
+        FormState.EMPTY
+    } else if (code.matches(inviteCodeRegex)) {
+        FormState.Valid()
+    } else {
+        FormState.Invalid()
+    }
 }

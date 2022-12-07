@@ -2,12 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-        <variable
-            name="title"
-            type="String" />
-    </data>
-
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -16,7 +10,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@{title}"
-            app:titleTextAppearance="@style/Text18.Black.Bold"/>
+            app:titleTextAppearance="@style/Text18.Black.Bold" />
+
     </com.google.android.material.appbar.AppBarLayout>
+
 </layout>
