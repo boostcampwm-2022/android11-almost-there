@@ -1,6 +1,7 @@
 package com.woory.presentation.binding
 
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.databinding.BindingAdapter
 import com.woory.presentation.ui.history.PromiseHistoryViewType
 
@@ -26,5 +27,13 @@ fun View.bindItemHP(type: PromiseHistoryViewType) {
     visibility = when (type) {
         PromiseHistoryViewType.ONGOING -> View.VISIBLE
         else -> View.GONE
+    }
+}
+
+@BindingAdapter("layoutMarginHorizontal")
+fun View.bindMarinHorizontal(dimen: Float) {
+    layoutParams = (layoutParams as MarginLayoutParams).apply {
+        marginStart = dimen.toInt()
+        marginEnd = dimen.toInt()
     }
 }

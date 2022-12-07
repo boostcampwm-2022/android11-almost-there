@@ -12,9 +12,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:paddingBottom="20dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btn_input_amount_due"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/btn_input_amount_due">
+            app:layout_constraintStart_toStartOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -132,7 +132,7 @@
             layout="@layout/layout_submit_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:text="@string/modification_amount_due"
+            app:buttonText="@{@string/modification_amount_due}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
