@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.getField
 import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
@@ -435,6 +436,33 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
+    override suspend fun getUserHpList(gameCode: String): Result<List<AddedUserHpModel>> =
+        withContext(scope.coroutineContext) {
+            runCatching {
+                fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(GAME_INFO_COLLECTION_NAME)
+                    .get()
+                    .await()
+                    .map {
+                        it.toObject(AddedUserHpDocument::class.java)
+                            .asDomain()
+                    }
+            }
+        }
+
+    override suspend fun getUserInfoList(gameCode: String): Result<List<UserModel>> =
+        withContext(scope.coroutineContext) {
+            runCatching {
+                fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .get()
+                    .await()
+                    .getField(USERS_KEY) ?: throw IllegalArgumentException("has not users info")
+            }
+        }
+
+
     override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
@@ -564,6 +592,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val TIMESTAMP_KEY = "timeStamp"
         private const val USER_ARRIVED_KEY = "arrived"
         private const val FINISHED_PROMISE_KEY = "finished"
+        private const val USERS_KEY = "users"
         private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
         private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")
     }
