@@ -2,10 +2,8 @@ package com.woory.presentation.ui.creatingpromise.locationsearch
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
 import android.graphics.PointF
-import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -17,6 +15,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
@@ -42,8 +42,8 @@ class LocationSearchFragment :
     private val activityViewModel: CreatingPromiseViewModel by activityViewModels()
     private val fragmentViewModel: LocationSearchViewModel by viewModels()
 
-    private val locationManager by lazy {
-        requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
+    private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
+        LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     private lateinit var mapView: TMapView
@@ -175,7 +175,7 @@ class LocationSearchFragment :
 
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
-        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener {
             if (activityViewModel.choosedLocation.value == null) {
                 activityViewModel.setChoosedLocation(
                     GeoPoint(it.latitude, it.longitude)

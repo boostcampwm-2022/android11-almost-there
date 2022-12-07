@@ -54,11 +54,21 @@ class LocationSearchResultFragment :
         }
 
         binding.etSearchLocation.setOnKeyListener { _, keyCode, event ->
-            if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                val queryText = binding.etSearchLocation.text.toString()
-                inputManager.hideSoftInputFromWindow(binding.etSearchLocation.windowToken, 0)
-                findLocation(queryText)
-                binding.etSearchLocation.clearFocus()
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_ENTER -> {
+                        val queryText = binding.etSearchLocation.text.toString()
+                        inputManager.hideSoftInputFromWindow(
+                            binding.etSearchLocation.windowToken,
+                            0
+                        )
+                        findLocation(queryText)
+                        binding.etSearchLocation.clearFocus()
+                    }
+                    KeyEvent.KEYCODE_BACK -> {
+                        binding.etSearchLocation.clearFocus()
+                    }
+                }
             }
             true
         }
