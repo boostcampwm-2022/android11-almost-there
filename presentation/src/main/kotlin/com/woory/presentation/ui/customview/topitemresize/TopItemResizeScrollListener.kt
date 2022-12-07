@@ -7,27 +7,38 @@ import timber.log.Timber
 class TopItemResizeScrollListener(private val linearLayoutManager: LinearLayoutManager) :
     RecyclerView.OnScrollListener() {
 
-    private var firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition()
+    private var firstVisibleItemIndex = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
-        if (firstVisibleItemIndex == linearLayoutManager.findFirstVisibleItemPosition()) return
-        firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition()
+        if (firstVisibleItemIndex == linearLayoutManager.findFirstCompletelyVisibleItemPosition()) return
+        firstVisibleItemIndex = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
         val lastVisibleItemIndex = linearLayoutManager.findLastVisibleItemPosition()
 
-        val start = if (firstVisibleItemIndex - 1 == -1) 0 else firstVisibleItemIndex - 1
+        val start = when {
+            firstVisibleItemIndex - 1 == -1 -> 0
+            firstVisibleItemIndex == lastVisibleItemIndex -> firstVisibleItemIndex
+            else -> firstVisibleItemIndex - 1
+        }
+
+        val highlightIndex = when (firstVisibleItemIndex) {
+            -1 -> lastVisibleItemIndex
+            else -> firstVisibleItemIndex
+        }
+
         (start..lastVisibleItemIndex).forEach { index ->
             val view = linearLayoutManager.findViewByPosition(index)
             if (view != null) {
                 val viewHolder = recyclerView.getChildViewHolder(view) as? TopItemResizeAdapter.HighlightAble
                 if (viewHolder != null) {
-                    viewHolder.setHighlight(firstVisibleItemIndex == index)
+                    viewHolder.setHighlight(highlightIndex == index)
                 } else {
-                    Timber.tag("TopItemResizeScrollListener").d("viewHolder[$index] is not HighlightAble.")
+                    Timber.tag("ScrollChangeListener")
+                        .d("%s is not HighlightAble.", "viewHolder($index)")
                 }
             } else {
-                Timber.tag("TopItemResizeScrollListener").d("itemView[$index] is null.")
+                Timber.tag("ScrollChangeListener").d("itemView($index) is null.")
             }
         }
     }

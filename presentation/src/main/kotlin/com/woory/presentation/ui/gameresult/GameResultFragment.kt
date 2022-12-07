@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGameResultBinding
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.customview.topitemresize.TopItemResizeDecoration
 import com.woory.presentation.ui.customview.topitemresize.TopItemResizeScrollListener
 import com.woory.presentation.util.festive
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +61,7 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
 
             adapter = UserRankingAdapter()
 
+            addItemDecoration(TopItemResizeDecoration())
             addOnScrollListener(TopItemResizeScrollListener(linearLayoutManager))
         }
     }
