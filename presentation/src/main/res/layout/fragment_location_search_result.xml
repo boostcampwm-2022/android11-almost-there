@@ -4,26 +4,34 @@
 
     <data>
 
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResultViewModel" />
+
+        <import type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchUiState"/>
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/sv_promise_location"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_search_location"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_submit_search"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_submit_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search"
+            android:layout_margin="10dp"
+            android:hint="@string/input_hint"
+            android:textSize="20sp"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_button_unclicked"
+            android:drawablePadding="10dp"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:imeOptions="actionSearch"
+            app:drawableStartCompat="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -34,7 +42,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/btn_submit_search" />
+            app:layout_constraintTop_toBottomOf="@id/et_search_location"/>
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/loading_indicator_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:toGone="@{!(vm.uiState instanceof LocationSearchUiState.Loading)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

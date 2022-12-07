@@ -6,9 +6,13 @@
 
         <variable
             name="vm"
+            type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchViewModel" />
+
+        <variable
+            name="activityVm"
             type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
 
-        <import type="android.view.View" />
+        <import type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchUiState"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,10 +33,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="10dp"
+            android:layout_margin="8dp"
             android:background="@drawable/bg_round_btn"
             android:enabled="@{vm.isSearchMapReady()}"
-            android:padding="10dp"
+            android:drawablePadding="8dp"
+            android:gravity="start|center_vertical"
+            android:padding="8dp"
+            android:text="@{activityVm.choosedLocationName}"
+            android:textSize="20sp"
             app:drawableStartCompat="@drawable/ic_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,15 +57,26 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <include
-            android:id="@+id/btn_submit"
+            android:id="@+id/btn_submit_choosed_location"
             layout="@layout/layout_submit_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:enabled="@{vm.isSearchMapReady()}"
-            android:text="hi"
+            app:buttonText="@{@string/ok}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/loading_indicator_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:toGone="@{!(vm.uiState instanceof LocationSearchUiState.Loading)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

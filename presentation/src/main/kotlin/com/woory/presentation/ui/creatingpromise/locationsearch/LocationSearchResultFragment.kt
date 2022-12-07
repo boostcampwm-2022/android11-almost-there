@@ -1,24 +1,32 @@
 package com.woory.presentation.ui.creatingpromise.locationsearch
 
+import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
-import androidx.appcompat.widget.SearchView
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchResultBinding
-import com.woory.presentation.model.Location
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LocationSearchResultFragment :
-    BaseFragment<FragmentLocationSearchResultBinding>(R.layout.fragment_location_search_result),
-    SearchView.OnQueryTextListener {
+    BaseFragment<FragmentLocationSearchResultBinding>(R.layout.fragment_location_search_result) {
 
-    private val viewModel: CreatingPromiseViewModel by activityViewModels()
+    private val activityViewModel: CreatingPromiseViewModel by activityViewModels()
+    private val fragmentViewModel: LocationSearchResultViewModel by viewModels()
 
     private val locationSearchResultAdapter by lazy {
         LocationSearchResultAdapter {
@@ -26,49 +34,69 @@ class LocationSearchResultFragment :
         }
     }
 
+    private val inputManager by lazy {
+        requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.svPromiseLocation.isIconified = false
-        binding.svPromiseLocation.setOnQueryTextListener(this)
-
         binding.rvSearchResult.adapter = locationSearchResultAdapter
+        binding.vm = fragmentViewModel
+        binding.root.setOnTouchListener { container, event ->
+            container.performClick()
+
+            if (event.action == MotionEvent.ACTION_UP) {
+                inputManager.hideSoftInputFromWindow(container.windowToken, 0)
+                binding.etSearchLocation.clearFocus()
+            }
+            true
+        }
+
+        binding.etSearchLocation.setOnKeyListener { _, keyCode, event ->
+            if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                val queryText = binding.etSearchLocation.text.toString()
+                inputManager.hideSoftInputFromWindow(binding.etSearchLocation.windowToken, 0)
+                findLocation(queryText)
+                binding.etSearchLocation.clearFocus()
+            }
+            true
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.locationSearchResult.collect {
-                    locationSearchResultAdapter.submitList(it)
+                launch {
+                    fragmentViewModel.locationSearchResult.collectLatest {
+                        locationSearchResultAdapter.submitList(it)
+                    }
+                }
+                launch {
+                    fragmentViewModel.errorEvent.collectLatest {
+                        showSnackBar(it.message ?: DEFAULT_STRING)
+                    }
                 }
             }
-        }
-
-        binding.btnSubmitSearch.setOnClickListener {
-            findLocation(binding.svPromiseLocation.query.toString())
         }
     }
 
     private fun setSearchedLocation(location: LocationSearchResult) {
-        viewModel.setChoosedLocation(
-            Location(location.location, location.address)
-        )
-        findNavController().popBackStack()
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.setSearchedResult(listOf())
+        fragmentViewModel.setSearchedResult(listOf())
+        activityViewModel.run {
+            setChoosedLocation(location.location)
+            setLocationName(binding.etSearchLocation.text.toString())
         }
+        findNavController().popBackStack()
     }
 
     private fun findLocation(query: String) {
-        viewModel.searchLocation(query)
+        fragmentViewModel.searchLocation(query)
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        findLocation(query ?: DEFAULT_QUERY)
-        return false
+    private fun showSnackBar(text: String) {
+        Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
-
-    override fun onQueryTextChange(newText: String?): Boolean = false
 
     companion object {
-        private const val DEFAULT_QUERY = ""
+        private const val DEFAULT_STRING = ""
     }
 }

@@ -11,13 +11,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
 import com.skt.tmap.overlay.TMapMarkerItem
@@ -27,6 +27,7 @@ import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchBinding
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
 import com.woory.presentation.util.animRightToLeftNavOption
 import com.woory.presentation.util.getActivityContext
@@ -38,7 +39,8 @@ import kotlinx.coroutines.launch
 class LocationSearchFragment :
     BaseFragment<FragmentLocationSearchBinding>(R.layout.fragment_location_search) {
 
-    private val viewModel: CreatingPromiseViewModel by activityViewModels()
+    private val activityViewModel: CreatingPromiseViewModel by activityViewModels()
+    private val fragmentViewModel: LocationSearchViewModel by viewModels()
 
     private val locationManager by lazy {
         requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
@@ -61,15 +63,30 @@ class LocationSearchFragment :
         }
     }
 
-    private val bitmap by lazy {
-        ContextCompat.getDrawable(requireContext(), R.drawable.ic_destination_flag)?.toBitmap()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpMapView()
         setUpButton()
-        binding.vm = viewModel
+        binding.vm = fragmentViewModel
+        binding.activityVm = activityViewModel
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    fragmentViewModel.promiseLocation.collectLatest {
+                        if (it != null) {
+                            activityViewModel.setPromiseLocation(it)
+                            findNavController().popBackStack()
+                        }
+                    }
+                }
+                launch {
+                    fragmentViewModel.errorEvent.collectLatest {
+                        showSnackBar(it.message ?: DEFAULT_TEXT)
+                    }
+                }
+            }
+        }
     }
 
     private fun setUpMapView() {
@@ -77,7 +94,7 @@ class LocationSearchFragment :
             setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
                 zoomLevel = DEFAULT_ZOOM_LEVEL
-                viewModel.setIsMapReady(true)
+                fragmentViewModel.setIsMapReady(true)
 
                 requestPermissions(
                     arrayOf(
@@ -88,36 +105,18 @@ class LocationSearchFragment :
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.choosedLocation.collectLatest {
+                        activityViewModel.choosedLocation.collectLatest {
                             if (it != null) {
 
                                 val latitude = it.latitude
                                 val longitude = it.longitude
 
-//                                val marker = TMapMarkerItem().apply {
-//                                    id = MARKER_ID
-//                                    icon = bitmap
-//                                    tMapPoint = TMapPoint(latitude, longitude)
-//                                }
-
                                 mapView.apply {
-//                                    removeTMapMarkerItem(MARKER_ID)
                                     setCenterPoint(latitude, longitude)
-//                                    addTMapMarkerItem(marker)
                                 }
                             }
                         }
                     }
-//                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                        viewModel.choosedLocation.collect {
-//                            if (it != null) {
-//                                setCenterPoint(
-//                                    it.latitude,
-//                                    it.longitude
-//                                )
-//                            }
-//                        }
-//                    }
                 }
             }
 
@@ -139,7 +138,7 @@ class LocationSearchFragment :
                 ) {
                     centerPoint?.let {
                         binding.iconCenterLocationMarker.alpha = 1f
-                        viewModel.setChoosedLocation(GeoPoint(it.latitude, it.longitude))
+                        activityViewModel.setChoosedLocation(GeoPoint(it.latitude, it.longitude))
                     }
                 }
             })
@@ -169,39 +168,34 @@ class LocationSearchFragment :
             )
         }
 
-        // TODO : 장소 결정 로직 추가
-        binding.btnSubmit.root.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.choosedLocation.collectLatest {
-//                    if (it != null) {
-//                        viewModel.setPromiseLocation(it)
-//                    }
-                }
-            }
-            findNavController().popBackStack()
+        binding.btnSubmitChoosedLocation.btnSubmit.setOnClickListener {
+            fragmentViewModel.findAddressByLocation(activityViewModel.choosedLocation.value)
         }
     }
-
 
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)?.let {
-            if (viewModel.choosedLocation.value == null) {
-                viewModel.setChoosedLocation(
+            if (activityViewModel.choosedLocation.value == null) {
+                activityViewModel.setChoosedLocation(
                     GeoPoint(it.latitude, it.longitude)
                 )
             }
         }
     }
 
+    private fun showSnackBar(text: String) {
+        Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.setIsMapReady(false)
+        fragmentViewModel.setIsMapReady(false)
+        activityViewModel.setLocationName("")
     }
 
     companion object {
         private const val DEFAULT_ZOOM_LEVEL = 15
-        private const val CURRENT_LOCATION_TEXT = ""
-        private const val MARKER_ID = "searchedDestination"
+        private const val DEFAULT_TEXT = ""
     }
 }

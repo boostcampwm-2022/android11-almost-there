@@ -127,4 +127,5 @@
     <string name="shake_device_description">흔들어서 도착을 알려주세요!</string>
     <string name="shake_arrive_button">터치하여 도착 🏁</string>
     <string name="promise_people_count">약속 인원</string>
+    <string name="input_hint">검색어를 입력하세요.</string>
 </resources>
