@@ -8,30 +8,37 @@
         android:layout_height="match_parent"
         tools:context=".ui.splash.SplashActivity">
 
-        <TextView
-            android:id="@+id/tv_app_name"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:breakStrategy="high_quality"
-            android:text="@string/splash_app_title"
-            android:textSize="48sp"
-            android:textStyle="bold"
-            android:textColor="@color/almost_there_black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
 
         <ImageView
             android:id="@+id/iv_splash_image"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_app"
+            android:background="@drawable/bg_splash_img"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_splash_bubble"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/bg_lying_shiba"
+            android:src="@drawable/ic_splash_bubble"
+            app:layout_constraintTop_toTopOf="@id/guideline_center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_app_name" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/tv_next"

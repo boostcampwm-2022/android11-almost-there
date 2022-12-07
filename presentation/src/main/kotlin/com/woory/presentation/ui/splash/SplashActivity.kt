@@ -21,6 +21,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
         super.onCreate(savedInstanceState)
 
         val anim = AnimationUtils.loadAnimation(this, R.anim.blink)
+        binding.ivSplashImage.clipToOutline = true
 
         handler.postDelayed({
             binding.tvNext.visibility = View.VISIBLE
