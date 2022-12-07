@@ -95,6 +95,9 @@ dependencies {
     // Lottie
     implementation("com.airbnb.android:lottie:5.2.0")
 
+    // Konfetti
+    implementation ("nl.dionsegijn:konfetti-xml:2.0.2")
+
     // Kakao Message
     implementation("com.kakao.sdk:v2-share:2.11.2")
 

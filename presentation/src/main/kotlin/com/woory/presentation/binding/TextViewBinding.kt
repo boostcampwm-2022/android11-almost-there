@@ -1,5 +1,7 @@
 package com.woory.presentation.binding
 
+import android.util.TypedValue
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
 import com.woory.presentation.R
@@ -39,4 +41,9 @@ fun AppCompatTextView.bindDateTime(dateTime: OffsetDateTime) = with(dateTime) {
         hour,
         minute
     )
+}
+
+@BindingAdapter("textSize")
+fun TextView.bindTextSize(size: Int) {
+    setTextSize(TypedValue.COMPLEX_UNIT_SP, size.toFloat())
 }

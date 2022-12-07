@@ -8,19 +8,27 @@
         <variable
             name="userRanking"
             type="com.woory.presentation.model.user.gameresult.UserRanking" />
+
+        <variable
+            name="isHighlight"
+            type="Boolean" />
+
+        <import type="android.view.View" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:alpha="0.8"
-        android:elevation="5dp">
+        layoutMarginHorizontal="@{isHighlight ? @dimen/highlight : @dimen/not_highlight}"
+        android:layout_marginVertical="10dp"
+        android:alpha="@{isHighlight ? 0.8f : 0.4f}"
+        android:clipToPadding="false"
+        android:elevation="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/tv_ranking_number"
@@ -39,28 +47,34 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"
+                android:visibility="@{isHighlight ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/tv_ranking_number"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toEndOf="@id/tv_ranking_number"
                 app:layout_constraintTop_toTopOf="@id/tv_ranking_number"
-                app:profileImage="@{userRanking.userData.profileImage}" />
+                app:profileImage="@{userRanking.userData.profileImage}"
+                tools:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_nickname"
-                style="@style/Text10.Black.Bold"
+                style="@style/Text12.Black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="@{userRanking.userData.name}"
+                textSize="@{isHighlight ? 10 : 12}"
                 app:layout_constraintBottom_toTopOf="@id/hpbar"
                 app:layout_constraintStart_toEndOf="@id/layout_character_img"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_goneMarginStart="20dp"
                 tools:text="김또깡" />
 
             <com.woory.presentation.ui.customview.HPBar
                 android:id="@+id/hpbar"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:visibility="@{isHighlight ? View.VISIBLE : View.GONE}"
                 app:backgroundVisible="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

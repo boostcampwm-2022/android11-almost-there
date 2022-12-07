@@ -7,10 +7,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentGameResultBinding
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.customview.topitemresize.TopItemResizeDecoration
+import com.woory.presentation.ui.customview.topitemresize.TopItemResizeScrollListener
+import com.woory.presentation.util.festive
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -26,8 +30,9 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
         setUpToolbar()
         setUpBind()
         setUpClickListener()
-        setUpAdapter()
+        setUpRecyclerView()
         observeData()
+        playKonfetti()
     }
 
     private fun setUpToolbar() {
@@ -48,8 +53,17 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
         binding.vm = viewModel
     }
 
-    private fun setUpAdapter() {
-        binding.rvRanking.adapter = UserRankingAdapter()
+    private fun setUpRecyclerView() {
+        binding.rvRanking.run {
+            val linearLayoutManager = LinearLayoutManager(context)
+            linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
+            layoutManager = linearLayoutManager
+
+            adapter = UserRankingAdapter()
+
+            addItemDecoration(TopItemResizeDecoration())
+            addOnScrollListener(TopItemResizeScrollListener(linearLayoutManager))
+        }
     }
 
     private fun observeData() {
@@ -77,5 +91,9 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
                 }
             }
         }
+    }
+
+    private fun playKonfetti() {
+        binding.konfetti.start(festive())
     }
 }
