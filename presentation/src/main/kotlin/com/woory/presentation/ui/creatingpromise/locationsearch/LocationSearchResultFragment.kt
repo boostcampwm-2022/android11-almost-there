@@ -12,6 +12,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchResultBinding
@@ -41,8 +43,16 @@ class LocationSearchResultFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val divider = DividerItemDecoration(requireContext(), VERTICAL)
         binding.rvSearchResult.adapter = locationSearchResultAdapter
-        binding.vm = fragmentViewModel
+        binding.run {
+            rvSearchResult.run {
+                adapter = locationSearchResultAdapter
+                addItemDecoration(divider)
+            }
+            vm = fragmentViewModel
+        }
+
         binding.root.setOnTouchListener { container, event ->
             container.performClick()
 
@@ -57,20 +67,21 @@ class LocationSearchResultFragment :
             if (event.action == KeyEvent.ACTION_DOWN) {
                 when (keyCode) {
                     KeyEvent.KEYCODE_ENTER -> {
-                        val queryText = binding.etSearchLocation.text.toString()
+                        val query = binding.etSearchLocation.text.toString()
                         inputManager.hideSoftInputFromWindow(
                             binding.etSearchLocation.windowToken,
                             0
                         )
-                        findLocation(queryText)
+                        findLocation(query)
                         binding.etSearchLocation.clearFocus()
+                        return@setOnKeyListener true
                     }
                     KeyEvent.KEYCODE_BACK -> {
                         binding.etSearchLocation.clearFocus()
                     }
                 }
             }
-            true
+            false
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
