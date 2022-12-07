@@ -18,7 +18,7 @@
         <activity
             android:name=".ui.gaming.GamingActivity"
             android:exported="false"
-            android:parentActivityName=".ui.main.MainActivity" />
+            android:parentActivityName=".ui.promiseinfo.PromiseInfoActivity" />
         <activity
             android:name=".ui.promiseinfo.PromiseInfoActivity"
             android:exported="false"
