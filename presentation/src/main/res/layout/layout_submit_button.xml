@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="text"
+            name="buttonText"
             type="String" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="0.8"
-        app:cardElevation="10dp"
+        android:elevation="10dp"
         android:background="@color/design_default_color_surface">
 
         <Button
+            android:id="@+id/btn_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="@{text}"
+            android:text="@{buttonText}"
             android:enabled="true"
             tools:text="@string/modification_amount_due" />
-    </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 
 </layout>
