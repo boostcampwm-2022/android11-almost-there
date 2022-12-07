@@ -39,6 +39,7 @@
             android:drawablePadding="8dp"
             android:gravity="start|center_vertical"
             android:padding="8dp"
+            android:textColor="@color/almost_there_black"
             android:text="@{activityVm.choosedLocationName}"
             android:textSize="20sp"
             app:drawableStartCompat="@drawable/ic_search"
