@@ -160,7 +160,7 @@
                         android:layout_marginBottom="-10dp"
                         android:contentDescription="@string/lying_shiba"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/bg_stubborn_shiba_in_profile"
+                        android:src="@drawable/bg_stubborn_shiba_in_menu"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintEnd_toEndOf="parent"
