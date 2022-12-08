@@ -7,11 +7,9 @@ import android.graphics.PointF
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
@@ -79,11 +77,7 @@ class LocationSearchFragment :
         if (isGranted) {
             setCurrentLocation()
         } else {
-            Toast.makeText(
-                requireContext(),
-                REQUIRE_PERMISSION_TEXT,
-                Toast.LENGTH_SHORT
-            ).show()
+            showSnackBar(REQUIRE_PERMISSION_TEXT)
         }
     }
 
@@ -212,7 +206,7 @@ class LocationSearchFragment :
     private fun setCurrentLocation() {
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                if (activityViewModel.choosedLocation.value == null) {
+                if (it != null && activityViewModel.choosedLocation.value == null) {
                     activityViewModel.setChoosedLocation(
                         GeoPoint(it.latitude, it.longitude)
                     )
