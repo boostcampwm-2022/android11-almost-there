@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD
 import com.google.android.material.timepicker.TimeFormat
@@ -87,6 +88,7 @@ class CreatingPromiseFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnCreatePromise.btnSubmit.isEnabled = false
+        binding.vm = viewModel
 
         setUpCollector()
         setUpListener()
@@ -97,19 +99,19 @@ class CreatingPromiseFragment :
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.promiseLocation.collectLatest {
-                        binding.btnPromiseLocation.text = it?.address ?: ""
+                        binding.btnPromiseLocation.text = it?.address ?: DEFAULT_STRING
                     }
                 }
 
                 launch {
                     viewModel.promiseDate.collectLatest {
-                        binding.btnPromiseDate.text = it?.toString() ?: ""
+                        binding.btnPromiseDate.text = it?.toString() ?: DEFAULT_STRING
                     }
                 }
 
                 launch {
                     viewModel.promiseTime.collectLatest {
-                        binding.btnPromiseTime.text = it?.toString() ?: ""
+                        binding.btnPromiseTime.text = it?.toString() ?: DEFAULT_STRING
                     }
                 }
 
@@ -121,7 +123,7 @@ class CreatingPromiseFragment :
                                 gameTime.toHours(),
                                 gameTime.toMinutes() % 60
                             )
-                        } else ""
+                        } else DEFAULT_STRING
                     }
                 }
 
@@ -142,7 +144,7 @@ class CreatingPromiseFragment :
                                 promiseCode = promiseAlarm.promiseCode,
                                 state = promiseAlarm.state,
                                 startTime = OffsetDateTime.now().plusSeconds(10),
-                                endTime = OffsetDateTime.now().plusDays(1)
+                                endTime = OffsetDateTime.now().plusSeconds(30)
                             )
                         )
 
@@ -153,6 +155,12 @@ class CreatingPromiseFragment :
                             promiseAlarm.promiseCode
                         )
                         requireActivity().finish()
+                    }
+                }
+
+                launch {
+                    viewModel.errorEvent.collectLatest {
+                        showSnackBar(it.message ?: DEFAULT_STRING)
                     }
                 }
             }
@@ -231,6 +239,10 @@ class CreatingPromiseFragment :
         gameTimePickerDialog.show()
     }
 
+    private fun showSnackBar(text: String){
+        Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
     companion object {
         private const val MIN_SELECT_HOUR = 1
         private const val MAX_SELECT_HOUR = 23
@@ -240,5 +252,7 @@ class CreatingPromiseFragment :
 
         private const val TIME_PICKER_TAG = "Time"
         private const val DATE_PICKER_TAG = "Date"
+
+        private const val DEFAULT_STRING = ""
     }
 }

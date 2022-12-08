@@ -20,4 +20,5 @@
     <color name="bronze">#FFAD8A56</color>
 
     <color name="splash_text_color">@color/almost_there_black</color>
+    <color name="icon_tint_color">@color/almost_there_white</color>
 </resources>

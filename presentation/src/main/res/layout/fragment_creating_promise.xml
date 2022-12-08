@@ -2,6 +2,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <import type="com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
+
+        <variable
+            name="vm"
+            type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -38,6 +46,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="start|center_vertical"
                     android:padding="8dp"
+                    app:drawableTint="@color/icon_tint_color"
                     android:text="어디서 볼까요?"
                     app:drawableStartCompat="@drawable/ic_location"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -71,6 +80,7 @@
                     android:gravity="start|center_vertical"
                     android:padding="8dp"
                     android:text="언제 볼까요?"
+                    app:drawableTint="@color/icon_tint_color"
                     app:drawableStartCompat="@drawable/ic_calendar"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -102,6 +112,7 @@
                     android:gravity="start|center_vertical"
                     android:padding="8dp"
                     android:text="몇 시에 볼까요?"
+                    app:drawableTint="@color/icon_tint_color"
                     app:drawableStartCompat="@drawable/ic_time"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -145,6 +156,7 @@
                     android:gravity="start|center_vertical"
                     android:padding="8dp"
                     android:text="언제 출발하나요?"
+                    app:drawableTint="@color/icon_tint_color"
                     app:drawableStartCompat="@drawable/ic_hourglass"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -179,6 +191,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/loading_indicator_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:toGone="@{!(vm.uiState instanceof CreatingPromiseUiState.Loading)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

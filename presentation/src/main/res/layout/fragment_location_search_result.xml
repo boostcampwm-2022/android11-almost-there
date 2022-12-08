@@ -8,7 +8,7 @@
             name="vm"
             type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResultViewModel" />
 
-        <import type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchUiState"/>
+        <import type="com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
 
     </data>
 
@@ -54,7 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:toGone="@{!(vm.uiState instanceof LocationSearchUiState.Loading)}" />
+            app:toGone="@{!(vm.uiState instanceof CreatingPromiseUiState.Loading)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
