@@ -20,16 +20,7 @@ class CreatingPromiseActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setUpAppBar()
-    }
-
-    private fun setUpAppBar() {
-        setSupportActionBar(binding.containerToolbar.toolbar)
-        binding.containerToolbar.toolbar.title = getString(R.string.promise_creation)
-        supportActionBar?.let {
-            it.setDisplayHomeAsUpEnabled(true)
-            it.setDisplayShowHomeEnabled(true)
-        }
+        initToolbar(binding.containerToolbar.toolbar, getString(R.string.promise_creation))
     }
 
     override fun onBackPressed() {
