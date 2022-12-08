@@ -37,3 +37,11 @@ fun View.bindMarinHorizontal(dimen: Float) {
         marginEnd = dimen.toInt()
     }
 }
+
+@BindingAdapter("layoutMarginVertical")
+fun View.bindMarinVertical(dimen: Float) {
+    layoutParams = (layoutParams as MarginLayoutParams).apply {
+        topMargin = dimen.toInt()
+        bottomMargin = dimen.toInt()
+    }
+}

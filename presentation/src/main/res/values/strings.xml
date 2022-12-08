@@ -103,7 +103,7 @@
     <string name="history_item_state_ongoing">%s 전</string>
     <string name="magnetic_radius_setting_title">자기장 반지름을 업데이트 하고 있습니다.</string>
     <string name="magnetic_radius_setting_content">게임 시작을 준비 해 주세요!</string>
-    <string name="calculate">정산</string>
+    <string name="calculate">정산하기 💸</string>
     <string name="exit">닫기</string>
     <string name="input_amount_due">정산 금액 입력</string>
     <string name="won">원</string>
@@ -130,4 +130,5 @@
     <string name="input_hint">검색어를 입력하세요.</string>
     <string name="fetch_data_fail_message">데이터를 불러오는데 실패했습니다.</string>
     <string name="store_data_fail_message">데이터 저장에 실패했습니다.</string>
+    <string name="my_ranking">내 순위 : %d위</string>
 </resources>

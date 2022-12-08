@@ -12,105 +12,132 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/almost_there_primary">
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.1" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.9" />
-
-        <nl.dionsegijn.konfetti.xml.KonfettiView
-            android:id="@+id/konfetti"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/container_game_result"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toTopOf="@id/layout_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.4" />
+
+                <View
+                    android:id="@+id/container_game_result_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/bg_game_result"
+                    app:layout_constraintBottom_toTopOf="@id/guideline_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/container_rankings"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/guideline_title"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie_game_result_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/container_game_result_title"
+                    app:layout_constraintEnd_toEndOf="@id/container_game_result_title"
+                    app:layout_constraintStart_toStartOf="@id/container_game_result_title"
+                    app:layout_constraintTop_toTopOf="@id/container_game_result_title"
+                    app:lottie_autoPlay="true"
+                    app:lottie_rawRes="@raw/finish" />
+
+                <TextView
+                    android:id="@+id/tv_game_result_my_ranking"
+                    style="@style/Text12.Black.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_tag"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="5dp"
+                    android:text="@string/my_ranking"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/container_game_result_title"
+                    app:layout_constraintEnd_toEndOf="@id/container_game_result_title"
+                    app:layout_constraintStart_toStartOf="@id/container_game_result_title"
+                    app:layout_constraintTop_toBottomOf="@id/lottie_game_result_title"
+                    app:layout_constraintVertical_bias="0.256"
+                    tools:text="내 순위 : 2위" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_ranking"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="@id/container_rankings"
+                    app:layout_constraintEnd_toEndOf="@id/container_rankings"
+                    app:layout_constraintStart_toStartOf="@id/container_rankings"
+                    app:layout_constraintTop_toTopOf="@id/container_rankings"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:listitem="@layout/item_ranking" />
+
+                <nl.dionsegijn.konfetti.xml.KonfettiView
+                    android:id="@+id/konfetti"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <include
+            android:id="@+id/layout_button"
+            layout="@layout/layout_double_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_result_image"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="-50dp"
-            android:layout_marginBottom="-30dp"
-            android:alpha="0.8"
-            android:contentDescription="@string/sudden_shiba"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bg_sudden_shiba_in_profile"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_finish"
-            style="@style/Text72.Black.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/game_result_finish"
-            android:textColor="@color/almost_there_white"
-            app:layout_constraintBottom_toTopOf="@id/rv_ranking"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_top"
-            app:layout_constraintVertical_bias="0.2" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_ranking"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/btn_calculate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_finish"
-            tools:listitem="@layout/item_ranking" />
-
-        <Button
-            android:id="@+id/btn_calculate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:backgroundTint="@color/cream"
-            android:text="@string/calculate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/iv_result_image" />
-
-        <Button
-            android:id="@+id/btn_exit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/cream"
-            android:text="@string/exit"
-            app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_calculate" />
+            app:layout_constraintTop_toBottomOf="@+id/container_game_result"
+            app:leftButtonText="@{@string/exit}"
+            app:rightButtonText="@{@string/calculate}" />
 
         <include
             layout="@layout/layout_progressbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:isLoading="@{vm.dataLoading}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/layout_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

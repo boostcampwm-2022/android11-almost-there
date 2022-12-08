@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="ib_size">48dp</dimen>
-    <dimen name="highlight">10dp</dimen>
-    <dimen name="not_highlight">20dp</dimen>
+    <dimen name="sp_0">0dp</dimen>
+    <dimen name="sp_5">0dp</dimen>
+    <dimen name="sp_10">10dp</dimen>
+    <dimen name="sp_20">20dp</dimen>
 </resources>

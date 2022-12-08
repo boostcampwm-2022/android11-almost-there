@@ -15,7 +15,8 @@
         <activity
             android:name=".ui.gameresult.GameResultActivity"
             android:exported="false"
-            android:parentActivityName=".ui.main.MainActivity" />
+            android:parentActivityName=".ui.main.MainActivity"
+            android:theme="@style/Theme.AlmostThere.GameResult" />
         <activity
             android:name=".ui.gaming.GamingActivity"
             android:exported="false"
