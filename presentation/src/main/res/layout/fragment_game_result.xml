@@ -47,7 +47,7 @@
             android:alpha="0.8"
             android:contentDescription="@string/sudden_shiba"
             android:scaleType="centerCrop"
-            android:src="@drawable/bg_sudden_shiba"
+            android:src="@drawable/bg_sudden_shiba_in_profile"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
