@@ -49,12 +49,10 @@ class CreatingPromiseFragment :
 
         val constraintsBuilder =
             CalendarConstraints.Builder()
-                .setStart(minPickCalendar.timeInMillis)
-                .setValidator(DateValidatorPointForward.from(minPickCalendar.timeInMillis))
+                .setStart(System.currentTimeMillis())
+                .setValidator(DateValidatorPointForward.now())
 
-        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar.apply {
-            add(Calendar.DAY_OF_MONTH, 1)
-        }
+        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar
 
         MaterialDatePicker.Builder.datePicker()
             .setTitleText(getString(R.string.hint_select_promise_date))
