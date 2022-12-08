@@ -13,6 +13,7 @@ import com.woory.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,11 +70,11 @@ class GameResultViewModel @Inject constructor(
             promiseRepository.getUserRankings(gameCode).onSuccess {
                 val rankings =
                     it.map { userRankingModel -> userRankingModel.asUiModel() }
-                userPreferences.collectLatest { userPreferences ->
-                    _myRankingNumber.emit(rankings.find { it.userId == userPreferences.userID }?.rankingNumber)
-                    _dataLoading.emit(false)
-                }
+
+                val user = runBlocking { userPreferences.first() }
+                _myRankingNumber.emit(rankings.find { it.userId == user.userID }?.rankingNumber)
                 _userRankingList.emit(rankings)
+
                 _dataLoading.emit(false)
             }.onFailure {
                 _errorEvent.emit(IllegalArgumentException("참여 코드에 해당하는 결과가 없습니다."))

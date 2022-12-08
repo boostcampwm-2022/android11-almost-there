@@ -62,6 +62,7 @@ class PromiseInfoFragment :
 
         setUpMapView()
         setUpButtonListener()
+        setUsers()
 
         viewModel.fetchPromiseDate()
         viewModel.fetchReadyUsers()
@@ -126,13 +127,6 @@ class PromiseInfoFragment :
                                     promise.data.promiseLocation.geoPoint.latitude,
                                     promise.data.promiseLocation.geoPoint.longitude
                                 )
-
-                                viewModel.readyUsers.collectLatest { readyUsers ->
-                                    participantAdapter.submitList(promise.data.users.map { user ->
-                                        val isReady = user.userId in readyUsers
-                                        ReadyUser(isReady, user)
-                                    })
-                                }
                             }
                         }
                     }
@@ -140,6 +134,21 @@ class PromiseInfoFragment :
             }
         }
         binding.containerMap.addView(mapView)
+    }
+
+    private fun setUsers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.users.collectLatest { users ->
+                    viewModel.readyUsers.collectLatest { readyUsers ->
+                        participantAdapter.submitList(users.map { user ->
+                            val isReady = user.userId in readyUsers
+                            ReadyUser(isReady, user)
+                        })
+                    }
+                }
+            }
+        }
     }
 
     private fun setMapItem(tMapView: TMapView, latitude: Double, longitude: Double) {
@@ -198,19 +207,19 @@ class PromiseInfoFragment :
         viewModel.isUserReady.collectLatest { readyStatus ->
             when (readyStatus) {
                 ReadyStatus.NOT -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_not)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_not)
                     binding.btnReady.btnSubmit.isEnabled = true
                 }
                 ReadyStatus.READY -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_done)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_done)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
                 ReadyStatus.BEFORE -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_before)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_before)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
                 ReadyStatus.AFTER -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_after)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_after)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
             }
