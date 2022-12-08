@@ -7,6 +7,7 @@ import com.woory.data.repository.RouteRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.Promise
+import com.woory.presentation.model.User
 import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.promise.PromiseMapper
@@ -49,6 +50,9 @@ class PromiseInfoViewModel @Inject constructor(
 
     private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
     val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
+
+    private val _users: MutableStateFlow<List<User>> = MutableStateFlow(listOf())
+    val users: StateFlow<List<User>> = _users.asStateFlow()
 
     private val _host: MutableStateFlow<String> = MutableStateFlow("")
     private val host: StateFlow<String> = _host.asStateFlow()
@@ -95,7 +99,7 @@ class PromiseInfoViewModel @Inject constructor(
             val code = gameCode.value
             _uiState.emit(PromiseUiState.Loading)
 
-            promiseRepository.getPromiseByCodeAndListen(code).collect {
+            promiseRepository.getPromiseByCodeAndListen(code).collectLatest {
                 it.onSuccess {
                     val promiseModel = PromiseMapper.asUiModel(it)
 
@@ -116,6 +120,8 @@ class PromiseInfoViewModel @Inject constructor(
 
                     _uiState.emit(PromiseUiState.Success)
                     _promiseModel.emit(promiseModel)
+                    _users.emit(promiseModel.data.users)
+
                     checkAvailReadyButton()
                     fetchUserReady()
                     _host.emit(promiseModel.data.host.userId)
@@ -232,7 +238,7 @@ class PromiseInfoViewModel @Inject constructor(
                     currentTime < readyAvailTime -> {
                         _isUserReady.emit(ReadyStatus.BEFORE)
                     }
-                    _isUserReady.value == ReadyStatus.BEFORE -> {
+                    _isUserReady.value != ReadyStatus.READY -> {
                         _isUserReady.emit(ReadyStatus.NOT)
                     }
                 }
