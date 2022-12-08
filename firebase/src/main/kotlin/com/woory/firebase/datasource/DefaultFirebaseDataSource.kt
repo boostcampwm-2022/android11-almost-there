@@ -7,7 +7,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.getField
 import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
@@ -190,7 +189,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 val res = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(code)
-                    .update("users", FieldValue.arrayUnion(user.asPromiseParticipant()))
+                    .update(USERS_KEY, FieldValue.arrayUnion(user.asPromiseParticipant()))
                     .await()
             }
 
@@ -448,12 +447,22 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun getUserInfoList(gameCode: String): Result<List<UserModel>> =
         withContext(scope.coroutineContext) {
-            runCatching {
-                fireStore.collection(PROMISE_COLLECTION_NAME)
+            val result = runCatching {
+                val task = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .get()
-                    .await()
-                    .getField(USERS_KEY) ?: throw IllegalArgumentException("has not users info")
+                Tasks.await(task)
+                val res = task.result
+                    .toObject(PromiseDocument::class.java)
+                    ?.asDomain()
+                    ?: throw UNMATCHED_STATE_EXCEPTION
+                res.data.users
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> result
+                else -> Result.failure(exception)
             }
         }
 

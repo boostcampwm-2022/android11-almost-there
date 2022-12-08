@@ -140,7 +140,7 @@ class DefaultPromiseRepository @Inject constructor(
                 .mapIndexed { index, addedUserHpModel ->
                     mapUserRankingModel(
                         addedUserHpModel,
-                        index + 2
+                        index + firstRankingUser.size + 1
                     )
                 }
             val middleRankingUser = temp.mapIndexed { index, userRankingModel ->
