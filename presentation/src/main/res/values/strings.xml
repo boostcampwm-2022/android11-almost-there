@@ -135,4 +135,7 @@
     <string name="location_off_error">위치 기능이 꺼져있습니다. 확인 후 다시 시도해주세요.</string>
     <string name="btn_ready_doing">게임 준비 진행중입니다.</string>
     <string name="status_ready">준비 완료</string>
+    <string name="input_hint">검색어를 입력하세요.</string>
+    <string name="fetch_data_fail_message">데이터를 불러오는데 실패했습니다.</string>
+    <string name="store_data_fail_message">데이터 저장에 실패했습니다.</string>
 </resources>

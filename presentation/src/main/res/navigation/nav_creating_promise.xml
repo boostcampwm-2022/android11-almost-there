@@ -17,12 +17,12 @@
 
     <fragment
         android:id="@+id/nav_location_find_frag"
-        android:name="com.woory.presentation.ui.creatingpromise.LocationSearchFragment"
+        android:name="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchFragment"
         tools:layout="@layout/fragment_location_search" />
 
     <fragment
         android:id="@+id/nav_location_search_graf"
-        android:name="com.woory.presentation.ui.creatingpromise.LocationSearchResultFragment"
+        android:name="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResultFragment"
         tools:layout="@layout/fragment_location_search_result"/>
 
 </navigation>

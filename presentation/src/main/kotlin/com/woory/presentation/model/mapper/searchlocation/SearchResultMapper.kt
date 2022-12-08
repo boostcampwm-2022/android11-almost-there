@@ -5,7 +5,7 @@ import com.woory.data.model.LocationSearchModel
 import com.woory.presentation.model.mapper.UiModelMapper
 import com.woory.presentation.model.mapper.location.asDomain
 import com.woory.presentation.model.mapper.location.asUiModel
-import com.woory.presentation.ui.creatingpromise.LocationSearchResult
+import com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResult
 
 object SearchResultMapper : UiModelMapper<LocationSearchResult, LocationSearchModel> {
     override fun asUiModel(domain: LocationSearchModel): LocationSearchResult =

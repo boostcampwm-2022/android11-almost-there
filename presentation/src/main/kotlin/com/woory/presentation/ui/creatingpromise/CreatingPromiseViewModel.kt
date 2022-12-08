@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.Color
+import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.Location
 import com.woory.presentation.model.ProfileImage
 import com.woory.presentation.model.PromiseAlarm
@@ -15,8 +16,6 @@ import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
-import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
-import com.woory.presentation.ui.promiseinfo.PromiseUiState
 import com.woory.presentation.util.TimeConverter.zoneOffset
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +32,6 @@ import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,27 +70,15 @@ class CreatingPromiseViewModel @Inject constructor(
     private val _promiseSettingEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
     val promiseSettingEvent: SharedFlow<PromiseAlarm> = _promiseSettingEvent.asSharedFlow()
 
-    private val _locationSearchResult: MutableStateFlow<List<LocationSearchResult>> =
-        MutableStateFlow(
-            listOf()
-        )
+    private val _choosedLocation: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
+    val choosedLocation: StateFlow<GeoPoint?> = _choosedLocation.asStateFlow()
 
-    val locationSearchResult: StateFlow<List<LocationSearchResult>> =
-        _locationSearchResult.asStateFlow()
+    private val _choosedLocationName: MutableStateFlow<String> = MutableStateFlow("")
+    val choosedLocationName: StateFlow<String> = _choosedLocationName.asStateFlow()
 
-    private val _choosedLocation: MutableStateFlow<Location?> = MutableStateFlow(null)
-    val choosedLocation: StateFlow<Location?> = _choosedLocation.asStateFlow()
-
-    private val _locationSearchUiState: MutableStateFlow<PromiseUiState> =
-        MutableStateFlow(PromiseUiState.Loading)
-    val locationSearchUiState: StateFlow<PromiseUiState> = _locationSearchUiState.asStateFlow()
-
-    private val _isSearchMapReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isSearchMapReady: StateFlow<Boolean> = _isSearchMapReady.asStateFlow()
-
-    fun setIsMapReady(isMapReady: Boolean) {
+    fun setLocationName(name: String){
         viewModelScope.launch {
-            _isSearchMapReady.emit(isMapReady)
+            _choosedLocationName.emit(name)
         }
     }
 
@@ -164,21 +150,9 @@ class CreatingPromiseViewModel @Inject constructor(
         }
     }
 
-    fun searchLocation(query: String) {
+    fun setChoosedLocation(getPoint: GeoPoint) {
         viewModelScope.launch {
-            promiseRepository.getSearchedLocationByKeyword(query).onSuccess {
-                setSearchedResult(it.map { SearchResultMapper.asUiModel(it) })
-            }
-        }
-    }
-
-    suspend fun setSearchedResult(lst: List<LocationSearchResult>) {
-        _locationSearchResult.emit(lst)
-    }
-
-    fun chooseLocation(location: Location) {
-        viewModelScope.launch {
-            _choosedLocation.emit(location)
+            _choosedLocation.emit(getPoint)
         }
     }
 }
