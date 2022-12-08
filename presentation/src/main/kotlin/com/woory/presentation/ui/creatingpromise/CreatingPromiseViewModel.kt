@@ -13,6 +13,7 @@ import com.woory.presentation.model.PromiseData
 import com.woory.presentation.model.User
 import com.woory.presentation.model.UserData
 import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.exception.InvalidGameTimeException
 import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
@@ -89,12 +90,6 @@ class CreatingPromiseViewModel @Inject constructor(
         }
     }
 
-    private fun setStateSuccess() {
-        viewModelScope.launch {
-            _uiState.emit(CreatingPromiseUiState.Success)
-        }
-    }
-
     private fun setStateError(throwable: Throwable) {
         viewModelScope.launch {
             _uiState.emit(CreatingPromiseUiState.Success)
@@ -137,8 +132,28 @@ class CreatingPromiseViewModel @Inject constructor(
         }
     }
 
+    private fun isNotEnabledPromiseDateTime(gameTime: OffsetDateTime): Boolean {
+        val nowDateTime = OffsetDateTime.now()
+        return nowDateTime.isAfter(gameTime.minusMinutes(MIN_DURATION_MINUTES))
+    }
+
     fun setPromise() {
         viewModelScope.launch {
+            val promiseLocation = _promiseLocation.value ?: return@launch
+            val promiseDate = _promiseDate.value ?: return@launch
+            val promiseTime = _promiseTime.value ?: return@launch
+            val readyDuration = _readyDuration.value ?: return@launch
+
+            val promiseDateTime =
+                OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+            val gameDateTime =
+                OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+                    .minus(readyDuration)
+
+            if (isNotEnabledPromiseDateTime(gameDateTime)) {
+                _errorEvent.emit(InvalidGameTimeException())
+                return@launch
+            }
 
             setStateLoading()
 
@@ -148,16 +163,6 @@ class CreatingPromiseViewModel @Inject constructor(
                     profileImageBackgroundColor.value.toString(),
                     profileImageIndex.value
                 )
-                val promiseLocation = _promiseLocation.value ?: return@collectLatest
-                val promiseDate = _promiseDate.value ?: return@collectLatest
-                val promiseTime = _promiseTime.value ?: return@collectLatest
-                val readyDuration = _readyDuration.value ?: return@collectLatest
-
-                val promiseDateTime =
-                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
-                val gameDateTime =
-                    OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
-                        .minus(readyDuration)
 
                 val user = User(userPreferences.userID, UserData(name, profileImage))
 
@@ -187,5 +192,9 @@ class CreatingPromiseViewModel @Inject constructor(
         viewModelScope.launch {
             _choosedLocation.emit(getPoint)
         }
+    }
+
+    companion object {
+        const val MIN_DURATION_MINUTES = 29L
     }
 }

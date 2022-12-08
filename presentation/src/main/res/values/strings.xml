@@ -23,6 +23,7 @@
     <string name="game_start_time">게임 시작 시간</string>
     <string name="date">%d년 %d월 %d일</string>
     <string name="time">%d시 %d분</string>
+    <string name="time_title">시간</string>
     <string name="before_time">%d시간 %d분 전</string>
     <string name="game_start">게임 시작</string>
     <string name="create">생성</string>
@@ -89,7 +90,7 @@
     <string name="notification_finish_promise_title">게임 종료 중</string>
     <string name="notification_finished_title">게임 종료!</string>
     <string name="notification_finished_content">게임이 종료되었습니다. 게임 결과를 확인하려면 터치하세요.</string>
-    <string name="unknown_error" />
+    <string name="unknown_error">알 수 없는 에러입니다. : %s</string>
     <string name="past_promise_history">과거 약속 정보</string>
     <string name="future_promise_history">미래 약속 정보</string>
     <string name="rank_label">순위</string>
@@ -138,6 +139,8 @@
     <string name="input_hint">검색어를 입력하세요.</string>
     <string name="fetch_data_fail_message">데이터를 불러오는데 실패했습니다.</string>
     <string name="store_data_fail_message">데이터 저장에 실패했습니다.</string>
+    <string name="invalid_game_date_time_message">게임 시작 시간은 현재보다 최소 30분 이상이어야 합니다.</string>
+    <string name="invalid_for_creating_promise_data_empty">약속을 위한 정보가 비어있습니다.</string>
     <string name="promise_location_text">어디서 볼까요?</string>
     <string name="promise_location_hint">약속 장소 입력...</string>
     <string name="promise_date_text">언제 볼까요?</string>
@@ -147,4 +150,5 @@
     <string name="game_time_text">언제 출발하나요?</string>
     <string name="game_time_hint">게임 시간 설정...</string>
     <string name="my_ranking">내 순위 : %d위</string>
+    <string name="location_title">위치</string>
 </resources>
