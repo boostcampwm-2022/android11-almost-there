@@ -40,12 +40,12 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
     }
 
     private fun setUpClickListener() {
-        binding.btnCalculate.setOnClickListener {
-            findNavController().navigate(R.id.nav_calculate_frag)
-        }
-
-        binding.btnExit.setOnClickListener {
+        binding.layoutButton.btnLeft.setOnClickListener {
             requireActivity().finish()
+        }
+        binding.layoutButton.btnRight.setOnClickListener {
+            viewModel.setShowDialogEvent()
+            findNavController().navigate(R.id.nav_calculate_frag)
         }
     }
 
@@ -87,6 +87,13 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
                 launch {
                     viewModel.userRankingList.collectLatest {
                         (binding.rvRanking.adapter as UserRankingAdapter).submitList(it)
+                    }
+                }
+
+                launch {
+                    viewModel.myRankingNumber.collectLatest {
+                        binding.tvGameResultMyRanking.text =
+                            String.format(getString(R.string.my_ranking), it)
                     }
                 }
             }

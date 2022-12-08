@@ -21,6 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="@{buttonText}"
+            android:background="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
             android:enabled="true"
             android:background="?attr/colorPrimary"
             android:textColor="?attr/colorOnPrimary"

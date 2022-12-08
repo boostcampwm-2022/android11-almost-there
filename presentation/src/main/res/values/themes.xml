@@ -23,39 +23,23 @@
         <item name="android:background">@color/splash_background</item>
     </style>
 
-    <style name="AlmostThere" />
-
-    <style name="AlmostThere.Main" />
-
-    <style name="AlmostThere.Clickable">
-        <item name="android:textSize">40sp</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="Theme.AlmostThere.GameResult" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimaryVariant">@color/green_light</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/green_dark</item>
+        <item name="colorSecondaryVariant">@color/green_light</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/white</item>
     </style>
 
-    <style name="AlmostThere.Clickable.Left">
-        <item name="android:layout_marginStart">20dp</item>
-    </style>
-
-    <style name="AlmostThere.Clickable.Left.Main">
-        <item name="android:layout_marginTop">40dp</item>
-    </style>
-
-    <style name="AlmostThere.Clickable.Left.Specific">
-        <item name="android:layout_marginTop">60dp</item>
-    </style>
-
-    <style name="AlmostThere.Clickable.Right">
-        <item name="android:layout_marginEnd">20dp</item>
-    </style>
-
-    <style name="AlmostThere.Clickable.Right.Main">
-        <item name="android:layout_marginTop">40dp</item>
-    </style>
-
-    <style name="AlmostThere.Clickable.Right.Specific">
-        <item name="android:layout_marginTop">60dp</item>
-    </style>
 </resources>

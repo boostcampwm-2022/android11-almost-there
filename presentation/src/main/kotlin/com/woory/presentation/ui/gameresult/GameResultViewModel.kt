@@ -7,6 +7,9 @@ import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.mapper.user.asUiModel
 import com.woory.presentation.model.user.gameresult.UserRanking
 import com.woory.presentation.model.user.gameresult.UserSplitMoneyItem
+import com.woory.presentation.util.flow.EventFlow
+import com.woory.presentation.util.flow.MutableEventFlow
+import com.woory.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,7 +30,10 @@ class GameResultViewModel @Inject constructor(
 
     private val userPreferences = userRepository.userPreferences
 
-    private val _mySplitMoney: MutableStateFlow<Int?> = MutableStateFlow(null)
+    private val _myRankingNumber: MutableStateFlow<Int?> = MutableStateFlow(0)
+    val myRankingNumber: StateFlow<Int?> = _myRankingNumber.asStateFlow()
+
+    private val _mySplitMoney: MutableStateFlow<Int?> = MutableStateFlow(0)
     val mySplitMoney: StateFlow<Int?> = _mySplitMoney.asStateFlow()
 
     private val _userSplitMoneyItems: MutableStateFlow<List<UserSplitMoneyItem>?> =
@@ -35,6 +41,9 @@ class GameResultViewModel @Inject constructor(
 
     val userSplitMoneyItems: StateFlow<List<UserSplitMoneyItem>?> =
         _userSplitMoneyItems.asStateFlow()
+
+    private val _showDialogEvent: MutableEventFlow<Unit> = MutableEventFlow()
+    val showDialogEvent: EventFlow<Unit> = _showDialogEvent.asEventFlow()
 
     private val _dataLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val dataLoading: StateFlow<Boolean> = _dataLoading.asStateFlow()
@@ -60,12 +69,16 @@ class GameResultViewModel @Inject constructor(
             promiseRepository.getUserRankings(gameCode).onSuccess {
                 val rankings =
                     it.map { userRankingModel -> userRankingModel.asUiModel() }
-                _dataLoading.emit(false)
+                userPreferences.collectLatest { userPreferences ->
+                    _myRankingNumber.emit(rankings.find { it.userId == userPreferences.userID }?.rankingNumber)
+                    _dataLoading.emit(false)
+                }
                 _userRankingList.emit(rankings)
+                _dataLoading.emit(false)
             }.onFailure {
                 _errorEvent.emit(IllegalArgumentException("참여 코드에 해당하는 결과가 없습니다."))
+                _dataLoading.emit(false)
             }
-            _dataLoading.emit(false)
         }
     }
 
@@ -81,6 +94,12 @@ class GameResultViewModel @Inject constructor(
                     userPayments.find { it.userId == userPreferences.userID }?.moneyToPay
                 )
             }
+        }
+    }
+
+    fun setShowDialogEvent() {
+        viewModelScope.launch {
+            _showDialogEvent.emit(Unit)
         }
     }
 }

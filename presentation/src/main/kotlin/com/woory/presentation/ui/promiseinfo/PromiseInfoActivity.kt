@@ -27,17 +27,8 @@ class PromiseInfoActivity :
         super.onCreate(savedInstanceState)
 
         FragmentComponentManager.findActivity(this)
-        setUpAppBar()
+        initToolbar(binding.containerToolbar.toolbar, getString(R.string.promise_info))
         viewModel.setGameCode(gameCode)
-    }
-
-    private fun setUpAppBar() {
-        setSupportActionBar(binding.containerToolbar.toolbar)
-        binding.containerToolbar.toolbar.title = getString(R.string.promise_info)
-        supportActionBar?.let {
-            it.setDisplayHomeAsUpEnabled(true)
-            it.setDisplayShowHomeEnabled(true)
-        }
     }
 
     companion object {

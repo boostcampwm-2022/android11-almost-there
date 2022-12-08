@@ -10,9 +10,11 @@ import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
+import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,14 +46,28 @@ class AlarmRestartService: LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         lifecycle.coroutineScope.launch {
+            val currentTime = OffsetDateTime.now()
+
             repository.getAllPromiseAlarms()
                 .onSuccess { promiseAlarmModels ->
                     promiseAlarmModels.forEach { promiseAlarmModel ->
-                        alarmFunctions.registerAlarm(promiseAlarmModel.asUiModel())
+                        val promiseAlarm = promiseAlarmModel.asUiModel()
+
+                        when (promiseAlarm.state) {
+                            AlarmState.READY,
+                            AlarmState.START -> {
+                                if (currentTime < promiseAlarmModel.startTime) {
+                                    alarmFunctions.registerAlarm(promiseAlarmModel.asUiModel())
+                                }
+                            }
+                            AlarmState.END -> {
+                                alarmFunctions.registerAlarm(promiseAlarmModel.asUiModel())
+                            }
+                        }
                     }
                 }
                 .onFailure {
-                    Timber.tag("TAG").d("Error -> $it")
+                    Timber.tag("ERROR").d("Error -> $it")
                 }
                 .also {
                     stopSelf()

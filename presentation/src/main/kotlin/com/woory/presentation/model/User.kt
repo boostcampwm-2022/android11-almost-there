@@ -3,6 +3,11 @@ package com.woory.presentation.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+data class ReadyUser(
+    val isReady: Boolean,
+    val user: User,
+)
+
 @Parcelize
 data class User(
     val userId: String,
