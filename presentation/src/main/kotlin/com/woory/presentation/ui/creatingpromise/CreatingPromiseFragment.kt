@@ -45,24 +45,25 @@ class CreatingPromiseFragment :
     }
 
     private val promiseDatePicker by lazy {
-        val minPickCalendar = Calendar.getInstance()
-
         val constraintsBuilder =
             CalendarConstraints.Builder()
                 .setStart(System.currentTimeMillis())
                 .setValidator(DateValidatorPointForward.now())
-
-        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar
-
-        MaterialDatePicker.Builder.datePicker()
+        val materialDatePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText(getString(R.string.hint_select_promise_date))
-            .setSelection(lastPickCalendar.timeInMillis)
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .setCalendarConstraints(constraintsBuilder.build())
             .build()
+
+        materialDatePicker.addOnPositiveButtonClickListener {
+            viewModel.setPromiseDate(it.asOffsetDateTime().toLocalDate())
+        }
+
+        materialDatePicker
     }
 
-    private val promiseTimePickerBuilder by lazy {
-        MaterialTimePicker.Builder()
+    private val promiseTimePicker by lazy {
+        val materialTimePicker = MaterialTimePicker.Builder()
             .setInputMode(INPUT_MODE_KEYBOARD)
             .setTimeFormat(TimeFormat.CLOCK_24H)
             .setTitleText(getString(R.string.hint_select_promise_time))
@@ -212,9 +213,6 @@ class CreatingPromiseFragment :
 
     private fun showPromiseDatePickerDialog() {
         promiseDatePicker.show(parentFragmentManager, DATE_PICKER_TAG)
-        promiseDatePicker.addOnPositiveButtonClickListener {
-            viewModel.setPromiseDate(it.asOffsetDateTime().toLocalDate())
-        }
     }
 
     private fun showPromiseTimePickerDialog() {
