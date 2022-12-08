@@ -73,20 +73,23 @@ class PromiseInfoFragment :
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                setReadyButton()
-            }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                setAlarm()
+                launch {
+                    viewModel.errorState.collect {
+                        val errorMessage =
+                            it.message ?: requireContext().resources.getString(R.string.unknown_error)
+                        makeSnackBar(
+                            "Error : $errorMessage"
+                        )
+                    }
+                }
 
-                viewModel.errorState.collect {
-                    val errorMessage =
-                        it.message ?: requireContext().resources.getString(R.string.unknown_error)
-                    makeSnackBar(
-                        "Error : $errorMessage"
-                    )
+                launch {
+                    setAlarm()
+                }
+
+                launch {
+                    setReadyButton()
                 }
             }
         }

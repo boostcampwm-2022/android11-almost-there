@@ -279,8 +279,6 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                     val maxValue = maxOf(serverRadius, radius.toLong())
                     transaction.update(reference, mapOf(RADIUS_KEY to maxValue))
-                }.addOnFailureListener {
-                    throw it
                 }.await()
             }
             when (val exception = result.exceptionOrNull()) {

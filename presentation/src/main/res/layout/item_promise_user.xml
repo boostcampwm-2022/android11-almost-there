@@ -22,7 +22,7 @@
         android:id="@+id/profileImageLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:layout_margin="20dp"
         android:background="@drawable/bg_profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
