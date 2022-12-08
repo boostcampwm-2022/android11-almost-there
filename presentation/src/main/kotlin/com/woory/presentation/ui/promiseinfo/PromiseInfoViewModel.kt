@@ -232,7 +232,7 @@ class PromiseInfoViewModel @Inject constructor(
                     currentTime < readyAvailTime -> {
                         _isUserReady.emit(ReadyStatus.BEFORE)
                     }
-                    _isUserReady.value == ReadyStatus.BEFORE -> {
+                    _isUserReady.value != ReadyStatus.READY -> {
                         _isUserReady.emit(ReadyStatus.NOT)
                     }
                 }

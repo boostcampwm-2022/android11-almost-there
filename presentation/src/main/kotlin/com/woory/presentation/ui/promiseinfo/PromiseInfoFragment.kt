@@ -198,19 +198,19 @@ class PromiseInfoFragment :
         viewModel.isUserReady.collectLatest { readyStatus ->
             when (readyStatus) {
                 ReadyStatus.NOT -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_not)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_not)
                     binding.btnReady.btnSubmit.isEnabled = true
                 }
                 ReadyStatus.READY -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_done)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_done)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
                 ReadyStatus.BEFORE -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_before)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_before)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
                 ReadyStatus.AFTER -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_after)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_after)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
             }
