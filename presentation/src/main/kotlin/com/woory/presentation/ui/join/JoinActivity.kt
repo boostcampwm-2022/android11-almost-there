@@ -4,65 +4,47 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityJoinBinding
+import com.woory.presentation.extension.repeatOnStarted
+import com.woory.presentation.model.UiState
 import com.woory.presentation.ui.BaseActivity
+import com.woory.presentation.util.handleLoading
+import com.woory.presentation.util.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class JoinActivity : BaseActivity<ActivityJoinBinding>(R.layout.activity_join) {
 
-    internal val viewModel: JoinViewModel by viewModels()
+    private val viewModel: JoinViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.lifecycleOwner = this@JoinActivity
         binding.vm = viewModel
 
-        initToolbar()
+        initToolbar(binding.containerToolbar.toolbar, getString(R.string.join))
         bindViews()
     }
 
-    private fun initToolbar() {
-        setSupportActionBar(binding.containerToolbar.toolbar)
-        binding.containerToolbar.toolbar.title = getString(R.string.join)
-        supportActionBar?.let {
-            it.setDisplayHomeAsUpEnabled(true)
-            it.setDisplayShowHomeEnabled(true)
+    private fun bindViews() = with(binding) {
+        repeatOnStarted {
+            viewModel.uiState.collectLatest { uiState ->
+                handleState(uiState)
+            }
         }
     }
 
-    private fun bindViews() = with(binding) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.promise.collectLatest { promise ->
-                    promise ?: return@collectLatest
-
-                    ProfileActivity.startActivity(this@JoinActivity, promise.code)
-                    finish()
-                }
-            }
+    private fun handleState(state: UiState<String>) = when (state) {
+        is UiState.Loading -> handleLoading(binding.loadingIndicator, true)
+        is UiState.Error -> {
+            handleLoading(binding.loadingIndicator, false)
+            showSnackBar(binding.root, getString(R.string.invalid_invite_code))
         }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.errorType.collectLatest { codeState ->
-                    codeState ?: return@collectLatest
-
-                    Snackbar.make(
-                        binding.root,
-                        codeState.getMessage(this@JoinActivity),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        is UiState.Success -> {
+            handleLoading(binding.loadingIndicator, false)
+            ProfileActivity.startActivity(this@JoinActivity, state.data)
         }
     }
 
