@@ -76,7 +76,33 @@ class CreatingPromiseViewModel @Inject constructor(
     private val _choosedLocationName: MutableStateFlow<String> = MutableStateFlow("")
     val choosedLocationName: StateFlow<String> = _choosedLocationName.asStateFlow()
 
-    fun setLocationName(name: String){
+    private val _uiState: MutableStateFlow<CreatingPromiseUiState> =
+        MutableStateFlow(CreatingPromiseUiState.Success)
+    val uiState: StateFlow<CreatingPromiseUiState> = _uiState.asStateFlow()
+
+    private val _errorEvent: MutableSharedFlow<Throwable> = MutableSharedFlow()
+    val errorEvent: SharedFlow<Throwable> = _errorEvent.asSharedFlow()
+
+    private fun setStateLoading() {
+        viewModelScope.launch {
+            _uiState.emit(CreatingPromiseUiState.Loading)
+        }
+    }
+
+    private fun setStateSuccess() {
+        viewModelScope.launch {
+            _uiState.emit(CreatingPromiseUiState.Success)
+        }
+    }
+
+    private fun setStateError(throwable: Throwable) {
+        viewModelScope.launch {
+            _uiState.emit(CreatingPromiseUiState.Success)
+            _errorEvent.emit(throwable)
+        }
+    }
+
+    fun setLocationName(name: String) {
         viewModelScope.launch {
             _choosedLocationName.emit(name)
         }
@@ -113,6 +139,9 @@ class CreatingPromiseViewModel @Inject constructor(
 
     fun setPromise() {
         viewModelScope.launch {
+
+            setStateLoading()
+
             userRepository.userPreferences.collectLatest { userPreferences ->
                 val name = nickname.value
                 val profileImage = UserProfileImage(
@@ -138,7 +167,11 @@ class CreatingPromiseViewModel @Inject constructor(
                 promiseRepository.setPromise(promiseData.asDomain()).onSuccess { promiseCode ->
                     promiseRepository.getPromiseAlarm(promiseCode).onSuccess { promiseAlarm ->
                         _promiseSettingEvent.emit(promiseAlarm.asUiModel())
+                    }.onFailure {
+                        setStateError(it)
                     }
+                }.onFailure {
+                    setStateError(it)
                 }
             }
         }

@@ -3,8 +3,8 @@ package com.woory.presentation.ui.creatingpromise.locationsearch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
-import com.woory.presentation.model.Location
 import com.woory.presentation.model.mapper.searchlocation.SearchResultMapper
+import com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +28,9 @@ class LocationSearchResultViewModel @Inject constructor(
     val locationSearchResult: StateFlow<List<LocationSearchResult>> =
         _locationSearchResult.asStateFlow()
 
-    private val _uiState: MutableStateFlow<LocationSearchUiState> =
-        MutableStateFlow(LocationSearchUiState.Success)
-    val uiState: StateFlow<LocationSearchUiState> = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<CreatingPromiseUiState> =
+        MutableStateFlow(CreatingPromiseUiState.Success)
+    val uiState: StateFlow<CreatingPromiseUiState> = _uiState.asStateFlow()
 
     private val _errorEvent: MutableSharedFlow<Throwable> = MutableSharedFlow()
     val errorEvent: SharedFlow<Throwable> = _errorEvent.asSharedFlow()
@@ -49,19 +49,19 @@ class LocationSearchResultViewModel @Inject constructor(
 
     private fun setStateLoading() {
         viewModelScope.launch {
-            _uiState.emit(LocationSearchUiState.Loading)
+            _uiState.emit(CreatingPromiseUiState.Loading)
         }
     }
 
     private fun setStateSuccess() {
         viewModelScope.launch {
-            _uiState.emit(LocationSearchUiState.Success)
+            _uiState.emit(CreatingPromiseUiState.Success)
         }
     }
 
     private fun setStateError(throwable: Throwable) {
         viewModelScope.launch {
-            _uiState.emit(LocationSearchUiState.Success)
+            _uiState.emit(CreatingPromiseUiState.Success)
             _errorEvent.emit(throwable)
         }
     }

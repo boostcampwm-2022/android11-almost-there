@@ -12,7 +12,7 @@
             name="activityVm"
             type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
 
-        <import type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchUiState"/>
+        <import type="com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,17 +32,17 @@
             android:id="@+id/btn_search_location"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_margin="8dp"
             android:background="@drawable/bg_round_btn"
-            android:enabled="@{vm.isSearchMapReady()}"
             android:drawablePadding="8dp"
+            android:enabled="@{vm.isSearchMapReady()}"
             android:gravity="start|center_vertical"
             android:padding="8dp"
-            android:textColor="@color/almost_there_black"
             android:text="@{activityVm.choosedLocationName}"
+            android:textColor="@color/almost_there_black"
             android:textSize="20sp"
             app:drawableStartCompat="@drawable/ic_search"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,7 +78,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:toGone="@{!(vm.uiState instanceof LocationSearchUiState.Loading)}" />
+            app:toGone="@{!(vm.uiState instanceof CreatingPromiseUiState.Loading)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -28,7 +28,6 @@ import com.woory.firebase.util.TimeConverter.asMillis
 import com.woory.firebase.util.TimeConverter.asTimeStamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -91,23 +90,20 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> =
         withContext(scope.coroutineContext) {
-            var generatedCode: String? = null
-            var isDone = false
-            while (isDone.not()) {
-                generatedCode = InviteCodeUtil.getRandomInviteCode()
-                val task = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(generatedCode)
-                    .get()
-                Tasks.await(task)
-                if (task.result.data == null) {
-                    isDone = true
-                }
-            }
-            requireNotNull(generatedCode)
-
+            var generatedCode = ""
             val result = runCatching {
-
+                var isDone = false
+                while (isDone.not()) {
+                    generatedCode = InviteCodeUtil.getRandomInviteCode()
+                    val task = fireStore
+                        .collection(PROMISE_COLLECTION_NAME)
+                        .document(requireNotNull(generatedCode))
+                        .get()
+                    Tasks.await(task)
+                    if (task.result.data == null) {
+                        isDone = true
+                    }
+                }
                 val promiseCollection =
                     fireStore.collection(PROMISE_COLLECTION_NAME).document(generatedCode)
                 val magneticCollection = fireStore
