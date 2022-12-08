@@ -27,13 +27,6 @@
         app:behavior_hideable="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3" />
-
         <TextView
             android:id="@+id/tv_promise_location_const"
             style="@style/Text14.Black.Bold"
@@ -43,7 +36,7 @@
             android:gravity="center"
             android:text="@string/promise_location"
             app:drawableStartCompat="@drawable/ic_location"
-            app:layout_constraintEnd_toEndOf="@id/guideline_left"
+            app:layout_constraintEnd_toStartOf="@id/tv_promise_location"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,11 +45,12 @@
             style="@style/Text14.Black.Bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:text="@{vm.promiseModel.data.promiseLocation.address}"
             app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_location_const"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintStart_toEndOf="@id/tv_promise_location_const"
             app:layout_constraintTop_toTopOf="@id/tv_promise_location_const"
             tools:text="주소가 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
@@ -70,7 +64,7 @@
             android:gravity="center"
             android:text="@string/promise_time"
             app:drawableStartCompat="@drawable/ic_time"
-            app:layout_constraintEnd_toEndOf="@id/guideline_left"
+            app:layout_constraintEnd_toStartOf="@id/tv_promise_time"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_promise_location" />
 
@@ -79,11 +73,12 @@
             style="@style/Text14.Black.Bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:text="@{vm.promiseModel.data.promiseDateTime.format(DateTimeFormatter.ofPattern(pattern))}"
             app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_time_const"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintStart_toEndOf="@id/tv_promise_time_const"
             app:layout_constraintTop_toTopOf="@id/tv_promise_time_const"
             tools:text="날짜가 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
@@ -97,7 +92,7 @@
             android:gravity="center"
             android:text="@string/promise_people_count"
             app:drawableStartCompat="@drawable/ic_people"
-            app:layout_constraintEnd_toEndOf="@id/guideline_left"
+            app:layout_constraintEnd_toStartOf="@id/tv_promise_people"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_promise_time" />
 
@@ -106,12 +101,13 @@
             style="@style/Text14.Black.Bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:text="@{String.valueOf(vm.promiseModel.data.users.size())}"
             app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_people_const"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintStart_toEndOf="@id/tv_promise_people_const"
             tools:text="인원이 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
 
