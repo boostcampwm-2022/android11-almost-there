@@ -62,6 +62,7 @@ class PromiseInfoFragment :
 
         setUpMapView()
         setUpButtonListener()
+        setUsers()
 
         viewModel.fetchPromiseDate()
         viewModel.fetchReadyUsers()
@@ -126,13 +127,6 @@ class PromiseInfoFragment :
                                     promise.data.promiseLocation.geoPoint.latitude,
                                     promise.data.promiseLocation.geoPoint.longitude
                                 )
-
-                                viewModel.readyUsers.collectLatest { readyUsers ->
-                                    participantAdapter.submitList(promise.data.users.map { user ->
-                                        val isReady = user.userId in readyUsers
-                                        ReadyUser(isReady, user)
-                                    })
-                                }
                             }
                         }
                     }
@@ -140,6 +134,21 @@ class PromiseInfoFragment :
             }
         }
         binding.containerMap.addView(mapView)
+    }
+
+    private fun setUsers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.users.collectLatest { users ->
+                    viewModel.readyUsers.collectLatest { readyUsers ->
+                        participantAdapter.submitList(users.map { user ->
+                            val isReady = user.userId in readyUsers
+                            ReadyUser(isReady, user)
+                        })
+                    }
+                }
+            }
+        }
     }
 
     private fun setMapItem(tMapView: TMapView, latitude: Double, longitude: Double) {
