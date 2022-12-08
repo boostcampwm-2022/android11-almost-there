@@ -30,7 +30,6 @@ class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.frag
         super.onViewCreated(view, savedInstanceState)
         setUpToolbar()
         setUpButtonClickListener()
-        showAmountDueDialog()
         setUpAdapter()
         observeData()
     }
@@ -45,7 +44,7 @@ class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.frag
 
     private fun setUpButtonClickListener() {
         binding.btnInputAmountDue.btnSubmit.setOnClickListener {
-            showAmountDueDialog()
+            viewModel.setShowDialogEvent()
         }
     }
 
@@ -63,6 +62,12 @@ class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.frag
                         binding.tvPayment.text = if (it != null) {
                             String.format(getString(R.string.payment), it)
                         } else ""
+                    }
+                }
+
+                launch {
+                    viewModel.showDialogEvent.collectLatest {
+                        showAmountDueDialog()
                     }
                 }
             }

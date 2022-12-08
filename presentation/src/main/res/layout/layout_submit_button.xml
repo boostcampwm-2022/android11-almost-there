@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="10dp"
-        android:background="@color/design_default_color_surface">
+        android:background="?attr/colorSurface">
 
         <Button
             android:id="@+id/btn_submit"
@@ -21,6 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="@{buttonText}"
+            android:background="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
             android:enabled="true"
             tools:text="@string/modification_amount_due" />
     </FrameLayout>
