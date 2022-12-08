@@ -16,6 +16,7 @@ import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.background.util.startServiceBp
 import com.woory.presentation.model.AlarmState
 import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -65,11 +66,12 @@ class AlarmReceiver : BroadcastReceiver() {
             NotificationChannelProvider.providePromiseReadyChannel(context)
         }
 
-        NotificationProvider.notifyBroadcastNotification(
+        NotificationProvider.notifyActivityNotification(
             context,
             context.getString(R.string.notification_ready_title),
             context.getString(R.string.notification_ready_content),
-            promiseAlarm
+            promiseAlarm,
+            PromiseInfoActivity::class.java
         )
     }
 }
