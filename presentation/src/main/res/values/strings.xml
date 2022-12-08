@@ -23,6 +23,7 @@
     <string name="game_start_time">게임 시작 시간</string>
     <string name="date">%d년 %d월 %d일</string>
     <string name="time">%d시 %d분</string>
+    <string name="time_title">시간</string>
     <string name="before_time">%d시간 %d분 전</string>
     <string name="game_start">게임 시작</string>
     <string name="create">생성</string>
@@ -147,4 +148,5 @@
     <string name="game_time_text">언제 출발하나요?</string>
     <string name="game_time_hint">게임 시간 설정...</string>
     <string name="my_ranking">내 순위 : %d위</string>
+    <string name="location_title">위치</string>
 </resources>

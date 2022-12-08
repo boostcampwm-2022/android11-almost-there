@@ -21,26 +21,18 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_bottom_sheet"
-        android:background="@drawable/bg_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="20dp"
+        android:background="@drawable/bg_bottom_sheet"
+        android:padding="20dp"
         app:behavior_hideable="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_center"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
 
         <include
             android:id="@+id/layout_character_img"
             layout="@layout/layout_character_img"
             android:layout_width="124dp"
             android:layout_height="0dp"
-            android:layout_marginStart="10dp"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -81,14 +73,14 @@
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
             android:padding="5dp"
-            app:textVisible="true"
             app:backgroundVisible="true"
             app:layout_constraintBottom_toBottomOf="@id/tv_hp_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_center"
+            app:layout_constraintStart_toEndOf="@id/tv_name"
             app:layout_constraintTop_toTopOf="@id/tv_hp_text"
             app:maxValue="100"
             app:minValue="0"
+            app:textVisible="true"
             app:value="@{vm.userHpMap[id].hp, default=0}" />
 
         <TextView
@@ -97,15 +89,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{@string/ranking_format(rank), default=`0위`}"
-            app:layout_constraintStart_toStartOf="@id/guideline_center"
+            app:layout_constraintStart_toStartOf="@id/hp_bar"
             app:layout_constraintTop_toTopOf="@id/tv_ranking_text"
             tools:text="1위" />
 
         <ImageView
             android:id="@+id/iv_location"
-            android:layout_width="40dp"
-            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:contentDescription="@string/location_title"
             android:src="@drawable/ic_location"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/layout_character_img"
@@ -113,35 +106,40 @@
 
         <TextView
             android:id="@+id/tv_location"
-            style="@style/Text18.Black.Bold"
-            android:layout_width="wrap_content"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_location"
+            android:text="@string/loading_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2"
             app:layout_constraintStart_toEndOf="@id/iv_location"
             app:layout_constraintTop_toTopOf="@id/iv_location"
-            android:text="@string/loading_text" />
+            tools:text="주소가 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
         <ImageView
             android:id="@+id/iv_expected_time"
-            android:layout_width="40dp"
-            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:src="@drawable/ic_time"
+            android:contentDescription="@string/time"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/layout_character_img"
-            app:layout_constraintTop_toBottomOf="@id/iv_location" />
+            app:layout_constraintTop_toBottomOf="@id/tv_location" />
 
         <TextView
             android:id="@+id/tv_expected_time"
-            style="@style/Text18.Black.Bold"
-            android:layout_width="wrap_content"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_expected_time"
+            android:text="@string/loading_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2"
             app:layout_constraintStart_toEndOf="@id/iv_expected_time"
             app:layout_constraintTop_toTopOf="@id/iv_expected_time"
-            android:text="@string/loading_text" />
+            tools:text="시간이 들어가는 곳입니다. 어느정도 되는지 테스트 중입니다." />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
