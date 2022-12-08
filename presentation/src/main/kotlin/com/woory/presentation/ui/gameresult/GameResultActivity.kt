@@ -18,18 +18,9 @@ class GameResultActivity : BaseActivity<ActivityGameResultBinding>(R.layout.acti
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setUpToolbar()
+        initToolbar(binding.containerToolbar.toolbar, getString(R.string.calculate))
         val gameCode = intent?.getStringExtra(PROMISE_CODE_KEY)
         viewModel.setGameCode(gameCode)
-    }
-
-    private fun setUpToolbar() {
-        setSupportActionBar(binding.containerToolbar.toolbar)
-        binding.containerToolbar.toolbar.title = getString(R.string.calculate)
-        supportActionBar?.let {
-            it.setDisplayHomeAsUpEnabled(true)
-            it.setDisplayShowHomeEnabled(true)
-        }
     }
 
     override fun onBackPressed() {
