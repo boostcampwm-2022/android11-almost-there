@@ -127,6 +127,12 @@
     <string name="shake_device_description">흔들어서 도착을 알려주세요!</string>
     <string name="shake_arrive_button">터치하여 도착 🏁</string>
     <string name="promise_people_count">약속 인원</string>
-    <string name="btn_ready">게임 준비 🐕</string>
-    <string name="location_permission_error">Location 권한이 없습니다.</string>
+    <string name="btn_ready_not">게임 준비 🐕</string>
+    <string name="btn_ready_done">준비 완료 🏁</string>
+    <string name="btn_ready_before">게임 시작 5분 전 부터 준비 가능합니다</string>
+    <string name="btn_ready_after">게임이 시작되었습니다 👟</string>
+    <string name="location_permission_error">위치 권한이 없습니다.</string>
+    <string name="location_off_error">위치 기능이 꺼져있습니다. 확인 후 다시 시도해주세요.</string>
+    <string name="btn_ready_doing">게임 준비 진행중입니다.</string>
+    <string name="status_ready">준비 완료</string>
 </resources>
