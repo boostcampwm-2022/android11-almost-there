@@ -23,16 +23,15 @@ import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
 import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
-import com.woory.presentation.util.TimeConverter.asCalendar
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.animRightToLeftNavOption
+import com.woory.presentation.util.getExceptionMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
-import java.util.Calendar
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
@@ -63,10 +62,21 @@ class CreatingPromiseFragment :
     }
 
     private val promiseTimePicker by lazy {
+        val nowLocalTime = LocalTime.now()
         val materialTimePicker = MaterialTimePicker.Builder()
             .setInputMode(INPUT_MODE_KEYBOARD)
             .setTimeFormat(TimeFormat.CLOCK_24H)
-            .setTitleText(getString(R.string.hint_select_promise_time))
+            .setHour(nowLocalTime.hour)
+            .setMinute(nowLocalTime.minute)
+            .setTitleText(getString(R.string.hint_select_promise_time)).build()
+
+        materialTimePicker.addOnPositiveButtonClickListener {
+            val hourOfPromise = materialTimePicker.hour
+            val minuteOfPromise = materialTimePicker.minute
+            viewModel.setPromiseTime(LocalTime.of(hourOfPromise, minuteOfPromise))
+        }
+
+        materialTimePicker
     }
 
     private val gameTimePickerDialog by lazy {
@@ -136,7 +146,7 @@ class CreatingPromiseFragment :
                     viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
 //                        alarmFunctions.registerAlarm(promiseAlarm)
 
-                         //Todo :: 테스트용 코드{
+                        //Todo :: 테스트용 코드{
                         alarmFunctions.registerAlarm(
                             PromiseAlarm(
                                 alarmCode = promiseAlarm.alarmCode,
@@ -159,7 +169,8 @@ class CreatingPromiseFragment :
 
                 launch {
                     viewModel.errorEvent.collectLatest {
-                        showSnackBar(it.message ?: DEFAULT_STRING)
+                        val message = getExceptionMessage(requireContext(), it)
+                        showSnackBar(message)
                     }
                 }
             }
@@ -216,26 +227,14 @@ class CreatingPromiseFragment :
     }
 
     private fun showPromiseTimePickerDialog() {
-        val localTime = viewModel.promiseTime.value ?: LocalTime.now()
-
-        promiseTimePickerBuilder.setHour(localTime.hour)
-        promiseTimePickerBuilder.setMinute(localTime.minute)
-
-        val promiseTimePicker = promiseTimePickerBuilder.build()
         promiseTimePicker.show(parentFragmentManager, TIME_PICKER_TAG)
-
-        promiseTimePicker.addOnPositiveButtonClickListener {
-            val hourOfPromise = promiseTimePicker.hour
-            val minuteOfPromise = promiseTimePicker.minute
-            viewModel.setPromiseTime(LocalTime.of(hourOfPromise, minuteOfPromise))
-        }
     }
 
     private fun showGameTimePickerDialog() {
         gameTimePickerDialog.show()
     }
 
-    private fun showSnackBar(text: String){
+    private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 
