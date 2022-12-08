@@ -40,5 +40,6 @@
         <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 </resources>

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="org.threeten.bp.format.DateTimeFormatter" />
 
         <variable
@@ -20,7 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_bottom_sheet"
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="20dp"
         app:behavior_hideable="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
@@ -29,14 +32,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.4" />
+            app:layout_constraintGuide_percent="0.3" />
 
         <TextView
             android:id="@+id/tv_promise_location_const"
-            style="@style/Text18.Black.Bold"
+            style="@style/Text14.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="10dp"
+            android:drawablePadding="5dp"
+            android:gravity="center"
             android:text="@string/promise_location"
             app:drawableStartCompat="@drawable/ic_location"
             app:layout_constraintEnd_toEndOf="@id/guideline_left"
@@ -45,60 +49,70 @@
 
         <TextView
             android:id="@+id/tv_promise_location"
-            style="@style/Text18.Black.Bold"
-            android:layout_width="wrap_content"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
             android:text="@{vm.promiseModel.data.promiseLocation.address}"
-            app:layout_constraintBottom_toBottomOf="@id/tv_promise_location_const"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_location_const"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toTopOf="@id/tv_promise_location_const" />
+            app:layout_constraintTop_toTopOf="@id/tv_promise_location_const"
+            tools:text="주소가 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
         <TextView
             android:id="@+id/tv_promise_time_const"
-            style="@style/Text18.Black.Bold"
+            style="@style/Text14.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="10dp"
+            android:layout_marginTop="10dp"
+            android:drawablePadding="5dp"
+            android:gravity="center"
             android:text="@string/promise_time"
             app:drawableStartCompat="@drawable/ic_time"
             app:layout_constraintEnd_toEndOf="@id/guideline_left"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_promise_location_const" />
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_location" />
 
         <TextView
             android:id="@+id/tv_promise_time"
-            style="@style/Text18.Black.Bold"
-            android:layout_width="wrap_content"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
             android:text="@{vm.promiseModel.data.promiseDateTime.format(DateTimeFormatter.ofPattern(pattern))}"
-            app:layout_constraintBottom_toBottomOf="@id/tv_promise_time_const"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_time_const"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toTopOf="@id/tv_promise_time_const" />
+            app:layout_constraintTop_toTopOf="@id/tv_promise_time_const"
+            tools:text="날짜가 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
         <TextView
             android:id="@+id/tv_promise_people_const"
-            style="@style/Text18.Black.Bold"
+            style="@style/Text14.Black.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="10dp"
+            android:layout_marginTop="10dp"
+            android:drawablePadding="5dp"
+            android:gravity="center"
             android:text="@string/promise_people_count"
             app:drawableStartCompat="@drawable/ic_people"
             app:layout_constraintEnd_toEndOf="@id/guideline_left"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_promise_time_const" />
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_time" />
 
         <TextView
             android:id="@+id/tv_promise_people"
-            style="@style/Text18.Black.Bold"
-            android:layout_width="wrap_content"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
             android:text="@{String.valueOf(vm.promiseModel.data.users.size())}"
-            app:layout_constraintBottom_toBottomOf="@id/tv_promise_people_const"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_people_const"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toTopOf="@id/tv_promise_people_const" />
+            tools:text="인원이 들어갈 곳입니다. 어느정도 되는지 테스트 중입니다. " />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
