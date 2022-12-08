@@ -21,4 +21,5 @@
 
     <color name="splash_text_color">@color/almost_there_black</color>
     <color name="icon_tint_color">@color/almost_there_white</color>
+    <color name="hint_color">#808080</color>
 </resources>
