@@ -1,8 +1,6 @@
 package com.woory.presentation.ui.creatingpromise
 
-import android.app.DatePickerDialog
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,6 +10,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD
+import com.google.android.material.timepicker.TimeFormat
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
@@ -19,14 +23,15 @@ import com.woory.presentation.model.PromiseAlarm
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 import com.woory.presentation.util.TimeConverter.asCalendar
-import com.woory.presentation.util.TimeConverter.asLocalDate
+import com.woory.presentation.util.TimeConverter.asOffsetDateTime
+import com.woory.presentation.util.animRightToLeftNavOption
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
-import java.util.Calendar
+import java.util.*
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
@@ -38,16 +43,30 @@ class CreatingPromiseFragment :
         AlarmFunctions(requireContext())
     }
 
-    private val promiseDatePickerDialog by lazy {
-        DatePickerDialog(
-            requireContext(), promiseDateSetListener, DEFAULT_NUMBER, DEFAULT_NUMBER, DEFAULT_NUMBER
-        )
+    private val promiseDatePicker by lazy {
+        val minPickCalendar = Calendar.getInstance()
+
+        val constraintsBuilder =
+            CalendarConstraints.Builder()
+                .setStart(minPickCalendar.timeInMillis)
+                .setValidator(DateValidatorPointForward.from(minPickCalendar.timeInMillis))
+
+        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar.apply {
+            add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        MaterialDatePicker.Builder.datePicker()
+            .setTitleText(getString(R.string.hint_select_promise_date))
+            .setSelection(lastPickCalendar.timeInMillis)
+            .setCalendarConstraints(constraintsBuilder.build())
+            .build()
     }
 
-    private val promiseTimePickerDialog by lazy {
-        TimePickerDialog(
-            requireContext(), promiseTimePickerListener, DEFAULT_NUMBER, DEFAULT_NUMBER, true
-        )
+    private val promiseTimePickerBuilder by lazy {
+        MaterialTimePicker.Builder()
+            .setInputMode(INPUT_MODE_KEYBOARD)
+            .setTimeFormat(TimeFormat.CLOCK_24H)
+            .setTitleText(getString(R.string.hint_select_promise_time))
     }
 
     private val gameTimePickerDialog by lazy {
@@ -64,22 +83,11 @@ class CreatingPromiseFragment :
         }
     }
 
-    private val promiseDateSetListener by lazy {
-        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance()
-            calendar.set(year, month, dayOfMonth)
-            viewModel.setPromiseDate(calendar.asLocalDate())
-        }
-    }
-
-    private val promiseTimePickerListener by lazy {
-        TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-            viewModel.setPromiseTime(LocalTime.of(hourOfDay, minute))
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.btnCreatePromise.btnSubmit.isEnabled = false
+
         setUpCollector()
         setUpListener()
     }
@@ -89,39 +97,37 @@ class CreatingPromiseFragment :
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.promiseLocation.collectLatest {
-                        binding.etPromiseLocation.setText(it?.address ?: "")
+                        binding.btnPromiseLocation.text = it?.address ?: ""
                     }
                 }
 
                 launch {
                     viewModel.promiseDate.collectLatest {
-                        binding.etPromiseDate.setText(it?.toString() ?: "")
+                        binding.btnPromiseDate.text = it?.toString() ?: ""
                     }
                 }
 
                 launch {
                     viewModel.promiseTime.collectLatest {
-                        binding.etPromiseTime.setText(it?.toString() ?: "")
+                        binding.btnPromiseTime.text = it?.toString() ?: ""
                     }
                 }
 
                 launch {
                     viewModel.readyDuration.collectLatest { gameTime ->
-                        binding.etGameTime.setText(
-                            if (gameTime != null) {
-                                String.format(
-                                    getString(R.string.before_time),
-                                    gameTime.toHours(),
-                                    gameTime.toMinutes() % 60
-                                )
-                            } else ""
-                        )
+                        binding.btnGameTime.text = if (gameTime != null) {
+                            String.format(
+                                getString(R.string.before_time),
+                                gameTime.toHours(),
+                                gameTime.toMinutes() % 60
+                            )
+                        } else ""
                     }
                 }
 
                 launch {
                     viewModel.isEnabled.collect {
-                        binding.btnPromiseCreate.isEnabled = it
+                        binding.btnCreatePromise.btnSubmit.isEnabled = it
                     }
                 }
 
@@ -154,19 +160,23 @@ class CreatingPromiseFragment :
     }
 
     private fun setUpListener() {
-        binding.ibPromiseLocation.setOnClickListener {
-            findNavController().navigate(R.id.nav_location_find_frag)
+        binding.btnPromiseLocation.setOnClickListener {
+            findNavController().navigate(
+                R.id.nav_location_find_frag,
+                null,
+                animRightToLeftNavOption
+            )
         }
 
-        binding.ibPromiseDate.setOnClickListener {
+        binding.btnPromiseDate.setOnClickListener {
             showPromiseDatePickerDialog()
         }
 
-        binding.ibPromiseTime.setOnClickListener {
+        binding.btnPromiseTime.setOnClickListener {
             showPromiseTimePickerDialog()
         }
 
-        binding.ibGameTime.setOnClickListener {
+        binding.btnGameTime.setOnClickListener {
             showGameTimePickerDialog()
         }
 
@@ -189,32 +199,32 @@ class CreatingPromiseFragment :
             gameTimePickerDialog.cancel()
         }
 
-        binding.btnPromiseCreate.setOnClickListener {
+        binding.btnCreatePromise.btnSubmit.setOnClickListener {
             viewModel.setPromise()
         }
     }
 
     private fun showPromiseDatePickerDialog() {
-        val minPickCalendar = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_MONTH, 1)
+        promiseDatePicker.show(parentFragmentManager, DATE_PICKER_TAG)
+        promiseDatePicker.addOnPositiveButtonClickListener {
+            viewModel.setPromiseDate(it.asOffsetDateTime().toLocalDate())
         }
-        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar
-        val year = lastPickCalendar.get(Calendar.YEAR)
-        val month = lastPickCalendar.get(Calendar.MONTH)
-        val dayOfMonth = lastPickCalendar.get(Calendar.DAY_OF_MONTH)
-
-        promiseDatePickerDialog.updateDate(year, month, dayOfMonth)
-        promiseDatePickerDialog.datePicker.minDate = minPickCalendar.timeInMillis
-        promiseDatePickerDialog.show()
     }
 
     private fun showPromiseTimePickerDialog() {
         val localTime = viewModel.promiseTime.value ?: LocalTime.now()
-        val hour = localTime.hour
-        val minute = localTime.minute
 
-        promiseTimePickerDialog.updateTime(hour, minute)
-        promiseTimePickerDialog.show()
+        promiseTimePickerBuilder.setHour(localTime.hour)
+        promiseTimePickerBuilder.setMinute(localTime.minute)
+
+        val promiseTimePicker = promiseTimePickerBuilder.build()
+        promiseTimePicker.show(parentFragmentManager, TIME_PICKER_TAG)
+
+        promiseTimePicker.addOnPositiveButtonClickListener {
+            val hourOfPromise = promiseTimePicker.hour
+            val minuteOfPromise = promiseTimePicker.minute
+            viewModel.setPromiseTime(LocalTime.of(hourOfPromise, minuteOfPromise))
+        }
     }
 
     private fun showGameTimePickerDialog() {
@@ -228,6 +238,7 @@ class CreatingPromiseFragment :
         private const val MIN_SELECT_MINUTE = 0
         private const val MAX_SELECT_MINUTE = 59
 
-        private const val DEFAULT_NUMBER = 1
+        private const val TIME_PICKER_TAG = "Time"
+        private const val DATE_PICKER_TAG = "Date"
     }
 }

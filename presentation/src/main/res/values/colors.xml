@@ -18,4 +18,6 @@
     <color name="gold">#FFFFCA09</color>
     <color name="silver">#FFB6B5B8</color>
     <color name="bronze">#FFAD8A56</color>
+
+    <color name="splash_text_color">@color/almost_there_black</color>
 </resources>
