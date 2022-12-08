@@ -2,6 +2,7 @@ package com.woory.firebase.datasource
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -27,7 +28,6 @@ import com.woory.firebase.util.TimeConverter.asMillis
 import com.woory.firebase.util.TimeConverter.asTimeStamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -90,23 +90,20 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> =
         withContext(scope.coroutineContext) {
-            var generatedCode: String? = null
-            var isDone = false
-            while (isDone.not()) {
-                generatedCode = InviteCodeUtil.getRandomInviteCode()
-                val task = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(generatedCode)
-                    .get()
-                Tasks.await(task)
-                if (task.result.data == null) {
-                    isDone = true
-                }
-            }
-            requireNotNull(generatedCode)
-
+            var generatedCode = ""
             val result = runCatching {
-
+                var isDone = false
+                while (isDone.not()) {
+                    generatedCode = InviteCodeUtil.getRandomInviteCode()
+                    val task = fireStore
+                        .collection(PROMISE_COLLECTION_NAME)
+                        .document(requireNotNull(generatedCode))
+                        .get()
+                    Tasks.await(task)
+                    if (task.result.data == null) {
+                        isDone = true
+                    }
+                }
                 val promiseCollection =
                     fireStore.collection(PROMISE_COLLECTION_NAME).document(generatedCode)
                 val magneticCollection = fireStore
@@ -278,8 +275,6 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                     val maxValue = maxOf(serverRadius, radius.toLong())
                     transaction.update(reference, mapOf(RADIUS_KEY to maxValue))
-                }.addOnFailureListener {
-                    throw it
                 }.await()
             }
             when (val exception = result.exceptionOrNull()) {
@@ -360,7 +355,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
@@ -577,6 +572,72 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
+    override suspend fun setUserReady(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(USER_READY_COLLECTION_NAME)
+                    .document(token)
+                    .set(READY_DATA)
+                    .await()
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getIsReadyUser(gameCode: String, token: String): Flow<Result<Boolean>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(USER_READY_COLLECTION_NAME)
+                    .document(token)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+
+                val result = runCatching {
+                    value.exists()
+                }
+                trySend(result)
+            }
+
+            awaitClose { subscription?.remove() }
+        }
+
+    override suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>> =
+        callbackFlow {
+            var collectionReference: CollectionReference? = null
+
+            runCatching {
+                collectionReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection(USER_READY_COLLECTION_NAME)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = collectionReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+                val result = runCatching {
+                    value.documents.map { it.id }
+                }
+                trySend(result)
+            }
+            awaitClose { subscription?.remove() }
+        }
+
     private fun isFirstAccess(prevTime: Timestamp): Boolean =
         System.currentTimeMillis() - prevTime.asMillis() >= 1000 * (MAGNETIC_FIELD_UPDATE_TERM_SECOND - 1)
 
@@ -586,6 +647,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val MAGNETIC_COLLECTION_NAME = "Magnetic"
         private const val HP_COLLECTION_NAME = "Hp"
         private const val GAME_INFO_COLLECTION_NAME = "GameInfo"
+        private const val USER_READY_COLLECTION_NAME = "UserReady"
         private const val HP_KEY = "hp"
         private const val RADIUS_KEY = "radius"
         private const val LOST_KEY = "lost"
@@ -595,5 +657,6 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val USERS_KEY = "users"
         private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
         private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")
+        private val READY_DATA = mapOf("ready" to "READY")
     }
 }

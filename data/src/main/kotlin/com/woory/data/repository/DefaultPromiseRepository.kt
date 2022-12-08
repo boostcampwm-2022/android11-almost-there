@@ -158,4 +158,13 @@ class DefaultPromiseRepository @Inject constructor(
             firstRankingUser + middleRankingUser + lastRankingUser
         }
     }
+
+    override suspend fun setUserReady(gameCode: String, token: String): Result<Unit> =
+        firebaseDataSource.setUserReady(gameCode, token)
+
+    override suspend fun getIsReadyUser(gameCode: String, token: String): Flow<Result<Boolean>> =
+        firebaseDataSource.getIsReadyUser(gameCode, token)
+
+    override suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>> =
+        firebaseDataSource.getReadyUsers(gameCode)
 }
