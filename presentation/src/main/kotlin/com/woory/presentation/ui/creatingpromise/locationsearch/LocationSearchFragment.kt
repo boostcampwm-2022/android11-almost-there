@@ -140,9 +140,7 @@ class LocationSearchFragment :
                                 val latitude = it.latitude
                                 val longitude = it.longitude
 
-                                mapView.apply {
-                                    setCenterPoint(latitude, longitude)
-                                }
+                                setCenterPoint(latitude, longitude)
                             }
                         }
                     }
