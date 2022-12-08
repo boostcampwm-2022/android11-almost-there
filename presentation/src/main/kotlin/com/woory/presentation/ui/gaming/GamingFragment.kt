@@ -277,6 +277,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     }
 
     private fun showPromiseInfo(){
+        dismissBottomSheet()
         promiseInfoBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
