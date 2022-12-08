@@ -582,9 +582,9 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
-                    .collection("UserReady")
+                    .collection(USER_READY_COLLECTION_NAME)
                     .document(token)
-                    .set(mapOf("ready" to "READY"))
+                    .set(READY_DATA)
                     .await()
             }
 
@@ -602,7 +602,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 documentReference = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
-                    .collection("UserReady")
+                    .collection(USER_READY_COLLECTION_NAME)
                     .document(token)
             }.onFailure {
                 trySend(Result.failure(it))
@@ -627,7 +627,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                 collectionReference = fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
-                    .collection("UserReady")
+                    .collection(USER_READY_COLLECTION_NAME)
             }.onFailure {
                 trySend(Result.failure(it))
             }
@@ -651,6 +651,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val MAGNETIC_COLLECTION_NAME = "Magnetic"
         private const val HP_COLLECTION_NAME = "Hp"
         private const val GAME_INFO_COLLECTION_NAME = "GameInfo"
+        private const val USER_READY_COLLECTION_NAME = "UserReady"
         private const val HP_KEY = "hp"
         private const val RADIUS_KEY = "radius"
         private const val LOST_KEY = "lost"
@@ -660,5 +661,6 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val USERS_KEY = "users"
         private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
         private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")
+        private val READY_DATA = mapOf("ready" to "READY")
     }
 }

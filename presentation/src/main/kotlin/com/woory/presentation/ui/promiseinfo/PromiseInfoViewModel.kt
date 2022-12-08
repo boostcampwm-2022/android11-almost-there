@@ -1,6 +1,5 @@
 package com.woory.presentation.ui.promiseinfo
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
@@ -85,7 +84,6 @@ class PromiseInfoViewModel @Inject constructor(
             val code = gameCode.value
             promiseRepository.getReadyUsers(code).collectLatest { result ->
                 result.onSuccess {
-                    Log.d("TAG", "list -> $it")
                     _readyUsers.emit(it)
                 }
             }
@@ -170,7 +168,7 @@ class PromiseInfoViewModel @Inject constructor(
                         }
                         .onFailure { throwable ->
                             _uiState.emit(PromiseUiState.Fail)
-                            _errorState.emit(throwable)
+                            _errorState.emit(IllegalArgumentException("네트워크를 확인해주세요."))
                         }
                 }
                 .onFailure { throwable ->
