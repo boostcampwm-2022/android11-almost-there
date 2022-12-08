@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
-import java.util.*
+import java.util.Calendar
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
