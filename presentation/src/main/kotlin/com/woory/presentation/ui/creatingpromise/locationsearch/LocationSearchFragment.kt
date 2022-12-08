@@ -89,7 +89,6 @@ class LocationSearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        setUpMapView()
         setUpButton()
         binding.vm = fragmentViewModel
         binding.activityVm = activityViewModel
