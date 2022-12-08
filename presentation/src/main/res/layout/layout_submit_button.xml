@@ -24,8 +24,6 @@
             android:background="?attr/colorPrimary"
             android:textColor="?attr/colorOnPrimary"
             android:enabled="true"
-            android:background="?attr/colorPrimary"
-            android:textColor="?attr/colorOnPrimary"
             tools:text="@string/modification_amount_due" />
     </FrameLayout>
 
