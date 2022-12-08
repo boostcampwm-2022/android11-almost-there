@@ -2,6 +2,7 @@ package com.woory.firebase.datasource
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -360,7 +361,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
@@ -574,6 +575,72 @@ class DefaultFirebaseDataSource @Inject constructor(
                 trySend(result)
             }
 
+            awaitClose { subscription?.remove() }
+        }
+
+    override suspend fun setUserReady(gameCode: String, token: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection("UserReady")
+                    .document(token)
+                    .set(mapOf("ready" to "READY"))
+                    .await()
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getIsReadyUser(gameCode: String, token: String): Flow<Result<Boolean>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection("UserReady")
+                    .document(token)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+
+                val result = runCatching {
+                    value.exists()
+                }
+                trySend(result)
+            }
+
+            awaitClose { subscription?.remove() }
+        }
+
+    override suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>> =
+        callbackFlow {
+            var collectionReference: CollectionReference? = null
+
+            runCatching {
+                collectionReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .collection("UserReady")
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = collectionReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+                val result = runCatching {
+                    value.documents.map { it.id }
+                }
+                trySend(result)
+            }
             awaitClose { subscription?.remove() }
         }
 
