@@ -1,27 +1,39 @@
 package com.woory.presentation.ui.promiseinfo
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
+import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentPromiseInfoBinding
+import com.woory.presentation.model.AlarmState
+import com.woory.presentation.model.GeoPoint
+import com.woory.presentation.model.ReadyUser
+import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.threeten.bp.Duration
 
 @AndroidEntryPoint
 class PromiseInfoFragment :
@@ -29,6 +41,8 @@ class PromiseInfoFragment :
 
     private val viewModel: PromiseInfoViewModel by activityViewModels()
     private lateinit var mapView: TMapView
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     private val participantAdapter by lazy {
         PromiseUserAdapter(viewModel)
     }
@@ -43,11 +57,15 @@ class PromiseInfoFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
 
         setUpMapView()
         setUpButtonListener()
 
         viewModel.fetchPromiseDate()
+        viewModel.fetchReadyUsers()
+
         binding.apply {
             vm = viewModel
             defaultString = ""
@@ -55,12 +73,23 @@ class PromiseInfoFragment :
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.errorState.collect {
-                    val errorMessage =
-                        it.message ?: requireContext().resources.getString(R.string.unknown_error)
-                    makeSnackBar(
-                        "Error : $errorMessage"
-                    )
+
+                launch {
+                    viewModel.errorState.collect {
+                        val errorMessage =
+                            it.message ?: requireContext().resources.getString(R.string.unknown_error)
+                        makeSnackBar(
+                            "Error : $errorMessage"
+                        )
+                    }
+                }
+
+                launch {
+                    setAlarm()
+                }
+
+                launch {
+                    setReadyButton()
                 }
             }
         }
@@ -76,6 +105,10 @@ class PromiseInfoFragment :
         binding.btnCodeShare.setOnClickListener {
 //            shareCode(viewModel.gameCode.value)
         }
+
+        binding.btnReady.btnSubmit.setOnClickListener {
+            readyGame()
+        }
     }
 
     private fun setUpMapView() {
@@ -86,14 +119,20 @@ class PromiseInfoFragment :
                 binding.rvPromiseParticipant.adapter = participantAdapter
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.promiseModel.collect {
-                            if (it != null) {
+                        viewModel.promiseModel.collect { promise ->
+                            if (promise != null) {
                                 setMapItem(
                                     this@apply,
-                                    it.data.promiseLocation.geoPoint.latitude,
-                                    it.data.promiseLocation.geoPoint.longitude
+                                    promise.data.promiseLocation.geoPoint.latitude,
+                                    promise.data.promiseLocation.geoPoint.longitude
                                 )
-                                participantAdapter.submitList(it.data.users)
+
+                                viewModel.readyUsers.collectLatest { readyUsers ->
+                                    participantAdapter.submitList(promise.data.users.map { user ->
+                                        val isReady = user.userId in readyUsers
+                                        ReadyUser(isReady, user)
+                                    })
+                                }
                             }
                         }
                     }
@@ -116,6 +155,78 @@ class PromiseInfoFragment :
 
             removeAllTMapMarkerItem()
             addTMapMarkerItem(marker)
+        }
+    }
+
+    private fun readyGame() {
+        if (viewModel.blockReady) {
+            makeSnackBar(getString(R.string.btn_ready_doing))
+            return
+        }
+
+        getLastLocation { startGeoPoint ->
+            viewModel.setUserCurrentLocation(startGeoPoint)
+            viewModel.setPromiseMagneticRadius(startGeoPoint)
+        }
+    }
+
+    private fun getLastLocation(callback: (GeoPoint) -> Unit) {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            makeSnackBar(getString(R.string.location_permission_error))
+            return
+        }
+
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+            if (location == null) {
+                makeSnackBar(getString(R.string.location_off_error))
+                return@addOnSuccessListener
+            }
+
+            val geoPoint = GeoPoint(location.latitude, location.longitude)
+            callback(geoPoint)
+        }
+    }
+
+    private suspend fun setReadyButton() {
+        viewModel.isUserReady.collectLatest { readyStatus ->
+            when (readyStatus) {
+                ReadyStatus.NOT -> {
+                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_not)
+                    binding.btnReady.btnSubmit.isEnabled = true
+                }
+                ReadyStatus.READY -> {
+                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_done)
+                    binding.btnReady.btnSubmit.isEnabled = false
+                }
+                ReadyStatus.BEFORE -> {
+                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_before)
+                    binding.btnReady.btnSubmit.isEnabled = false
+                }
+                ReadyStatus.AFTER -> {
+                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_after)
+                    binding.btnReady.btnSubmit.isEnabled = false
+                }
+            }
+        }
+    }
+
+    private suspend fun setAlarm() {
+        viewModel.isAvailSetAlarm.collectLatest { isAvailable ->
+            if (isAvailable) {
+                val alarmFunctions = AlarmFunctions(requireContext())
+                val promiseCode = viewModel.promiseModel.value?.code ?: return@collectLatest
+
+                viewModel.getPromiseAlarmByCode(promiseCode).onSuccess { promiseAlarm ->
+                    alarmFunctions.registerAlarm(promiseAlarm.asUiModel().copy(state = AlarmState.START))
+                }
+            }
         }
     }
 
