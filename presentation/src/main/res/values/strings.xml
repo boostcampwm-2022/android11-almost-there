@@ -127,7 +127,7 @@
     <string name="shake_device_description">흔들어서 도착을 알려주세요!</string>
     <string name="shake_arrive_button">터치하여 도착 🏁</string>
     <string name="promise_people_count">약속 인원</string>
-
+    <string name="input_hint">검색어를 입력하세요.</string>
     <string name="fetch_data_fail_message">데이터를 불러오는데 실패했습니다.</string>
     <string name="store_data_fail_message">데이터 저장에 실패했습니다.</string>
 </resources>
