@@ -36,17 +36,6 @@
                 android:backgroundTint="@{vm.uiState instanceof PromiseUiState.Loading ? @color/loading_indicator_color : @color/white}"
                 tools:context=".ui.promiseinfo.PromiseInfoFragment">
 
-                <ProgressBar
-                    android:id="@+id/ic_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:indeterminateTint="@color/loading_indicator_color"
-                    android:visibility="@{vm.uiState instanceof PromiseUiState.Loading ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
                 <ImageButton
                     android:id="@+id/iv_refresh"
                     android:layout_width="wrap_content"
@@ -228,12 +217,22 @@
 
         </androidx.core.widget.NestedScrollView>
 
+        <ProgressBar
+            android:id="@+id/ic_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/loading_indicator_color"
+            android:visibility="@{vm.uiState instanceof PromiseUiState.Loading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <include
             android:id="@+id/btn_ready"
             layout="@layout/layout_submit_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:buttonText="@{@string/btn_ready}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

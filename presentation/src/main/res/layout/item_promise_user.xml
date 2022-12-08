@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="item"
-            type="com.woory.presentation.model.User" />
+            type="com.woory.presentation.model.ReadyUser" />
 
         <import type="android.graphics.Color" />
 
@@ -33,7 +34,7 @@
             android:id="@+id/profileBackground"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            app:backgroundColor="@{Color.parseColor(item.data.profileImage.color)}"
+            app:backgroundColor="@{Color.parseColor(item.user.data.profileImage.color)}"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +47,7 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@string/profile_title"
                 android:scaleType="centerCrop"
-                app:src="@{item.data.profileImage.imageIndex}" />
+                app:src="@{item.user.data.profileImage.imageIndex}" />
 
         </androidx.cardview.widget.CardView>
 
@@ -64,10 +65,27 @@
             app:layout_constraintTop_toTopOf="@id/profileBackground" />
 
         <TextView
+            android:id="@+id/tv_ready"
+            style="@style/Text14"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/ready_background"
+            android:gravity="center"
+            android:paddingVertical="2dp"
+            android:text="@string/status_ready"
+            android:textAlignment="center"
+            android:textColor="@color/almost_there_white"
+            android:visibility="@{item.ready ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/profileBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/profileBackground" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
-            android:text="@{item.data.name}"
+            android:text="@{item.user.data.name}"
             android:textAppearance="@style/Text18.Black.Bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

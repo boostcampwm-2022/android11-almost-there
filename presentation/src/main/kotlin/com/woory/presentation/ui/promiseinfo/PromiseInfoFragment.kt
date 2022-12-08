@@ -116,14 +116,20 @@ class PromiseInfoFragment :
                 binding.rvPromiseParticipant.adapter = participantAdapter
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.promiseModel.collect {
-                            if (it != null) {
+                        viewModel.promiseModel.collect { promise ->
+                            if (promise != null) {
                                 setMapItem(
                                     this@apply,
-                                    it.data.promiseLocation.geoPoint.latitude,
-                                    it.data.promiseLocation.geoPoint.longitude
+                                    promise.data.promiseLocation.geoPoint.latitude,
+                                    promise.data.promiseLocation.geoPoint.longitude
                                 )
-                                participantAdapter.submitList(it.data.users)
+
+                                viewModel.readyUsers.collectLatest { readyUsers ->
+                                    participantAdapter.submitList(promise.data.users.map { user ->
+                                        val isReady = user.userId in readyUsers
+                                        ReadyUser(isReady, user)
+                                    })
+                                }
                             }
                         }
                     }
