@@ -3,11 +3,12 @@ package com.woory.presentation.ui.join
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
-
-
-import com.woory.presentation.model.Promise
-import com.woory.presentation.model.mapper.promise.asUiModel
-import com.woory.presentation.util.InviteCodeUtil.isValidInviteCode
+import com.woory.presentation.model.UiState
+import com.woory.presentation.model.exception.AlmostThereException
+import com.woory.presentation.util.InviteCodeUtil
+import com.woory.presentation.util.flow.EventFlow
+import com.woory.presentation.util.flow.MutableEventFlow
+import com.woory.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,38 +26,27 @@ class JoinViewModel @Inject constructor(
     private val _codeState: MutableStateFlow<FormState> = MutableStateFlow(FormState.EMPTY)
     val codeState: StateFlow<FormState> = _codeState.asStateFlow()
 
-    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _errorType: MutableStateFlow<CodeState?> = MutableStateFlow(null)
-    val errorType: StateFlow<CodeState?> = _errorType.asStateFlow()
-
-    private val _promise: MutableStateFlow<Promise?> = MutableStateFlow(null)
-    val promise: StateFlow<Promise?> = _promise.asStateFlow()
+    private val _uiState: MutableEventFlow<UiState<String>> = MutableEventFlow()
+    val uiState: EventFlow<UiState<String>> = _uiState.asEventFlow()
 
     fun checkInviteCodeValidation() {
-        _codeState.value = if (code.value.isValidInviteCode()) {
-            FormState.Valid()
-        } else {
-            FormState.Invalid()
-        }
+        _codeState.value = InviteCodeUtil.getCodeState(code.value)
     }
 
-    fun fetchPromise() {
+    fun fetchPromiseByCode() {
         viewModelScope.launch {
-            _isLoading.value = true
+            _uiState.emit(UiState.Loading)
 
             promiseRepository.getPromiseByCode(code.value.uppercase())
                 .onSuccess { promise ->
-                    _isLoading.value = false
-                    _promise.value = promise.asUiModel()
+                    _uiState.emit(
+                        UiState.Success(promise.code)
+                    )
                 }
-                .onFailure { error ->
-                    _isLoading.value = false
-                    _errorType.value = when (error) {
-                        is IllegalStateException -> CodeState.NONEXISTENT
-                        else -> null
-                    }
+                .onFailure { _ ->
+                    _uiState.emit(
+                        UiState.Error(AlmostThereException.FetchFailedException())
+                    )
                 }
         }
     }

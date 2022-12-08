@@ -10,97 +10,105 @@
             type="com.woory.presentation.ui.join.JoinViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.join.JoinActivity">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/startGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/endGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.8" />
-
-        <include
-            android:id="@+id/container_toolbar"
-            layout="@layout/layout_toolbar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/label"
-            style="@style/Text18.Black.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_invite_code"
-            app:layout_constraintBottom_toTopOf="@id/inviteCodeInputLayout"
-            app:layout_constraintStart_toStartOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/container_toolbar"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/inviteCodeInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:counterEnabled="true"
-            app:counterMaxLength="7"
-            app:endIconMode="clear_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/endGuideline"
-            app:layout_constraintStart_toStartOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/label"
-            app:startIconDrawable="@drawable/ic_invite_code"
-            app:state_message="@{vm.codeState}">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inviteCodeInputEditText"
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/startGuideline"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:afterTextChanged="@{() -> vm.checkInviteCodeValidation()}"
-                android:hint="@string/hint_invite_code"
-                android:inputType="text"
-                android:maxLength="7"
-                android:text="@={vm.code}" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/endGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
 
-        <Button
-            android:id="@+id/joinButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:onClick="@{() -> vm.fetchPromise()}"
-            android:text="@string/next_with_icon"
-            android:textAppearance="@style/Text12.Black.Bold"
-            app:enabled="@{vm.codeState}"
-            app:layout_constraintEnd_toEndOf="@id/inviteCodeInputLayout"
-            app:layout_constraintStart_toStartOf="@id/inviteCodeInputLayout"
-            app:layout_constraintTop_toBottomOf="@id/inviteCodeInputLayout" />
+            <include
+                android:id="@+id/container_toolbar"
+                layout="@layout/layout_toolbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ProgressBar
-            android:id="@+id/loadingIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="@color/loading_indicator_color"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_toolbar"
-            app:toGone="@{!vm.isLoading}" />
+            <TextView
+                android:id="@+id/label"
+                style="@style/Text16.Black.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_invite_code"
+                app:layout_constraintBottom_toTopOf="@id/inviteCodeInputLayout"
+                app:layout_constraintStart_toStartOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/container_toolbar"
+                app:layout_constraintVertical_chainStyle="packed" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inviteCodeInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="7"
+                app:endIconMode="clear_text"
+                app:errorEnabled="true"
+                app:hintEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintStart_toStartOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/label"
+                app:startIconDrawable="@drawable/ic_invite_code"
+                app:stateMessage="@{vm.codeState}">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inviteCodeInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:afterTextChanged="@{() -> vm.checkInviteCodeValidation()}"
+                    android:hint="@string/hint_invite_code"
+                    android:inputType="text"
+                    android:maxLength="7"
+                    android:text="@={vm.code}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/joinButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:onClick="@{() -> vm.fetchPromiseByCode()}"
+                android:text="@string/next_with_icon"
+                android:textAppearance="@style/Text12.Black.Bold"
+                app:enabled="@{vm.codeState}"
+                app:layout_constraintEnd_toEndOf="@id/inviteCodeInputLayout"
+                app:layout_constraintStart_toStartOf="@id/inviteCodeInputLayout"
+                app:layout_constraintTop_toBottomOf="@id/inviteCodeInputLayout" />
+
+            <ProgressBar
+                android:id="@+id/loadingIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/loading_indicator_color"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/container_toolbar" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </layout>
