@@ -27,7 +27,7 @@
             android:contentDescription="@string/player_image"
             android:scaleType="centerCrop"
             src="@{profileImage.imageIndex}"
-            tools:src="@drawable/bg_modest_shiba" />
+            tools:src="@drawable/bg_modest_shiba_in_profile" />
     </com.google.android.material.card.MaterialCardView>
 
 </layout>

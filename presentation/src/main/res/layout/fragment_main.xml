@@ -1,120 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.main.MainFragment">
+        android:fillViewport="true">
 
-        <View
-            android:id="@+id/container_join_promise"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="#FDFDBD"
-            app:layout_constraintBottom_toTopOf="@id/container_create_promise"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/container_create_promise"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="#B8E8FC"
-            app:layout_constraintBottom_toTopOf="@id/container_find_promise"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_join_promise" />
-
-        <View
-            android:id="@+id/container_find_promise"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="#B1AFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_create_promise" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/lying_shiba"
-            android:src="@drawable/bg_lying_shiba"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@id/container_join_promise"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/container_join_promise" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/modest_shiba"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bg_modest_shiba"
-            app:layout_constraintBottom_toBottomOf="@id/container_create_promise"
-            app:layout_constraintEnd_toStartOf="@+id/tv_create_promise_text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/container_create_promise" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/stubborn_shiba"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bg_stubborn_shiba"
-            app:layout_constraintBottom_toBottomOf="@id/container_find_promise"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_find_promise_text"
-            app:layout_constraintTop_toTopOf="@id/container_find_promise" />
-
-        <TextView
-            android:id="@+id/tv_join_text"
-            style="@style/AlmostThere.Clickable.Left.Main"
-            android:text="@string/join_promise"
-            app:layout_constraintStart_toStartOf="@id/container_join_promise"
-            app:layout_constraintTop_toTopOf="@id/container_join_promise" />
-
-        <TextView
-            android:id="@+id/tv_join_hint"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/join_promise_hint"
-            app:layout_constraintStart_toStartOf="@id/tv_join_text"
-            app:layout_constraintTop_toBottomOf="@id/tv_join_text" />
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_create_promise_text"
-            style="@style/AlmostThere.Clickable.Right.Main"
-            android:text="@string/set_promise"
-            app:layout_constraintEnd_toEndOf="@id/container_create_promise"
-            app:layout_constraintTop_toTopOf="@id/container_create_promise" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/container_join_promise"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:backgroundTint="#44CA64"
+                app:cardElevation="20dp"
+                app:contentPadding="-5dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardView.Cut">
 
-        <TextView
-            android:id="@+id/tv_create_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/set_promise_hint"
-            app:layout_constraintEnd_toEndOf="@id/tv_create_promise_text"
-            app:layout_constraintTop_toBottomOf="@id/tv_create_promise_text" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_menu_green">
 
-        <TextView
-            android:id="@+id/tv_find_promise_text"
-            style="@style/AlmostThere.Clickable.Left.Main"
-            android:text="@string/promise_history"
-            app:layout_constraintStart_toStartOf="@id/container_find_promise"
-            app:layout_constraintTop_toTopOf="@id/container_find_promise" />
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:contentDescription="@string/lying_shiba"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/bg_lying_shiba_in_menu"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1.5:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@id/tv_join_hint"
+                        app:layout_constraintTop_toTopOf="@id/tv_join_text"
+                        app:layout_constraintVertical_bias="1.0" />
 
-        <TextView
-            android:id="@+id/tv_find_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/promise_history_hint"
-            app:layout_constraintStart_toStartOf="@id/tv_find_promise_text"
-            app:layout_constraintTop_toBottomOf="@id/tv_find_promise_text" />
+                    <TextView
+                        android:id="@+id/tv_join_text"
+                        style="@style/Text32.Black.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/join_promise"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.2" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/tv_join_hint"
+                        style="@style/Text12.Black"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_tag"
+                        android:backgroundTint="?attr/colorSurface"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="5dp"
+                        android:text="@string/join_promise_hint"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@id/tv_join_text"
+                        app:layout_constraintTop_toBottomOf="@id/tv_join_text"
+                        app:layout_constraintVertical_bias="0.1" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/container_create_promise"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:backgroundTint="#8AC6F2"
+                app:cardElevation="20dp"
+                app:contentPadding="-5dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardView.Cut">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_menu_sky">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:contentDescription="@string/modest_shiba"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/bg_modest_shiba_in_menu"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toStartOf="@id/tv_create_hint"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <TextView
+                        android:id="@+id/tv_create_text"
+                        style="@style/Text32.Black.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        android:text="@string/set_promise"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.2" />
+
+                    <TextView
+                        android:id="@+id/tv_create_hint"
+                        style="@style/Text12.Black"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_tag"
+                        android:backgroundTint="?attr/colorSurface"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="5dp"
+                        android:text="@string/set_promise_hint"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/tv_create_text"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintTop_toBottomOf="@id/tv_create_text"
+                        app:layout_constraintVertical_bias="0.1" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/container_find_promise"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:backgroundTint="#FD849D"
+                app:cardElevation="20dp"
+                app:contentPadding="-5dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardView.Cut">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_menu_pink">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="-10dp"
+                        android:contentDescription="@string/lying_shiba"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/bg_stubborn_shiba_in_menu"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@id/tv_list_hint"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/tv_list_text"
+                        style="@style/Text32.Black.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/promise_history"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.2" />
+
+                    <TextView
+                        android:id="@+id/tv_list_hint"
+                        style="@style/Text12.Black"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_tag"
+                        android:backgroundTint="?attr/colorSurface"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="5dp"
+                        android:text="@string/promise_history_hint"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@id/tv_list_text"
+                        app:layout_constraintTop_toBottomOf="@id/tv_list_text"
+                        app:layout_constraintVertical_bias="0.1" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
 </layout>
