@@ -68,17 +68,22 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         ContextCompat.getDrawable(requireActivity(), R.drawable.ic_destination_flag)?.toBitmap()
     }
 
+    private val markerMap = mutableMapOf<String, TMapMarkerItem>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.fetchPromiseData()
+//        viewModel.fetchPromiseData()
+        viewModel.fetchPromise()
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.errorState.collectLatest {
-                    makeSnackBar(it.message ?: resources.getString(R.string.unknown_error))
+                launch {
+                    viewModel.errorState.collectLatest {
+                        makeSnackBar(it.message ?: resources.getString(R.string.unknown_error))
+                    }
                 }
             }
         }
@@ -113,31 +118,51 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         launch {
+                            viewModel.promiseModel.collectLatest {
+                                if (it != null) {
+                                    viewModel.fetchMagneticField(it)
+//                                    viewModel.fetchRealtimeRanking()
+                                    viewModel.fetchUserArrival()
+                                    viewModel.fetchPromiseEnding()
+                                }
+                            }
+                        }
+
+                        launch {
                             viewModel.allUsers.collectLatest {
-                                it?.forEach { id ->
-                                    viewModel.userLocationMap[id]?.collectLatest { userLocation ->
-                                        if (userLocation != null) {
-                                            launch {
-                                                val marker = TMapMarkerItem().apply {
-                                                    this.id = id
-                                                    tMapPoint = TMapPoint(
+                                it?.forEach { user ->
+                                    launch {
+                                        viewModel.fetchUserLocation(user)
+                                        viewModel.fetchUserHp(user.userId)
+                                        requireNotNull(viewModel.userLocationMap[user.userId]).collect { userLocation ->
+                                            if (userLocation != null) {
+                                                viewModel.fetchGameRanking()
+                                                if (markerMap[user.userId] == null) {
+                                                    markerMap[user.userId] =
+                                                        TMapMarkerItem().apply {
+                                                            id = user.userId
+                                                            tMapPoint = TMapPoint(
+                                                                userLocation.geoPoint.latitude,
+                                                                userLocation.geoPoint.longitude
+                                                            )
+                                                            icon =
+                                                                getUserMarker(user.data.profileImage)
+                                                        }
+                                                    addTMapMarkerItem(markerMap[user.userId])
+                                                } else {
+                                                    markerMap[user.userId]?.tMapPoint = TMapPoint(
                                                         userLocation.geoPoint.latitude,
                                                         userLocation.geoPoint.longitude
                                                     )
-                                                    icon = viewModel.getUserImage(id)
-                                                        ?.let { userProfileImage ->
-                                                            getUserMarker(userProfileImage)
-                                                        }
+                                                    removeTMapMarkerItem(user.userId)
+                                                    addTMapMarkerItem(markerMap[user.userId])
                                                 }
-                                                viewModel.setUserMarker(userLocation, marker)
-                                                removeTMapMarkerItem(id)
-                                                addTMapMarkerItem(viewModel.getUserMarker(id))
                                             }
 
                                             launch {
                                                 viewModel.isArrived.collectLatest { isArrived ->
                                                     if (isArrived) return@collectLatest
-                                                    if (userLocation.token == viewModel.myUserInfo.userID) {
+                                                    if (userLocation?.token == viewModel.myUserInfo.userID) {
                                                         viewModel.magneticInfo.collectLatest { magneticInfo ->
                                                             magneticInfo
                                                                 ?: throw NO_MAGNETIC_INFO_EXCEPTION
@@ -188,7 +213,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                         binding.tvTime.text =
                                             TimeUtils.getDurationStringInMinuteToDay(
                                                 requireContext(),
-                                                System.currentTimeMillis().asOffsetDateTime(),
+                                                System.currentTimeMillis()
+                                                    .asOffsetDateTime(),
                                                 promise.data.promiseDateTime
                                             )
                                     }
@@ -211,11 +237,14 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                         launch {
                             viewModel.ranking.collectLatest {
-                                rankingAdapter.submitList(it.chunked(3)[0])
+                                if (it.isNotEmpty()) {
+                                    rankingAdapter.submitList(it.chunked(3)[0])
+                                }
                             }
                         }
                     }
                 }
+
                 setOnClickListenerCallback(object : OnClickListenerCallback {
                     override fun onPressDown(
                         p0: ArrayList<TMapMarkerItem>?,
@@ -223,7 +252,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                         p2: TMapPoint?,
                         p3: PointF?
                     ) {
-                        if (p0?.isNotEmpty() == true) {
+                        if (p0?.isNotEmpty() == true && p0[0].id != PROMISE_LOCATION_MARKER_ID) {
                             showBottomSheet(p0[0].id)
                         } else {
                             dismissBottomSheet()
@@ -248,6 +277,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     }
 
     private fun showPromiseInfo(){
+        dismissBottomSheet()
         promiseInfoBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
