@@ -29,10 +29,6 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
 
     private val viewModel: GamingViewModel by viewModels()
 
-    private val defaultProfileImage by lazy {
-        UserProfileImage("#000000", 0)
-    }
-
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissionResults ->
@@ -51,7 +47,6 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
         setOnListenIsFinished()
         viewModel.setGameCode(gameCode)
         viewModel.setUserId()
-        viewModel.setDefaultImage(defaultProfileImage)
 
         if (ActivityCompat.checkSelfPermission(
                 this,
