@@ -151,4 +151,5 @@
     <string name="game_time_hint">게임 시간 설정...</string>
     <string name="my_ranking">내 순위 : %d위</string>
     <string name="location_title">위치</string>
+    <string name="snack_bar_not_implementation">"아직 구현되지 않은 기능입니다."</string>
 </resources>

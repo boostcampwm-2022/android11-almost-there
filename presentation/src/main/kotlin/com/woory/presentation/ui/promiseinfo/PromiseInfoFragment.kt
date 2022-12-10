@@ -104,6 +104,7 @@ class PromiseInfoFragment :
         }
 
         binding.btnCodeShare.setOnClickListener {
+            shareCode()
 //            shareCode(viewModel.gameCode.value)
         }
 
@@ -237,6 +238,10 @@ class PromiseInfoFragment :
                 }
             }
         }
+    }
+
+    private fun shareCode() {
+        makeSnackBar(getString(R.string.snack_bar_not_implementation))
     }
 
     // TODO : 카카오톡 공유 코드
