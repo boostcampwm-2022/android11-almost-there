@@ -165,7 +165,7 @@ class LocationSearchFragment :
                 override fun onPressUp(
                     p0: ArrayList<TMapMarkerItem>?,
                     p1: ArrayList<TMapPOIItem>?,
-                    centerPoint: TMapPoint?,
+                    p2: TMapPoint?,
                     p3: PointF?
                 ) {
                     centerPoint?.let {
