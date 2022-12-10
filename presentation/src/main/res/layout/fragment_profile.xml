@@ -12,106 +12,124 @@
             type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.join.ProfileActivity">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/startGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/endGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.8" />
-
-        <FrameLayout
-            android:id="@+id/profileImageLayout"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/bg_profile"
-            app:layout_constraintBottom_toTopOf="@id/nicknameInputLayout"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="@id/endGuideline"
-            app:layout_constraintStart_toStartOf="@id/startGuideline"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/background"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:backgroundColor="@{vm.profileImageBackgroundColor}"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="0dp">
-
-                <ImageView
-                    android:id="@+id/profileImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@string/profile_title"
-                    android:scaleType="centerCrop"
-                    app:src="@{vm.profileImageIndex}" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <ImageButton
-                android:id="@+id/switchButton"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:backgroundTint="@color/almost_there_primary_dark"
-                android:contentDescription="@string/profile_title"
-                android:minWidth="48dp"
-                android:onClick="@{() -> vm.shuffleProfileImage()}"
-                android:src="@drawable/ic_switch" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
 
-        </FrameLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/nicknameInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:counterEnabled="true"
-            app:counterMaxLength="7"
-            app:endIconMode="clear_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/endGuideline"
-            app:layout_constraintStart_toStartOf="@id/startGuideline"
-            app:layout_constraintTop_toBottomOf="@id/profileImageLayout"
-            app:startIconDrawable="@drawable/ic_nickname">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/nicknameInputEditText"
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_end"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/nickname_hint"
-                android:inputType="text"
-                android:maxLength="7"
-                android:text="@={vm.nickname}" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <FrameLayout
+                android:id="@+id/container_profile_Image"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/bg_profile"
+                app:layout_constraintBottom_toTopOf="@id/container_input_nickname"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="@id/guideline_end"
+                app:layout_constraintStart_toStartOf="@id/guideline_start"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed">
 
-        <Button
-            android:id="@+id/btn_next"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:enabled="@{TextUtils.isEmpty(vm.nickname) ? false : true}"
-            android:text="@string/next_with_icon"
-            android:textAppearance="@style/Text12.Black.Bold"
-            app:layout_constraintEnd_toEndOf="@id/nicknameInputLayout"
-            app:layout_constraintStart_toStartOf="@id/nicknameInputLayout"
-            app:layout_constraintTop_toBottomOf="@id/nicknameInputLayout" />
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cv_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:backgroundColor="@{vm.profileImageBackgroundColor}"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:id="@+id/iv_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/profile_title"
+                        android:scaleType="centerCrop"
+                        app:src="@{vm.profileImageIndex}" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <ImageButton
+                    android:id="@+id/ib_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:backgroundTint="@color/almost_there_primary_dark"
+                    android:contentDescription="@string/profile_title"
+                    android:minWidth="48dp"
+                    android:onClick="@{() -> vm.shuffleProfileImage()}"
+                    android:src="@drawable/ic_switch" />
+
+            </FrameLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/container_input_nickname"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="7"
+                app:endIconMode="clear_text"
+                app:hintEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline_end"
+                app:layout_constraintStart_toStartOf="@id/guideline_start"
+                app:layout_constraintTop_toBottomOf="@id/container_profile_Image"
+                app:startIconDrawable="@drawable/ic_nickname">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_input_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/nickname_hint"
+                    android:inputType="text"
+                    android:maxLength="7"
+                    android:text="@={vm.nickname}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:enabled="@{TextUtils.isEmpty(vm.nickname) ? false : true}"
+                android:text="@string/next_with_icon"
+                android:textAppearance="@style/Text12.Black.Bold"
+                app:layout_constraintEnd_toEndOf="@id/container_input_nickname"
+                app:layout_constraintStart_toStartOf="@id/container_input_nickname"
+                app:layout_constraintTop_toBottomOf="@id/container_input_nickname" />
+
+            <ProgressBar
+                android:id="@+id/progressbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/loading_indicator_color"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </layout>
