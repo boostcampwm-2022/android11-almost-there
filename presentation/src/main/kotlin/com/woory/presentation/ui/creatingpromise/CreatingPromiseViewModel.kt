@@ -205,6 +205,6 @@ class CreatingPromiseViewModel @Inject constructor(
     }
 
     companion object {
-        const val MIN_DURATION_MINUTES = 29L
+        const val MIN_DURATION_MINUTES = 9L
     }
 }
