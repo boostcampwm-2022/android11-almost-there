@@ -152,6 +152,9 @@
     <string name="location_title">위치</string>
     <string name="promise_setting">약속 설정</string>
     <string name="game_setting">게임 설정</string>
+    <string name="check_promise_data_message">다음처럼 약속을 설정하시겠습니까?</string>
+    <string name="promise_date_time">약속 시간</string>
+    <string name="game_time">게임 시간</string>
     <string-array name="game_time_array">
         <item>게임 시간 설정...</item>
         <item>10분 전</item>

@@ -2,22 +2,18 @@ package com.woory.presentation.ui.creatingpromise
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woory.data.model.UserPreferencesModel
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
-import com.woory.presentation.model.Color
-import com.woory.presentation.model.GeoPoint
-import com.woory.presentation.model.Location
-import com.woory.presentation.model.ProfileImage
-import com.woory.presentation.model.PromiseAlarm
-import com.woory.presentation.model.PromiseData
-import com.woory.presentation.model.User
-import com.woory.presentation.model.UserData
-import com.woory.presentation.model.UserProfileImage
+import com.woory.presentation.model.*
 import com.woory.presentation.model.exception.InvalidGameTimeException
 import com.woory.presentation.model.mapper.alarm.asDomain
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.model.mapper.promise.asDomain
 import com.woory.presentation.util.TimeConverter.zoneOffset
+import com.woory.presentation.util.flow.EventFlow
+import com.woory.presentation.util.flow.MutableEventFlow
+import com.woory.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,19 +53,21 @@ class CreatingPromiseViewModel @Inject constructor(
     val promiseTime: StateFlow<LocalTime?> = _promiseTime.asStateFlow()
 
     private val _readyDuration: MutableStateFlow<Duration?> = MutableStateFlow(null)
-    val readyDuration: StateFlow<Duration?> = _readyDuration.asStateFlow()
 
     val isEnabled: Flow<Boolean> = combine(
         promiseLocation,
         promiseDate,
         promiseTime,
-        readyDuration
+        _readyDuration
     ) { _promiseLocation, _promiseDate, _promiseTime, _gameTime ->
         (_promiseLocation != null) && (_promiseDate != null) && (_promiseTime != null) && (_gameTime != null)
     }
 
-    private val _promiseSettingEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
-    val promiseSettingEvent: SharedFlow<PromiseAlarm> = _promiseSettingEvent.asSharedFlow()
+    private val _requestSetPromiseEvent: MutableEventFlow<PromiseData> = MutableEventFlow()
+    val requestSetPromiseEvent: EventFlow<PromiseData> = _requestSetPromiseEvent.asEventFlow()
+
+    private val _setPromiseSuccessEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
+    val setPromiseSuccessEvent: SharedFlow<PromiseAlarm> = _setPromiseSuccessEvent.asSharedFlow()
 
     private val _choosedLocation: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
     val choosedLocation: StateFlow<GeoPoint?> = _choosedLocation.asStateFlow()
@@ -137,46 +135,58 @@ class CreatingPromiseViewModel @Inject constructor(
         return nowDateTime.isAfter(gameTime.minusMinutes(MIN_DURATION_MINUTES))
     }
 
+    private fun getPromiseData(userPreferencesModel: UserPreferencesModel): PromiseData? {
+        val promiseLocation = _promiseLocation.value ?: return null
+        val promiseDate = _promiseDate.value ?: return null
+        val promiseTime = _promiseTime.value ?: return null
+        val readyDuration = _readyDuration.value ?: return null
+
+        val promiseDateTime =
+            OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+        val gameDateTime =
+            OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
+                .minus(readyDuration)
+
+        val name = nickname.value
+        val profileImage = UserProfileImage(
+            profileImageBackgroundColor.value.toString(),
+            profileImageIndex.value
+        )
+
+        val user = User(userPreferencesModel.userID, UserData(name, profileImage))
+
+        return PromiseData(promiseLocation, promiseDateTime, gameDateTime, user, listOf(user))
+    }
+
+    fun setRequestSetPromiseEvent() {
+        viewModelScope.launch {
+            userRepository.userPreferences.collectLatest {
+                val promiseData = getPromiseData(it) ?: return@collectLatest
+                _requestSetPromiseEvent.emit(promiseData)
+            }
+        }
+    }
+
     fun setPromise() {
         viewModelScope.launch {
-            val promiseLocation = _promiseLocation.value ?: return@launch
-            val promiseDate = _promiseDate.value ?: return@launch
-            val promiseTime = _promiseTime.value ?: return@launch
-            val readyDuration = _readyDuration.value ?: return@launch
+            userRepository.userPreferences.collectLatest {
+                val promiseData = getPromiseData(it) ?: return@collectLatest
 
-            val promiseDateTime =
-                OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
-            val gameDateTime =
-                OffsetDateTime.of(promiseDate, promiseTime, zoneOffset)
-                    .minus(readyDuration)
+                if (isNotEnabledPromiseDateTime(promiseData.gameDateTime)) {
+                    _errorEvent.emit(InvalidGameTimeException())
+                    return@collectLatest
+                }
 
-            if (isNotEnabledPromiseDateTime(gameDateTime)) {
-                _errorEvent.emit(InvalidGameTimeException())
-                return@launch
-            }
-
-            setStateLoading()
-
-            userRepository.userPreferences.collectLatest { userPreferences ->
-                val name = nickname.value
-                val profileImage = UserProfileImage(
-                    profileImageBackgroundColor.value.toString(),
-                    profileImageIndex.value
-                )
-
-                val user = User(userPreferences.userID, UserData(name, profileImage))
-
-                val promiseData =
-                    PromiseData(promiseLocation, promiseDateTime, gameDateTime, user, listOf(user))
+                setStateLoading()
 
                 promiseRepository.setPromise(promiseData.asDomain()).onSuccess { promiseCode ->
                     promiseRepository.getPromiseAlarm(promiseCode).onSuccess { promiseAlarm ->
-                        _promiseSettingEvent.emit(promiseAlarm.asUiModel())
-                    }.onFailure {
-                        setStateError(it)
+                        _setPromiseSuccessEvent.emit(promiseAlarm.asUiModel())
+                    }.onFailure { exception ->
+                        setStateError(exception)
                     }
-                }.onFailure {
-                    setStateError(it)
+                }.onFailure { exception ->
+                    setStateError(exception)
                 }
             }
         }

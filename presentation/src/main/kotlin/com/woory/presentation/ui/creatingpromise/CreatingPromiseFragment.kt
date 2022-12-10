@@ -19,7 +19,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
-import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.model.PromiseData
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalTime
-import org.threeten.bp.OffsetDateTime
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
@@ -78,6 +77,18 @@ class CreatingPromiseFragment :
         materialTimePicker
     }
 
+    private val checkPromiseDataDialog by lazy {
+        CheckPromiseDataDialog().apply {
+            setButtonClickListener(object : CheckPromiseDataDialog.ButtonClickListener {
+                override fun onSubmit() {
+                    viewModel.setPromise()
+                }
+
+                override fun onCancel() {}
+            })
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -116,19 +127,14 @@ class CreatingPromiseFragment :
                 }
 
                 launch {
-                    viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
-//                        alarmFunctions.registerAlarm(promiseAlarm)
+                    viewModel.requestSetPromiseEvent.collectLatest {
+                        showCheckPromiseDataDialog(it)
+                    }
+                }
 
-                        //Todo :: 테스트용 코드{
-                        alarmFunctions.registerAlarm(
-                            PromiseAlarm(
-                                alarmCode = promiseAlarm.alarmCode,
-                                promiseCode = promiseAlarm.promiseCode,
-                                state = promiseAlarm.state,
-                                startTime = OffsetDateTime.now().plusSeconds(10),
-                                endTime = OffsetDateTime.now().plusSeconds(30)
-                            )
-                        )
+                launch {
+                    viewModel.setPromiseSuccessEvent.collectLatest { promiseAlarm ->
+                        alarmFunctions.registerAlarm(promiseAlarm)
 
                         viewModel.setPromiseAlarm(promiseAlarm)
 
@@ -197,7 +203,7 @@ class CreatingPromiseFragment :
         }
 
         binding.btnCreatePromise.btnSubmit.setOnClickListener {
-            viewModel.setPromise()
+            viewModel.setRequestSetPromiseEvent()
         }
     }
 
@@ -207,6 +213,17 @@ class CreatingPromiseFragment :
 
     private fun showPromiseTimePickerDialog() {
         promiseTimePicker.show(parentFragmentManager, TIME_PICKER_TAG)
+    }
+
+    private fun showCheckPromiseDataDialog(promiseData: PromiseData) {
+        try {
+            checkPromiseDataDialog.setPromiseData(promiseData)
+            checkPromiseDataDialog.show(parentFragmentManager, "TAG")
+        } catch (e: Exception) {
+            println(e.stackTraceToString())
+            val message = getExceptionMessage(requireContext(), e)
+            showSnackBar(message)
+        }
     }
 
     private fun showSnackBar(text: String) {
