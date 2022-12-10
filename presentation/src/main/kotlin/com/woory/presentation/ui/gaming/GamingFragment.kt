@@ -30,7 +30,6 @@ import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.DistanceUtil.getDistance
-import com.woory.presentation.util.NO_MAGNETIC_INFO_EXCEPTION
 import com.woory.presentation.util.TAG
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.TimeUtils
@@ -38,6 +37,7 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
@@ -75,7 +75,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        viewModel.fetchPromiseData()
         viewModel.fetchPromise()
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -121,8 +120,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                         launch {
                             viewModel.promiseModel.collectLatest {
                                 if (it != null) {
+                                    viewModel.fetchUserList()
                                     viewModel.fetchMagneticField(it)
-//                                    viewModel.fetchRealtimeRanking()
                                     viewModel.fetchUserArrival()
                                     viewModel.fetchPromiseEnding()
                                 }
@@ -131,6 +130,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                         launch {
                             viewModel.allUsers.collectLatest {
+
+                                Timber.tag("123123").d("on View: $it")
                                 it?.forEach { user ->
                                     launch {
                                         viewModel.fetchUserLocation(user)
@@ -151,10 +152,11 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                                         }
                                                     addTMapMarkerItem(markerMap[user.userId])
                                                 } else {
-                                                    markerMap[user.userId]?.tMapPoint = TMapPoint(
-                                                        userLocation.geoPoint.latitude,
-                                                        userLocation.geoPoint.longitude
-                                                    )
+                                                    markerMap[user.userId]?.tMapPoint =
+                                                        TMapPoint(
+                                                            userLocation.geoPoint.latitude,
+                                                            userLocation.geoPoint.longitude
+                                                        )
                                                     removeTMapMarkerItem(user.userId)
                                                     addTMapMarkerItem(markerMap[user.userId])
                                                 }
@@ -162,15 +164,16 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                                             launch {
                                                 viewModel.isArrived.collectLatest { isArrived ->
-                                                    if (isArrived) return@collectLatest
-                                                    if (userLocation?.token == viewModel.myUserInfo.userID) {
-                                                        viewModel.magneticInfo.collectLatest { magneticInfo ->
-                                                            magneticInfo
-                                                                ?: throw NO_MAGNETIC_INFO_EXCEPTION
-                                                            alertShakeDialog(
-                                                                userLocation.geoPoint,
-                                                                magneticInfo.centerPoint
-                                                            )
+                                                    if (isArrived.not()) {
+                                                        if (userLocation?.token == viewModel.myUserInfo.userID) {
+                                                            viewModel.magneticInfo.collectLatest { magneticInfo ->
+                                                                if (magneticInfo != null) {
+                                                                    alertShakeDialog(
+                                                                        userLocation.geoPoint,
+                                                                        magneticInfo.centerPoint
+                                                                    )
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -225,14 +228,17 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                         launch {
                             viewModel.centerLocationToMe.collectLatest {
-                                val myToken = viewModel.userId.value ?: return@collectLatest
-                                val location =
-                                    viewModel.getUserLocation(myToken) ?: return@collectLatest
-                                setCenterPoint(
-                                    location.geoPoint.latitude,
-                                    location.geoPoint.longitude
-                                )
-                                mapView.zoomLevel = 100
+                                val myToken = viewModel.userId.value
+                                if (myToken != null) {
+                                    val location = viewModel.getUserLocation(myToken)
+                                    if (location != null) {
+                                        setCenterPoint(
+                                            location.geoPoint.latitude,
+                                            location.geoPoint.longitude
+                                        )
+                                        mapView.zoomLevel = 100
+                                    }
+                                }
                             }
                         }
 
@@ -297,7 +303,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                     binding.layoutBottomSheet.tvLocation.text = address
                 }
                 launch {
-                    val remainTime = viewModel.getRemainTime() ?: -1
+                    val remainTime = viewModel.getRemainTime(id) ?: -1
                     binding.layoutBottomSheet.tvExpectedTime.text =
                         TimeUtils.getStringInMinuteToDay(requireContext(), remainTime)
                 }

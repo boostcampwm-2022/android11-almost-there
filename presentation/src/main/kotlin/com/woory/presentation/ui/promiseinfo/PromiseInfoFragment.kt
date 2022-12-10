@@ -33,7 +33,6 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.threeten.bp.Duration
 
 @AndroidEntryPoint
 class PromiseInfoFragment :

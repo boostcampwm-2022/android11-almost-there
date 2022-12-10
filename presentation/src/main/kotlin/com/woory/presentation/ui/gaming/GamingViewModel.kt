@@ -115,8 +115,6 @@ class GamingViewModel @Inject constructor(
     fun fetchMagneticField(promise: Promise) {
         viewModelScope.launch {
 
-            _allUsers.emit(promise.data.users)
-
             launch {
                 promiseRepository.getMagneticInfoByCodeAndListen(promise.code)
                     .collectLatest { result ->
@@ -139,34 +137,6 @@ class GamingViewModel @Inject constructor(
                     requireNotNull(userLocationMap[user.userId]).emit(uiLocationModel)
                 }.onFailure {
                     Timber.tag("123123").d(it)
-                }
-            }
-        }
-    }
-
-    // TODO : 실시간 순위 받아오기
-    fun fetchRealtimeRanking() {
-        viewModelScope.launch {
-            val code = gameCode.value
-            launch {
-                promiseRepository.getGameRealtimeRanking(code).collectLatest { result ->
-                    result.onSuccess { list ->
-//                        _ranking.emit(list.filter {
-//                            !it.lost && !it.arrived
-//                        }
-//                            .map { addedUserHpModel ->
-//                                val id = addedUserHpModel.userId
-//                                UserRanking(
-//                                    userId = id,
-//                                    rank = list.indexOf(addedUserHpModel) + 1,
-//                                    profileImage = getUserImage(id) ?: requireNotNull(
-//                                        userDefaultImage.value
-//                                    ),
-//                                    userName = userNameMap[id]?.value ?: "",
-//                                    hp = addedUserHpModel.hp
-//                                )
-//                            })
-                    }
                 }
             }
         }
@@ -225,14 +195,9 @@ class GamingViewModel @Inject constructor(
     fun getUserImage(id: String): UserProfileImage? = userImageMap[id]?.value
 
     fun getUserRanking(id: String): Int? {
-
         return ranking.value.find {
             it.userId == id
         }?.rankingNumber
-
-//        return userHpMap[id]?.value?.let {
-//            userHpMap.values.map { it.value }.indexOf(it) + 1
-//        }
     }
 
     suspend fun getAddress(id: String): String? =
@@ -253,19 +218,23 @@ class GamingViewModel @Inject constructor(
         }
     }
 
-    suspend fun getRemainTime(): Int? =
-        withContext(viewModelScope.coroutineContext) {
-            userId.value?.let { id ->
-                getUserLocation(id)?.geoPoint?.let { myPoint ->
-                    magneticInfo.value?.centerPoint?.let { centerPoint ->
-                        routeRepository.getMinimumTime(
-                            myPoint.asDomain(),
-                            centerPoint.asDomain()
-                        )
-                            .getOrDefault(-1)
-                    }
-                }
+    suspend fun getRemainTime(token: String): Int? =
+        getUserLocation(token)?.geoPoint?.let { myPoint ->
+            magneticInfo.value?.centerPoint?.let { centerPoint ->
+                routeRepository.getMinimumTime(
+                    myPoint.asDomain(),
+                    centerPoint.asDomain()
+                )
+                    .getOrDefault(-1)
             }
-
         }
+
+    fun fetchUserList() {
+        viewModelScope.launch {
+            val code = gameCode.value
+            promiseRepository.getReadyUserList(code).onSuccess {
+                _allUsers.emit(it.map { it.asUiModel() })
+            }
+        }
+    }
 }

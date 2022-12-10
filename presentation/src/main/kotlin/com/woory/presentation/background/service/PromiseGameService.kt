@@ -33,6 +33,7 @@ import com.woory.presentation.model.mapper.magnetic.asUiModel
 import com.woory.presentation.model.mapper.promise.asUiModel
 import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.DistanceUtil
+import com.woory.presentation.util.TimeConverter.asMillis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.OffsetDateTime
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -149,47 +149,58 @@ class PromiseGameService : LifecycleService() {
                                     promiseRepository.getPromiseByCode(promiseCode)
                                         .onSuccess { promiseModel ->
                                             val promiseUiModel = promiseModel.asUiModel()
-                                            _gameTimeInitialValue.emit(
-                                                extractTimeDifference(
-                                                    promiseUiModel.data.gameDateTime,
-                                                    promiseUiModel.data.promiseDateTime
-                                                )
-                                            )
 
-                                            // TODO : 자기장 flow 받아오기
-                                            launch {
-                                                promiseRepository.getMagneticInfoByCodeAndListen(
-                                                    promiseCode
+                                            if (promiseUiModel.data.gameDateTime.asMillis() - System.currentTimeMillis() > 20 * 1000) {
+                                                promiseRepository.sendOutUser(
+                                                    promiseCode,
+                                                    userToken
                                                 )
-                                                    .collect { result ->
-                                                        result.onSuccess { magneticInfoModel ->
-                                                            val uiModel =
-                                                                magneticInfoModel.asUiModel()
-                                                            _magneticZoneInfo.emit(uiModel)
+                                                stopUpdateLocation()
+                                            } else {
+                                                _gameTimeInitialValue.emit(
+                                                    extractTimeDifference(
+                                                        promiseUiModel.data.gameDateTime,
+                                                        promiseUiModel.data.promiseDateTime
+                                                    )
+                                                )
+
+                                                // TODO : 자기장 flow 받아오기
+                                                launch {
+                                                    promiseRepository.getMagneticInfoByCodeAndListen(
+                                                        promiseCode
+                                                    )
+                                                        .collect { result ->
+                                                            result.onSuccess { magneticInfoModel ->
+                                                                val uiModel =
+                                                                    magneticInfoModel.asUiModel()
+                                                                _magneticZoneInfo.emit(uiModel)
+                                                            }
                                                         }
-                                                    }
-                                            }
+                                                }
 
-                                            launch {
-                                                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                                    promiseRepository.getIsFinishedPromise(promiseCode).collectLatest { result ->
-                                                        result.onSuccess { isFinished ->
-                                                            if (isFinished) {
-                                                                stopGame(promiseCode)
+                                                launch {
+                                                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                                        promiseRepository.getIsFinishedPromise(
+                                                            promiseCode
+                                                        ).collectLatest { result ->
+                                                            result.onSuccess { isFinished ->
+                                                                if (isFinished) {
+                                                                    stopGame(promiseCode)
+                                                                }
                                                             }
                                                         }
                                                     }
                                                 }
-                                            }
 
-                                            // TODO : 주기적으로 자기장 update 하기
-                                            while (true) {
-                                                delay((1000 * MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL).toLong())
-                                                promiseRepository.decreaseMagneticRadius(
-                                                    promiseCode,
-                                                    magneticZoneInitialRadius.value / gameTimeInitialValue.value
-                                                )
+                                                // TODO : 주기적으로 자기장 update 하기
+                                                while (true) {
+                                                    delay((1000 * MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL).toLong())
+                                                    promiseRepository.decreaseMagneticRadius(
+                                                        promiseCode,
+                                                        magneticZoneInitialRadius.value / gameTimeInitialValue.value
+                                                    )
 
+                                                }
                                             }
                                         }
                                 }
