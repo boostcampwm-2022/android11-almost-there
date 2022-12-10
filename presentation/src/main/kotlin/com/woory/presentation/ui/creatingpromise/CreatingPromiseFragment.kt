@@ -1,10 +1,9 @@
 package com.woory.presentation.ui.creatingpromise
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.NumberPicker
+import android.widget.AdapterView
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -79,20 +78,6 @@ class CreatingPromiseFragment :
         materialTimePicker
     }
 
-    private val gameTimePickerDialog by lazy {
-        Dialog(requireContext()).apply {
-            setContentView(R.layout.layout_game_time_picker_dialog)
-            findViewById<NumberPicker>(R.id.numberpicker_hour)?.run {
-                minValue = MIN_SELECT_HOUR
-                maxValue = MAX_SELECT_HOUR
-            }
-            findViewById<NumberPicker>(R.id.numberpicker_minute)?.run {
-                minValue = MIN_SELECT_MINUTE
-                maxValue = MAX_SELECT_MINUTE
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -121,18 +106,6 @@ class CreatingPromiseFragment :
                 launch {
                     viewModel.promiseTime.collectLatest {
                         binding.btnPromiseTime.text = it?.toString() ?: DEFAULT_STRING
-                    }
-                }
-
-                launch {
-                    viewModel.readyDuration.collectLatest { gameTime ->
-                        binding.btnGameTime.text = if (gameTime != null) {
-                            String.format(
-                                getString(R.string.before_time),
-                                gameTime.toHours(),
-                                gameTime.toMinutes() % 60
-                            )
-                        } else DEFAULT_STRING
                     }
                 }
 
@@ -194,27 +167,33 @@ class CreatingPromiseFragment :
             showPromiseTimePickerDialog()
         }
 
-        binding.btnGameTime.setOnClickListener {
-            showGameTimePickerDialog()
-        }
+        binding.spinnerGameTime.onItemSelectedListener = object : AdapterView.OnItemClickListener,
+            AdapterView.OnItemSelectedListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+            }
 
-        gameTimePickerDialog.findViewById<Button>(R.id.btn_cancel)?.setOnClickListener {
-            gameTimePickerDialog.cancel()
-        }
-
-        gameTimePickerDialog.findViewById<Button>(R.id.btn_submit)?.setOnClickListener {
-            val hour =
-                gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour)?.value
-            val minute =
-                gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute)?.value
-            viewModel.setReadyDuration(
-                if (hour != null && minute != null) {
-                    Duration.ofMinutes(60L * hour + minute)
-                } else {
-                    null
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (position == 0) {
+                    (parent?.getChildAt(position) as? TextView)?.setTextColor(
+                        requireActivity().getColor(
+                            R.color.hint_color
+                        )
+                    )
                 }
-            )
-            gameTimePickerDialog.cancel()
+                viewModel.setReadyDuration(GameTime.values()[position].duration)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         binding.btnCreatePromise.btnSubmit.setOnClickListener {
@@ -230,21 +209,23 @@ class CreatingPromiseFragment :
         promiseTimePicker.show(parentFragmentManager, TIME_PICKER_TAG)
     }
 
-    private fun showGameTimePickerDialog() {
-        gameTimePickerDialog.show()
-    }
-
     private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 
+    enum class GameTime(val duration: Duration?) {
+        DEFAULT(null),
+        ONE_TEN_MINUTES(Duration.ofMinutes(10)),
+        THREE_TEN_MINUTES(Duration.ofMinutes(30)),
+        ONE_HOURS(Duration.ofHours(1)),
+        TWO_HOURS(Duration.ofHours(2)),
+        THREE_HOURS(Duration.ofHours(3)),
+        FOUR_HOURS(Duration.ofHours(4)),
+        FIVE_HOURS(Duration.ofHours(5)),
+        SIX_HOURS(Duration.ofHours(6)),
+    }
+
     companion object {
-        private const val MIN_SELECT_HOUR = 1
-        private const val MAX_SELECT_HOUR = 23
-
-        private const val MIN_SELECT_MINUTE = 0
-        private const val MAX_SELECT_MINUTE = 59
-
         private const val TIME_PICKER_TAG = "Time"
         private const val DATE_PICKER_TAG = "Date"
 
