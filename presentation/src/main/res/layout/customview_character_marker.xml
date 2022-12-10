@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+
+        android:background="@android:color/transparent">
+
+        <View
+            android:id="@+id/view_tail"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginTop="-5dp"
+            android:background="@drawable/bg_speech_bubble_tail"
+            android:backgroundTint="?attr/colorPrimary"
+            android:elevation="10dp"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_body" />
+
+        <View
+            android:id="@+id/view_body"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_speech_bubble_body"
+            android:backgroundTint="?attr/colorPrimary"
+            android:elevation="10dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toTopOf="@id/view_tail"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/bg_modest_shiba_in_profile" />
+
+        <ImageView
+            android:id="@+id/iv_character"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="3dp"
+            android:background="@drawable/bg_speech_bubble_body"
+            android:backgroundTint="@color/purple_200"
+            android:elevation="10dp"
+            android:padding="10dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/character_img"
+            app:layout_constraintBottom_toBottomOf="@id/view_body"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/view_body"
+            app:layout_constraintStart_toStartOf="@id/view_body"
+            app:layout_constraintTop_toTopOf="@id/view_body"
+            tools:src="@drawable/bg_modest_shiba_in_profile" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
