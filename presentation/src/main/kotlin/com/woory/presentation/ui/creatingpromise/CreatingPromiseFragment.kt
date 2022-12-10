@@ -135,7 +135,6 @@ class CreatingPromiseFragment :
                 launch {
                     viewModel.setPromiseSuccessEvent.collectLatest { promiseAlarm ->
                         alarmFunctions.registerAlarm(promiseAlarm)
-
                         viewModel.setPromiseAlarm(promiseAlarm)
 
                         PromiseInfoActivity.startActivity(

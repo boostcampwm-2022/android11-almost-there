@@ -23,6 +23,7 @@
         android:layout_height="match_parent">
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/btn_ready"
@@ -47,19 +48,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline_center"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.5" />
-
                 <FrameLayout
                     android:id="@+id/container_map"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="400dp"
                     android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBottom_toBottomOf="@id/guideline_center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -74,7 +67,7 @@
                     android:textStyle="italic|bold"
                     android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/guideline_center" />
+                    app:layout_constraintTop_toBottomOf="@id/container_map" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_code_copy"
@@ -98,7 +91,7 @@
                     android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="@id/btn_code_copy"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/guideline_center"
+                    app:layout_constraintTop_toBottomOf="@id/container_map"
                     app:layout_goneMarginTop="10dp" />
 
                 <androidx.cardview.widget.CardView
