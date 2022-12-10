@@ -120,6 +120,7 @@ class LocationSearchFragment :
         mapView = TMapView(getActivityContext(requireContext())).apply {
             setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
+                setVisibleLogo(false)
                 zoomLevel = DEFAULT_ZOOM_LEVEL
                 fragmentViewModel.setIsMapReady(true)
                 binding.iconCenterLocationMarker.visibility = View.VISIBLE
@@ -145,6 +146,10 @@ class LocationSearchFragment :
                         }
                     }
                 }
+            }
+
+            setOnLongClickListenerCallback { _, _, tMapPoint ->
+                activityViewModel.setChoosedLocation(GeoPoint(tMapPoint.latitude, tMapPoint.longitude))
             }
 
             setOnClickListenerCallback(object : TMapView.OnClickListenerCallback {
@@ -202,21 +207,33 @@ class LocationSearchFragment :
 
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                if (it != null && activityViewModel.choosedLocation.value == null) {
-                    activityViewModel.setChoosedLocation(
-                        GeoPoint(it.latitude, it.longitude)
-                    )
+        if (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+            fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (activityViewModel.choosedLocation.value == null) {
+                        activityViewModel.setChoosedLocation(
+                            GeoPoint(it.result.latitude, it.result.longitude)
+                        )
+                    }
+                } else {
+                    setDefaultLocation()
                 }
             }.addOnFailureListener {
-                showSnackBar(it.message ?: DEFAULT_TEXT)
+                setDefaultLocation()
             }
+        } else {
+            setDefaultLocation()
         }
     }
 
     private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun setDefaultLocation() {
+        activityViewModel.setChoosedLocation(
+            GeoPoint(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+        )
     }
 
     override fun onDestroyView() {
@@ -229,5 +246,7 @@ class LocationSearchFragment :
     companion object {
         private const val DEFAULT_ZOOM_LEVEL = 15
         private const val DEFAULT_TEXT = ""
+        private const val DEFAULT_LATITUDE = 37.3588602423595
+        private const val DEFAULT_LONGITUDE = 127.105206334597
     }
 }

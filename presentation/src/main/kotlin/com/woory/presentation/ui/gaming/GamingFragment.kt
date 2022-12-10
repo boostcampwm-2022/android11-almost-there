@@ -115,6 +115,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         mapView = TMapView(getActivityContext(requireContext())).apply {
             setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
+                setVisibleLogo(false)
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         launch {
