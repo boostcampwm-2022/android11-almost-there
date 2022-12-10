@@ -144,19 +144,7 @@ class CreatingPromiseFragment :
 
                 launch {
                     viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
-//                        alarmFunctions.registerAlarm(promiseAlarm)
-
-                        //Todo :: 테스트용 코드{
-                        alarmFunctions.registerAlarm(
-                            PromiseAlarm(
-                                alarmCode = promiseAlarm.alarmCode,
-                                promiseCode = promiseAlarm.promiseCode,
-                                state = promiseAlarm.state,
-                                startTime = OffsetDateTime.now().plusSeconds(10),
-                                endTime = OffsetDateTime.now().plusSeconds(30)
-                            )
-                        )
-
+                        alarmFunctions.registerAlarm(promiseAlarm)
                         viewModel.setPromiseAlarm(promiseAlarm)
 
                         PromiseInfoActivity.startActivity(
