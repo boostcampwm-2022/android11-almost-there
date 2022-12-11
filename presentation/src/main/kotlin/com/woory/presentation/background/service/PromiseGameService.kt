@@ -146,62 +146,68 @@ class PromiseGameService : LifecycleService() {
                         true -> {
                             promiseRepository.setUserInitialHpData(promiseCode, userToken)
                                 .onSuccess {
-                                    promiseRepository.getPromiseByCode(promiseCode)
-                                        .onSuccess { promiseModel ->
-                                            val promiseUiModel = promiseModel.asUiModel()
+                                    promiseRepository.getMagneticInfoByCode(promiseCode)
+                                        .onSuccess { magneticModel ->
+                                            _magneticZoneInitialRadius.emit(magneticModel.asUiModel().radius)
+                                            promiseRepository.getPromiseByCode(promiseCode)
+                                                .onSuccess { promiseModel ->
+                                                    val promiseUiModel = promiseModel.asUiModel()
 
-                                            if (promiseUiModel.data.gameDateTime.asMillis() - System.currentTimeMillis() > 20 * 1000) {
-                                                promiseRepository.sendOutUser(
-                                                    promiseCode,
-                                                    userToken
-                                                )
-                                                stopUpdateLocation()
-                                            } else {
-                                                _gameTimeInitialValue.emit(
-                                                    extractTimeDifference(
-                                                        promiseUiModel.data.gameDateTime,
-                                                        promiseUiModel.data.promiseDateTime
-                                                    )
-                                                )
+                                                    if (promiseUiModel.data.gameDateTime.asMillis() - System.currentTimeMillis() > 20 * 1000) {
+                                                        promiseRepository.sendOutUser(
+                                                            promiseCode,
+                                                            userToken
+                                                        )
+                                                        stopUpdateLocation()
+                                                    } else {
+                                                        _gameTimeInitialValue.emit(
+                                                            extractTimeDifference(
+                                                                promiseUiModel.data.gameDateTime,
+                                                                promiseUiModel.data.promiseDateTime
+                                                            )
+                                                        )
 
-                                                // TODO : 자기장 flow 받아오기
-                                                launch {
-                                                    promiseRepository.getMagneticInfoByCodeAndListen(
-                                                        promiseCode
-                                                    )
-                                                        .collect { result ->
-                                                            result.onSuccess { magneticInfoModel ->
-                                                                val uiModel =
-                                                                    magneticInfoModel.asUiModel()
-                                                                _magneticZoneInfo.emit(uiModel)
-                                                            }
+                                                        // TODO : 자기장 flow 받아오기
+                                                        launch {
+                                                            promiseRepository.getMagneticInfoByCodeAndListen(
+                                                                promiseCode
+                                                            )
+                                                                .collect { result ->
+                                                                    result.onSuccess { magneticInfoModel ->
+                                                                        val uiModel =
+                                                                            magneticInfoModel.asUiModel()
+                                                                        _magneticZoneInfo.emit(
+                                                                            uiModel
+                                                                        )
+                                                                    }
+                                                                }
                                                         }
-                                                }
 
-                                                launch {
-                                                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                                        promiseRepository.getIsFinishedPromise(
-                                                            promiseCode
-                                                        ).collectLatest { result ->
-                                                            result.onSuccess { isFinished ->
-                                                                if (isFinished) {
-                                                                    stopGame(promiseCode)
+                                                        launch {
+                                                            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                                                promiseRepository.getIsFinishedPromise(
+                                                                    promiseCode
+                                                                ).collectLatest { result ->
+                                                                    result.onSuccess { isFinished ->
+                                                                        if (isFinished) {
+                                                                            stopGame(promiseCode)
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         }
+
+                                                        // TODO : 주기적으로 자기장 update 하기
+                                                        while (true) {
+                                                            delay((1000 * MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL).toLong())
+                                                            promiseRepository.decreaseMagneticRadius(
+                                                                promiseCode,
+                                                                magneticZoneInitialRadius.value / gameTimeInitialValue.value
+                                                            )
+
+                                                        }
                                                     }
                                                 }
-
-                                                // TODO : 주기적으로 자기장 update 하기
-                                                while (true) {
-                                                    delay((1000 * MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL).toLong())
-                                                    promiseRepository.decreaseMagneticRadius(
-                                                        promiseCode,
-                                                        magneticZoneInitialRadius.value / gameTimeInitialValue.value
-                                                    )
-
-                                                }
-                                            }
                                         }
                                 }
                         }

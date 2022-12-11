@@ -6,6 +6,7 @@ import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.RouteRepository
 import com.woory.data.repository.UserRepository
 import com.woory.presentation.model.AddedUserHp
+import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.Promise
 import com.woory.presentation.model.User
@@ -79,6 +80,9 @@ class GamingViewModel @Inject constructor(
 
     private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
     val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
+
+    private val _centerLocation: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
+    val centerLocation: StateFlow<GeoPoint?> = _centerLocation.asStateFlow()
 
     fun setGameCode(code: String) {
         viewModelScope.launch {
@@ -235,6 +239,12 @@ class GamingViewModel @Inject constructor(
             promiseRepository.getReadyUserList(code).onSuccess {
                 _allUsers.emit(it.map { it.asUiModel() })
             }
+        }
+    }
+
+    fun setCenterLocation(getPoint: GeoPoint) {
+        viewModelScope.launch {
+            _centerLocation.emit(getPoint)
         }
     }
 }

@@ -1,13 +1,19 @@
 package com.woory.presentation.ui.gaming
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PointF
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
@@ -15,6 +21,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
@@ -39,7 +47,6 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gaming) {
@@ -71,6 +78,23 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     }
 
     private val markerMap = mutableMapOf<String, TMapMarkerItem>()
+
+    private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
+        LocationServices.getFusedLocationProviderClient(requireContext())
+    }
+
+    private val locationManager by lazy {
+        requireContext().getSystemService(LocationManager::class.java)
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissionResults ->
+        val isGranted = permissionResults.values.reduce { acc, b -> acc && b }
+        if (isGranted) {
+            setCurrentLocation()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -107,6 +131,14 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         binding.layoutBottomSheetPromise.lifecycleOwner = viewLifecycleOwner
         binding.layoutBottomSheetPromise.pattern = "yyyy:MM:hh hh:mm"
 
+        requestPermissions(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_NETWORK_STATE
+            )
+        )
+
         dismissBottomSheet()
 
         setUpMapView()
@@ -117,6 +149,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
                 setVisibleLogo(false)
+
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         launch {
@@ -126,6 +159,16 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                     viewModel.fetchMagneticField(it)
                                     viewModel.fetchUserArrival()
                                     viewModel.fetchPromiseEnding()
+                                }
+                            }
+                        }
+
+                        launch {
+                            viewModel.centerLocation.collectLatest {
+                                if (it != null) {
+                                    val latitude = it.latitude
+                                    val longitude = it.longitude
+                                    setCenterPoint(latitude, longitude)
                                 }
                             }
                         }
@@ -314,6 +357,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     private fun dismissBottomSheet() {
         profileBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         promiseInfoBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        binding.layoutBottomSheet.tvExpectedTime.text = getString(R.string.loading_text)
     }
 
     private fun makeSnackBar(text: String) {
@@ -327,13 +371,47 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             )
 
         markerBinding.ivCharacter.bindImage(userProfileImage.imageIndex)
-        markerBinding.ivCharacter.backgroundTintList = ColorStateList.valueOf(Color.parseColor(userProfileImage.color))
+        markerBinding.ivCharacter.backgroundTintList =
+            ColorStateList.valueOf(Color.parseColor(userProfileImage.color))
         markerBinding.lifecycleOwner = this
 
         val view = markerBinding.root
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         return view.drawToBitmap()
+    }
+
+    private fun requestPermissions(permissions: Array<String>) {
+        val permissionResult = permissions
+            .map {
+                ActivityCompat.checkSelfPermission(requireContext(), it) ==
+                        PackageManager.PERMISSION_GRANTED
+            }
+            .reduce { a, b -> a && b }
+
+        if (permissionResult) setCurrentLocation()
+        else requestPermissionLauncher.launch(permissions)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setCurrentLocation() {
+        if (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+            fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (viewModel.centerLocation.value == null) {
+                        viewModel.setCenterLocation(
+                            GeoPoint(it.result.latitude, it.result.longitude)
+                        )
+                    }
+                } else {
+                    setDefaultLocation()
+                }
+            }.addOnFailureListener {
+                setDefaultLocation()
+            }
+        } else {
+            setDefaultLocation()
+        }
     }
 
     private fun alertShakeDialog(userLocation: GeoPoint, dest: GeoPoint) {
@@ -354,9 +432,20 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         }
     }
 
+    private fun setDefaultLocation() {
+        viewModel.setCenterLocation(
+            GeoPoint(
+                DEFAULT_LATITUDE,
+                DEFAULT_LONGITUDE
+            )
+        )
+    }
+
     companion object {
         private const val MAGNETIC_CIRCLE_KEY = "Magnetic"
         private const val ARRIVE_STANDARD_LENGTH = 20
         private const val PROMISE_LOCATION_MARKER_ID = "PromiseLocation"
+        private const val DEFAULT_LATITUDE = 37.3588602423595
+        private const val DEFAULT_LONGITUDE = 127.105206334597
     }
 }
