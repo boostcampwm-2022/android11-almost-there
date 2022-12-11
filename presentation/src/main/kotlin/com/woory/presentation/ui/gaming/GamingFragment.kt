@@ -106,7 +106,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
         binding.layoutBottomSheetPromise.vm = viewModel
         binding.layoutBottomSheetPromise.lifecycleOwner = viewLifecycleOwner
-        binding.layoutBottomSheetPromise.pattern = "yyyy:MM:hh hh:mm"
+        binding.layoutBottomSheetPromise.pattern = "yyyy:MM:hh a hh:mm"
 
         dismissBottomSheet()
 
