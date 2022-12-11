@@ -337,15 +337,11 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             dest
         )
 
-        if (distance < ARRIVE_STANDARD_LENGTH && !shakeDialog.isVisible) {
+        if (distance < ARRIVE_STANDARD_LENGTH && !shakeDialog.isAdded) {
             shakeDialog.show(
                 parentFragmentManager,
                 shakeDialog.TAG
             )
-        } else {
-            if (shakeDialog.isVisible) {
-                shakeDialog.dismiss()
-            }
         }
     }
 
