@@ -26,21 +26,19 @@ class RankBadge constructor(
     private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     init {
-        val padding = getDip(4f)
+        val padding = getDip(6f)
         setPadding(padding, padding, padding, padding)
         setTextAppearance(R.style.Caption)
+        textSize = 12f
         setTextColor(Color.BLACK)
         background = null
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawRoundRect(
-            0f,
-            0f,
-            width.toFloat(),
-            height.toFloat(),
-            getDip(100f).toFloat(),
-            getDip(100f).toFloat(),
+        canvas.drawCircle(
+            width.toFloat() / 2,
+            height.toFloat() / 2,
+            minOf(width, height).toFloat() / 2,
             paint.apply { color = ContextCompat.getColor(context, badgeColor) }
         )
 

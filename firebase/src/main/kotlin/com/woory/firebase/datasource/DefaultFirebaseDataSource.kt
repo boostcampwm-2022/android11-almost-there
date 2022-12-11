@@ -638,6 +638,40 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
+    override suspend fun getPromisesByCodes(codes: List<String>): Flow<List<PromiseModel>?> =
+        callbackFlow {
+            if (codes.isEmpty()) throw UNMATCHED_STATE_EXCEPTION
+
+            var promisesCollectionReference: CollectionReference? = null
+
+            try {
+                promisesCollectionReference = fireStore.collection(PROMISE_COLLECTION_NAME)
+            } catch (e: Throwable) {
+                close(e)
+            }
+
+            val subscription =
+                promisesCollectionReference?.addSnapshotListener { promiseDocuments, _ ->
+                    promiseDocuments?.documents?.filter { it.id in codes }?.forEach { document ->
+                        document.reference.collection(MAGNETIC_COLLECTION_NAME)
+                            .addSnapshotListener { _, _ ->
+                                val data = promiseDocuments.documents
+                                    .filter { code ->
+                                        code.id in codes
+                                    }.map { promiseDocument ->
+                                        promiseDocument.toObject(PromiseDocument::class.java)
+                                            ?.asDomain()
+                                            ?: throw UNMATCHED_STATE_EXCEPTION
+                                    }
+
+                                trySend(data)
+                            }
+                    }
+                }
+
+            awaitClose { subscription?.remove() }
+        }
+
     private fun isFirstAccess(prevTime: Timestamp): Boolean =
         System.currentTimeMillis() - prevTime.asMillis() >= 1000 * (MAGNETIC_FIELD_UPDATE_TERM_SECOND - 1)
 
