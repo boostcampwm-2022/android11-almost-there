@@ -536,6 +536,8 @@ class DefaultFirebaseDataSource @Inject constructor(
             awaitClose { subscription?.remove() }
         }
 
+
+
     override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
         callbackFlow {
             var documentReference: Query? = null
@@ -601,6 +603,46 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                 val result = runCatching {
                     value.getBoolean(FINISHED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
+                }
+                trySend(result)
+            }
+
+            awaitClose { subscription?.remove() }
+        }
+
+    override suspend fun setIsStartedGame(gameCode: String): Result<Unit> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+                    .update(STARTED_PROMISE_KEY, true)
+                    .await()
+            }
+
+            when (val exception = result.exceptionOrNull()) {
+                null -> Result.success(Unit)
+                else -> Result.failure(exception)
+            }
+        }
+
+    override suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>> =
+        callbackFlow {
+            var documentReference: DocumentReference? = null
+
+            runCatching {
+                documentReference = fireStore
+                    .collection(PROMISE_COLLECTION_NAME)
+                    .document(gameCode)
+            }.onFailure {
+                trySend(Result.failure(it))
+            }
+
+            val subscription = documentReference?.addSnapshotListener { value, _ ->
+                value ?: return@addSnapshotListener
+
+                val result = runCatching {
+                    value.getBoolean(STARTED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
                 }
                 trySend(result)
             }
@@ -690,6 +732,7 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val TIMESTAMP_KEY = "timeStamp"
         private const val USER_ARRIVED_KEY = "arrived"
         private const val FINISHED_PROMISE_KEY = "finished"
+        private const val STARTED_PROMISE_KEY = "started"
         private const val USERS_KEY = "users"
         private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
         private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")

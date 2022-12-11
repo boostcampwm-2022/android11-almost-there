@@ -137,6 +137,8 @@ class PromiseGameService : LifecycleService() {
         val promiseAlarm = intent.asPromiseAlarm()
         val promiseCode = promiseAlarm.promiseCode
 
+        setIsStartedGame(promiseCode)
+
         val gameJob = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val userToken = userId.value ?: return@repeatOnLifecycle
@@ -277,6 +279,12 @@ class PromiseGameService : LifecycleService() {
 
         if (jobByGame.values.isEmpty()) {
             stopSelf()
+        }
+    }
+
+    private fun setIsStartedGame(promiseCode: String) {
+        lifecycleScope.launch {
+            promiseRepository.setIsStartedGame(promiseCode)
         }
     }
 

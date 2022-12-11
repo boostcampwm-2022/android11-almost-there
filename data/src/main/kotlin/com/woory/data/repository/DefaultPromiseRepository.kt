@@ -120,6 +120,11 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
         firebaseDataSource.getIsFinishedPromise(gameCode)
 
+    override suspend fun setIsStartedGame(gameCode: String): Result<Unit> =
+        firebaseDataSource.setIsStartedGame(gameCode)
+
+    override suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>> =
+        firebaseDataSource.getIsStartedGame(gameCode)
 
     override suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>> {
         return runCatching {

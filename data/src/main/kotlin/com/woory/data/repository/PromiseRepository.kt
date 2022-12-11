@@ -70,6 +70,10 @@ interface PromiseRepository {
 
     suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>>
 
+    suspend fun setIsStartedGame(gameCode: String): Result<Unit>
+
+    suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>>
+
     suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>>
 
     suspend fun setUserReady(gameCode: String, token: String): Result<Unit>

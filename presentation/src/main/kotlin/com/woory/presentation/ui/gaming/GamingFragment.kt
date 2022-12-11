@@ -40,9 +40,11 @@ import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.DistanceUtil.getDistance
+import com.woory.presentation.util.NO_MAGNETIC_INFO_EXCEPTION
 import com.woory.presentation.util.TAG
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.TimeUtils
+import com.woory.presentation.util.festive
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -207,15 +209,17 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                                             launch {
                                                 viewModel.isArrived.collectLatest { isArrived ->
-                                                    if (isArrived.not()) {
-                                                        if (userLocation?.token == viewModel.myUserInfo.userID) {
-                                                            viewModel.magneticInfo.collectLatest { magneticInfo ->
-                                                                if (magneticInfo != null) {
-                                                                    alertShakeDialog(
-                                                                        userLocation.geoPoint,
-                                                                        magneticInfo.centerPoint
-                                                                    )
-                                                                }
+                                                    if (isArrived) {
+                                                        binding.konfetti.start(festive())
+                                                        return@collectLatest
+                                                    }
+                                                    if (userLocation?.token == viewModel.myUserInfo.userID) {
+                                                        viewModel.magneticInfo.collectLatest { magneticInfo ->
+                                                            if (magneticInfo != null) {
+                                                                alertShakeDialog(
+                                                                    userLocation.geoPoint,
+                                                                    magneticInfo.centerPoint
+                                                                )
                                                             }
                                                         }
                                                     }
@@ -326,7 +330,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         binding.containerMap.addView(mapView)
     }
 
-    private fun showPromiseInfo(){
+    private fun showPromiseInfo() {
         dismissBottomSheet()
         promiseInfoBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
