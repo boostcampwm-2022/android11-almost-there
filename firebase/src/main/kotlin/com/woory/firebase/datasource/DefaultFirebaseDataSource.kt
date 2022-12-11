@@ -62,7 +62,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun getReadyUserList(code: String): Result<List<UserModel>> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val gameInfo = fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(code)
                     .get().await().toObject(PromiseDocument::class.java)
@@ -344,7 +344,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val task = fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
@@ -363,7 +363,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun sendOutUser(gameCode: String, token: String): Result<Unit> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val reference = fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)

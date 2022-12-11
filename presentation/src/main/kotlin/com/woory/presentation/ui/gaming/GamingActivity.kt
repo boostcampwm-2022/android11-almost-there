@@ -46,7 +46,7 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
         super.onCreate(savedInstanceState)
 
         if (gameCode == null) {
-            showSnackBar(binding.root, "참여 코드가 없습니다.")
+            showSnackBar(binding.root, getString(R.string.no_code_error))
             finish()
         }
 
