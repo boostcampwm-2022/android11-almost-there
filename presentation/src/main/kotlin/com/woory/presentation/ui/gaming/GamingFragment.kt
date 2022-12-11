@@ -36,6 +36,7 @@ import com.woory.presentation.util.NO_MAGNETIC_INFO_EXCEPTION
 import com.woory.presentation.util.TAG
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.TimeUtils
+import com.woory.presentation.util.festive
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -163,7 +164,10 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                                             launch {
                                                 viewModel.isArrived.collectLatest { isArrived ->
-                                                    if (isArrived) return@collectLatest
+                                                    if (isArrived) {
+                                                        binding.konfetti.start(festive())
+                                                        return@collectLatest
+                                                    }
                                                     if (userLocation?.token == viewModel.myUserInfo.userID) {
                                                         viewModel.magneticInfo.collectLatest { magneticInfo ->
                                                             magneticInfo

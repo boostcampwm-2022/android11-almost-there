@@ -9,7 +9,7 @@
             name="vm"
             type="com.woory.presentation.ui.gaming.GamingViewModel" />
 
-        <import type="com.woory.presentation.util.TimeUtils"/>
+        <import type="com.woory.presentation.util.TimeUtils" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -87,6 +87,11 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <nl.dionsegijn.konfetti.xml.KonfettiView
+            android:id="@+id/konfetti"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <include
             android:id="@+id/layout_bottom_sheet"
