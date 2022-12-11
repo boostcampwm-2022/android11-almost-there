@@ -139,7 +139,7 @@
     <string name="input_hint">검색어를 입력하세요.</string>
     <string name="fetch_data_fail_message">데이터를 불러오는데 실패했습니다.</string>
     <string name="store_data_fail_message">데이터 저장에 실패했습니다.</string>
-    <string name="invalid_game_date_time_message">게임 시작 시간은 현재보다 최소 30분 이상이어야 합니다.</string>
+    <string name="invalid_game_date_time_message">게임 시작 시간은 현재보다 최소 10분 이상이어야 합니다.</string>
     <string name="invalid_for_creating_promise_data_empty">약속을 위한 정보가 비어있습니다.</string>
     <string name="promise_location_text">어디서 볼까요?</string>
     <string name="promise_location_hint">약속 장소 입력...</string>
@@ -151,4 +151,21 @@
     <string name="game_time_hint">게임 시간 설정...</string>
     <string name="my_ranking">내 순위 : %d위</string>
     <string name="location_title">위치</string>
+    <string name="promise_setting">약속 설정</string>
+    <string name="game_setting">게임 설정</string>
+    <string name="check_promise_data_message">다음처럼 약속을 설정하시겠습니까?</string>
+    <string name="promise_date_time">약속 시간</string>
+    <string name="game_time">게임 시간</string>
+    <string-array name="game_time_array">
+    <item>게임 시간 설정...</item>
+    <item>10분 전</item>
+    <item>30분 전</item>
+    <item>1시간 전</item>
+    <item>2시간 전</item>
+    <item>3시간 전</item>
+    <item>4시간 전</item>
+    <item>5시간 전</item>
+    <item>6시간 전</item>
+    </string-array>
+    <string name="snack_bar_not_implementation">"아직 구현되지 않은 기능입니다."</string>
 </resources>

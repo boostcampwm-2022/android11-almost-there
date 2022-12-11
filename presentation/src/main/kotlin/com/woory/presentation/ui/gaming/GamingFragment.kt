@@ -1,5 +1,6 @@
 package com.woory.presentation.ui.gaming
 
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PointF
@@ -24,7 +25,8 @@ import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
-import com.woory.presentation.databinding.CustomviewCharaterMarkerBinding
+import com.woory.presentation.binding.bindImage
+import com.woory.presentation.databinding.CustomviewCharacterMarkerBinding
 import com.woory.presentation.databinding.FragmentGamingBinding
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
@@ -130,8 +132,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                         launch {
                             viewModel.allUsers.collectLatest {
-
-                                Timber.tag("123123").d("on View: $it")
                                 it?.forEach { user ->
                                     launch {
                                         viewModel.fetchUserLocation(user)
@@ -321,14 +321,13 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     }
 
     private fun getUserMarker(userProfileImage: UserProfileImage): Bitmap {
-        val markerBinding: CustomviewCharaterMarkerBinding =
-            CustomviewCharaterMarkerBinding.inflate(
+        val markerBinding: CustomviewCharacterMarkerBinding =
+            CustomviewCharacterMarkerBinding.inflate(
                 layoutInflater, binding.root as ViewGroup?, false
             )
 
-        markerBinding.viewTail.setColorFilter(Color.parseColor(userProfileImage.color))
-        markerBinding.containerBody.setColorFilter(Color.parseColor(userProfileImage.color))
-        markerBinding.layoutMarker.profileImage = userProfileImage
+        markerBinding.ivCharacter.bindImage(userProfileImage.imageIndex)
+        markerBinding.ivCharacter.backgroundTintList = ColorStateList.valueOf(Color.parseColor(userProfileImage.color))
         markerBinding.lifecycleOwner = this
 
         val view = markerBinding.root

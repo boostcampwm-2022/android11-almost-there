@@ -106,14 +106,14 @@ class PromiseInfoViewModel @Inject constructor(
                     _gameTime.emit(
                         promiseModel.data.gameDateTime.format(
                             DateTimeFormatter.ofPattern(
-                                "yyyy.MM.dd hh:mm"
+                                "yyyy.MM.dd a hh:mm"
                             )
                         )
                     )
                     _promiseTime.emit(
                         promiseModel.data.promiseDateTime.format(
                             DateTimeFormatter.ofPattern(
-                                "yyyy.MM.dd hh:mm"
+                                "yyyy.MM.dd a hh:mm"
                             )
                         )
                     )

@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.pm.PackageManager
+import android.graphics.PointF
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -19,7 +20,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
+import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
@@ -33,6 +36,8 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.threeten.bp.Duration
+import java.util.ArrayList
 
 @AndroidEntryPoint
 class PromiseInfoFragment :
@@ -60,6 +65,7 @@ class PromiseInfoFragment :
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
         setUpMapView()
+        setDisableMapViewTouchInterceptor()
         setUpButtonListener()
         setUsers()
 
@@ -103,6 +109,7 @@ class PromiseInfoFragment :
         }
 
         binding.btnCodeShare.setOnClickListener {
+            shareCode()
 //            shareCode(viewModel.gameCode.value)
         }
 
@@ -164,6 +171,29 @@ class PromiseInfoFragment :
             removeAllTMapMarkerItem()
             addTMapMarkerItem(marker)
         }
+    }
+
+    private fun setDisableMapViewTouchInterceptor() {
+        mapView.setOnClickListenerCallback(object: OnClickListenerCallback {
+            override fun onPressDown(
+                p0: ArrayList<TMapMarkerItem>?,
+                p1: ArrayList<TMapPOIItem>?,
+                p2: TMapPoint?,
+                p3: PointF?
+            ) {
+                binding.scrollView.requestDisallowInterceptTouchEvent(true)
+            }
+
+            override fun onPressUp(
+                p0: ArrayList<TMapMarkerItem>?,
+                p1: ArrayList<TMapPOIItem>?,
+                p2: TMapPoint?,
+                p3: PointF?
+            ) {
+                binding.scrollView.requestDisallowInterceptTouchEvent(false)
+            }
+
+        })
     }
 
     private fun readyGame() {
@@ -236,6 +266,10 @@ class PromiseInfoFragment :
                 }
             }
         }
+    }
+
+    private fun shareCode() {
+        makeSnackBar(getString(R.string.snack_bar_not_implementation))
     }
 
     // TODO : 카카오톡 공유 코드
