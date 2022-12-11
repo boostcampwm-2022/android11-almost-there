@@ -7,7 +7,7 @@
 
         <variable
             name="userRanking"
-            type="com.woory.presentation.model.gaming.UserRanking" />
+            type="com.woory.presentation.model.user.gameresult.UserRanking" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -27,7 +27,7 @@
                 style="@style/Text24.Black.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(userRanking.rank)}"
+                android:text="@{String.valueOf(userRanking.rankingNumber)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -43,7 +43,7 @@
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toEndOf="@id/tv_ranking_number"
                 app:layout_constraintTop_toTopOf="@id/tv_ranking_number"
-                app:profileImage="@{userRanking.profileImage}" />
+                app:profileImage="@{userRanking.userData.profileImage}" />
 
             <TextView
                 android:id="@+id/tv_nickname"
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="@{userRanking.userName}"
+                android:text="@{userRanking.userData.name}"
                 app:layout_constraintBottom_toTopOf="@id/hpbar"
                 app:layout_constraintStart_toEndOf="@id/layout_character_img"
                 app:layout_constraintTop_toTopOf="parent"

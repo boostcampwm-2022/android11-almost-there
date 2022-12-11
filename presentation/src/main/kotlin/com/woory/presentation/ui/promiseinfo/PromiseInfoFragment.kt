@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.pm.PackageManager
+import android.graphics.PointF
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -19,7 +20,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
+import com.skt.tmap.TMapView.OnClickListenerCallback
 import com.skt.tmap.overlay.TMapMarkerItem
+import com.skt.tmap.poi.TMapPOIItem
 import com.woory.presentation.BuildConfig
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
@@ -34,6 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
+import java.util.ArrayList
 
 @AndroidEntryPoint
 class PromiseInfoFragment :
@@ -61,7 +65,9 @@ class PromiseInfoFragment :
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
         setUpMapView()
+        setDisableMapViewTouchInterceptor()
         setUpButtonListener()
+        setUsers()
 
         viewModel.fetchPromiseDate()
         viewModel.fetchReadyUsers()
@@ -103,6 +109,7 @@ class PromiseInfoFragment :
         }
 
         binding.btnCodeShare.setOnClickListener {
+            shareCode()
 //            shareCode(viewModel.gameCode.value)
         }
 
@@ -126,13 +133,6 @@ class PromiseInfoFragment :
                                     promise.data.promiseLocation.geoPoint.latitude,
                                     promise.data.promiseLocation.geoPoint.longitude
                                 )
-
-                                viewModel.readyUsers.collectLatest { readyUsers ->
-                                    participantAdapter.submitList(promise.data.users.map { user ->
-                                        val isReady = user.userId in readyUsers
-                                        ReadyUser(isReady, user)
-                                    })
-                                }
                             }
                         }
                     }
@@ -140,6 +140,21 @@ class PromiseInfoFragment :
             }
         }
         binding.containerMap.addView(mapView)
+    }
+
+    private fun setUsers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.users.collectLatest { users ->
+                    viewModel.readyUsers.collectLatest { readyUsers ->
+                        participantAdapter.submitList(users.map { user ->
+                            val isReady = user.userId in readyUsers
+                            ReadyUser(isReady, user)
+                        })
+                    }
+                }
+            }
+        }
     }
 
     private fun setMapItem(tMapView: TMapView, latitude: Double, longitude: Double) {
@@ -156,6 +171,29 @@ class PromiseInfoFragment :
             removeAllTMapMarkerItem()
             addTMapMarkerItem(marker)
         }
+    }
+
+    private fun setDisableMapViewTouchInterceptor() {
+        mapView.setOnClickListenerCallback(object: OnClickListenerCallback {
+            override fun onPressDown(
+                p0: ArrayList<TMapMarkerItem>?,
+                p1: ArrayList<TMapPOIItem>?,
+                p2: TMapPoint?,
+                p3: PointF?
+            ) {
+                binding.scrollView.requestDisallowInterceptTouchEvent(true)
+            }
+
+            override fun onPressUp(
+                p0: ArrayList<TMapMarkerItem>?,
+                p1: ArrayList<TMapPOIItem>?,
+                p2: TMapPoint?,
+                p3: PointF?
+            ) {
+                binding.scrollView.requestDisallowInterceptTouchEvent(false)
+            }
+
+        })
     }
 
     private fun readyGame() {
@@ -198,19 +236,19 @@ class PromiseInfoFragment :
         viewModel.isUserReady.collectLatest { readyStatus ->
             when (readyStatus) {
                 ReadyStatus.NOT -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_not)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_not)
                     binding.btnReady.btnSubmit.isEnabled = true
                 }
                 ReadyStatus.READY -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_done)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_done)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
                 ReadyStatus.BEFORE -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_before)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_before)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
                 ReadyStatus.AFTER -> {
-                    binding.btnReady.btnSubmit.text = getString(R.string.btn_ready_after)
+                    binding.btnReady.buttonText = getString(R.string.btn_ready_after)
                     binding.btnReady.btnSubmit.isEnabled = false
                 }
             }
@@ -228,6 +266,10 @@ class PromiseInfoFragment :
                 }
             }
         }
+    }
+
+    private fun shareCode() {
+        makeSnackBar(getString(R.string.snack_bar_not_implementation))
     }
 
     // TODO : 카카오톡 공유 코드

@@ -149,7 +149,7 @@ class DefaultPromiseRepository @Inject constructor(
                 .mapIndexed { index, addedUserHpModel ->
                     mapUserRankingModel(
                         addedUserHpModel,
-                        index + 2
+                        index + firstRankingUser.size + 1
                     )
                 }
             val middleRankingUser = temp.mapIndexed { index, userRankingModel ->
@@ -176,6 +176,9 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>> =
         firebaseDataSource.getReadyUsers(gameCode)
+
+    override suspend fun getReadyUserList(code: String): Result<List<UserModel>> =
+        firebaseDataSource.getReadyUserList(code)
 
     override fun getJoinedPromises(): Flow<List<PromiseAlarmModel>> =
         databaseDataSource.getJoinedPromises()

@@ -1,10 +1,9 @@
 package com.woory.presentation.ui.creatingpromise
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.NumberPicker
+import android.widget.AdapterView
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,19 +19,17 @@ import com.google.android.material.timepicker.TimeFormat
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
 import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
-import com.woory.presentation.model.PromiseAlarm
+import com.woory.presentation.model.PromiseData
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
-import com.woory.presentation.util.TimeConverter.asCalendar
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.animRightToLeftNavOption
+import com.woory.presentation.util.getExceptionMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalTime
-import org.threeten.bp.OffsetDateTime
-import java.util.Calendar
 
 @AndroidEntryPoint
 class CreatingPromiseFragment :
@@ -45,40 +42,50 @@ class CreatingPromiseFragment :
     }
 
     private val promiseDatePicker by lazy {
-        val minPickCalendar = Calendar.getInstance()
-
         val constraintsBuilder =
             CalendarConstraints.Builder()
                 .setStart(System.currentTimeMillis())
                 .setValidator(DateValidatorPointForward.now())
-
-        val lastPickCalendar = viewModel.promiseDate.value?.asCalendar() ?: minPickCalendar
-
-        MaterialDatePicker.Builder.datePicker()
+        val materialDatePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText(getString(R.string.hint_select_promise_date))
-            .setSelection(lastPickCalendar.timeInMillis)
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .setCalendarConstraints(constraintsBuilder.build())
             .build()
+
+        materialDatePicker.addOnPositiveButtonClickListener {
+            viewModel.setPromiseDate(it.asOffsetDateTime().toLocalDate())
+        }
+
+        materialDatePicker
     }
 
-    private val promiseTimePickerBuilder by lazy {
-        MaterialTimePicker.Builder()
+    private val promiseTimePicker by lazy {
+        val nowLocalTime = LocalTime.now()
+        val materialTimePicker = MaterialTimePicker.Builder()
             .setInputMode(INPUT_MODE_KEYBOARD)
             .setTimeFormat(TimeFormat.CLOCK_24H)
-            .setTitleText(getString(R.string.hint_select_promise_time))
+            .setHour(nowLocalTime.hour)
+            .setMinute(nowLocalTime.minute)
+            .setTitleText(getString(R.string.hint_select_promise_time)).build()
+
+        materialTimePicker.addOnPositiveButtonClickListener {
+            val hourOfPromise = materialTimePicker.hour
+            val minuteOfPromise = materialTimePicker.minute
+            viewModel.setPromiseTime(LocalTime.of(hourOfPromise, minuteOfPromise))
+        }
+
+        materialTimePicker
     }
 
-    private val gameTimePickerDialog by lazy {
-        Dialog(requireContext()).apply {
-            setContentView(R.layout.layout_game_time_picker_dialog)
-            findViewById<NumberPicker>(R.id.numberpicker_hour)?.run {
-                minValue = MIN_SELECT_HOUR
-                maxValue = MAX_SELECT_HOUR
-            }
-            findViewById<NumberPicker>(R.id.numberpicker_minute)?.run {
-                minValue = MIN_SELECT_MINUTE
-                maxValue = MAX_SELECT_MINUTE
-            }
+    private val checkPromiseDataDialog by lazy {
+        CheckPromiseDataDialog().apply {
+            setButtonClickListener(object : CheckPromiseDataDialog.ButtonClickListener {
+                override fun onSubmit() {
+                    viewModel.setPromise()
+                }
+
+                override fun onCancel() {}
+            })
         }
     }
 
@@ -114,38 +121,20 @@ class CreatingPromiseFragment :
                 }
 
                 launch {
-                    viewModel.readyDuration.collectLatest { gameTime ->
-                        binding.btnGameTime.text = if (gameTime != null) {
-                            String.format(
-                                getString(R.string.before_time),
-                                gameTime.toHours(),
-                                gameTime.toMinutes() % 60
-                            )
-                        } else DEFAULT_STRING
-                    }
-                }
-
-                launch {
                     viewModel.isEnabled.collect {
                         binding.btnCreatePromise.btnSubmit.isEnabled = it
                     }
                 }
 
                 launch {
-                    viewModel.promiseSettingEvent.collectLatest { promiseAlarm ->
-//                        alarmFunctions.registerAlarm(promiseAlarm)
+                    viewModel.requestSetPromiseEvent.collectLatest {
+                        showCheckPromiseDataDialog(it)
+                    }
+                }
 
-                         //Todo :: 테스트용 코드{
-                        alarmFunctions.registerAlarm(
-                            PromiseAlarm(
-                                alarmCode = promiseAlarm.alarmCode,
-                                promiseCode = promiseAlarm.promiseCode,
-                                state = promiseAlarm.state,
-                                startTime = OffsetDateTime.now().plusSeconds(10),
-                                endTime = OffsetDateTime.now().plusSeconds(30)
-                            )
-                        )
-
+                launch {
+                    viewModel.setPromiseSuccessEvent.collectLatest { promiseAlarm ->
+                        alarmFunctions.registerAlarm(promiseAlarm)
                         viewModel.setPromiseAlarm(promiseAlarm)
 
                         PromiseInfoActivity.startActivity(
@@ -158,7 +147,8 @@ class CreatingPromiseFragment :
 
                 launch {
                     viewModel.errorEvent.collectLatest {
-                        showSnackBar(it.message ?: DEFAULT_STRING)
+                        val message = getExceptionMessage(requireContext(), it)
+                        showSnackBar(message)
                     }
                 }
             }
@@ -182,72 +172,76 @@ class CreatingPromiseFragment :
             showPromiseTimePickerDialog()
         }
 
-        binding.btnGameTime.setOnClickListener {
-            showGameTimePickerDialog()
-        }
+        binding.spinnerGameTime.onItemSelectedListener = object : AdapterView.OnItemClickListener,
+            AdapterView.OnItemSelectedListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+            }
 
-        gameTimePickerDialog.findViewById<Button>(R.id.btn_cancel)?.setOnClickListener {
-            gameTimePickerDialog.cancel()
-        }
-
-        gameTimePickerDialog.findViewById<Button>(R.id.btn_submit)?.setOnClickListener {
-            val hour =
-                gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_hour)?.value
-            val minute =
-                gameTimePickerDialog.findViewById<NumberPicker>(R.id.numberpicker_minute)?.value
-            viewModel.setReadyDuration(
-                if (hour != null && minute != null) {
-                    Duration.ofMinutes(60L * hour + minute)
-                } else {
-                    null
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (position == 0) {
+                    (parent?.getChildAt(position) as? TextView)?.setTextColor(
+                        requireActivity().getColor(
+                            R.color.hint_color
+                        )
+                    )
                 }
-            )
-            gameTimePickerDialog.cancel()
+                viewModel.setReadyDuration(GameTime.values()[position].duration)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         binding.btnCreatePromise.btnSubmit.setOnClickListener {
-            viewModel.setPromise()
+            viewModel.setRequestSetPromiseEvent()
         }
     }
 
     private fun showPromiseDatePickerDialog() {
         promiseDatePicker.show(parentFragmentManager, DATE_PICKER_TAG)
-        promiseDatePicker.addOnPositiveButtonClickListener {
-            viewModel.setPromiseDate(it.asOffsetDateTime().toLocalDate())
-        }
     }
 
     private fun showPromiseTimePickerDialog() {
-        val localTime = viewModel.promiseTime.value ?: LocalTime.now()
-
-        promiseTimePickerBuilder.setHour(localTime.hour)
-        promiseTimePickerBuilder.setMinute(localTime.minute)
-
-        val promiseTimePicker = promiseTimePickerBuilder.build()
         promiseTimePicker.show(parentFragmentManager, TIME_PICKER_TAG)
+    }
 
-        promiseTimePicker.addOnPositiveButtonClickListener {
-            val hourOfPromise = promiseTimePicker.hour
-            val minuteOfPromise = promiseTimePicker.minute
-            viewModel.setPromiseTime(LocalTime.of(hourOfPromise, minuteOfPromise))
+    private fun showCheckPromiseDataDialog(promiseData: PromiseData) {
+        try {
+            checkPromiseDataDialog.setPromiseData(promiseData)
+            checkPromiseDataDialog.show(parentFragmentManager, "TAG")
+        } catch (e: Exception) {
+            println(e.stackTraceToString())
+            val message = getExceptionMessage(requireContext(), e)
+            showSnackBar(message)
         }
     }
 
-    private fun showGameTimePickerDialog() {
-        gameTimePickerDialog.show()
-    }
-
-    private fun showSnackBar(text: String){
+    private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 
+    enum class GameTime(val duration: Duration?) {
+        DEFAULT(null),
+        ONE_TEN_MINUTES(Duration.ofMinutes(10)),
+        THREE_TEN_MINUTES(Duration.ofMinutes(30)),
+        ONE_HOURS(Duration.ofHours(1)),
+        TWO_HOURS(Duration.ofHours(2)),
+        THREE_HOURS(Duration.ofHours(3)),
+        FOUR_HOURS(Duration.ofHours(4)),
+        FIVE_HOURS(Duration.ofHours(5)),
+        SIX_HOURS(Duration.ofHours(6)),
+    }
+
     companion object {
-        private const val MIN_SELECT_HOUR = 1
-        private const val MAX_SELECT_HOUR = 23
-
-        private const val MIN_SELECT_MINUTE = 0
-        private const val MAX_SELECT_MINUTE = 59
-
         private const val TIME_PICKER_TAG = "Time"
         private const val DATE_PICKER_TAG = "Date"
 
