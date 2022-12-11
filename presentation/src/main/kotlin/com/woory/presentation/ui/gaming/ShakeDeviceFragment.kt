@@ -38,7 +38,11 @@ class ShakeDeviceFragment :
     override fun onResume() {
         super.onResume()
         accelerometer.also { accelerometer ->
-            sensorManager.registerListener(shakeEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager.registerListener(
+                shakeEventListener,
+                accelerometer,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
         }
     }
 
