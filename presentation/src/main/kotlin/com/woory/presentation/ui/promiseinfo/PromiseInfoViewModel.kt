@@ -72,6 +72,9 @@ class PromiseInfoViewModel @Inject constructor(
     private val _isAvailSetAlarm: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val  isAvailSetAlarm: StateFlow<Boolean> = _isAvailSetAlarm
 
+    private val _isStartedGame: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val  isStartedGame: StateFlow<Boolean> = _isStartedGame
+
     private var _blockReady: Boolean = false
     val blockReady get() = _blockReady
 
@@ -124,11 +127,24 @@ class PromiseInfoViewModel @Inject constructor(
 
                     checkAvailReadyButton()
                     fetchUserReady()
+                    fetchIsStartedGame()
+
                     _host.emit(promiseModel.data.host.userId)
                 }
                 it.onFailure { throwable ->
                     _uiState.emit(PromiseUiState.Fail)
                     _errorState.emit(throwable)
+                }
+            }
+        }
+    }
+
+    fun fetchIsStartedGame() {
+        viewModelScope.launch {
+            val promise = promiseModel.value ?: return@launch
+            promiseRepository.getIsStartedGame(promise.code).collectLatest { result ->
+                result.onSuccess {
+                    _isStartedGame.emit(it)
                 }
             }
         }

@@ -42,7 +42,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.OffsetDateTime
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -136,6 +135,8 @@ class PromiseGameService : LifecycleService() {
 
         val promiseAlarm = intent.asPromiseAlarm()
         val promiseCode = promiseAlarm.promiseCode
+
+        setIsStartedGame(promiseCode)
 
         val gameJob = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -260,6 +261,12 @@ class PromiseGameService : LifecycleService() {
 
         if (jobByGame.values.isEmpty()) {
             stopSelf()
+        }
+    }
+
+    private fun setIsStartedGame(promiseCode: String) {
+        lifecycleScope.launch {
+            promiseRepository.setIsStartedGame(promiseCode)
         }
     }
 
