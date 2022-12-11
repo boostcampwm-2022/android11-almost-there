@@ -30,6 +30,14 @@ fun View.bindItemHP(type: PromiseHistoryViewType) {
     }
 }
 
+@BindingAdapter("visibilityByType")
+fun View.bindVisibilityByType(type: PromiseHistoryViewType) {
+    visibility = when (type) {
+        PromiseHistoryViewType.ONGOING -> View.VISIBLE
+        else -> View.GONE
+    }
+}
+
 @BindingAdapter("layoutMarginHorizontal")
 fun View.bindMarinHorizontal(dimen: Float) {
     layoutParams = (layoutParams as MarginLayoutParams).apply {
