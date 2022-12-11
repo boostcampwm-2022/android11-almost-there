@@ -71,6 +71,7 @@ class PromiseInfoFragment :
         setUsers()
 
         viewModel.fetchIsStartedGame()
+        viewModel.fetchReadyUsers()
         viewModel.fetchPromiseDate()
 
         binding.apply {
