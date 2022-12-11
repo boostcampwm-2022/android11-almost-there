@@ -66,4 +66,5 @@ interface FirebaseDataSource {
 
     suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>>
 
+    suspend fun getReadyUserList(code: String): Result<List<UserModel>>
 }

@@ -17,6 +17,7 @@ import com.woory.data.source.FirebaseDataSource
 import com.woory.firebase.mapper.asDomain
 import com.woory.firebase.mapper.asModel
 import com.woory.firebase.mapper.asPromiseParticipant
+import com.woory.firebase.mapper.asUserModel
 import com.woory.firebase.mapper.extractMagnetic
 import com.woory.firebase.model.AddedUserHpDocument
 import com.woory.firebase.model.MagneticInfoDocument
@@ -58,6 +59,32 @@ class DefaultFirebaseDataSource @Inject constructor(
                 else -> Result.failure(exception)
             }
         }
+
+    override suspend fun getReadyUserList(code: String): Result<List<UserModel>> =
+        withContext(scope.coroutineContext) {
+            val result = runCatching {
+                val gameInfo = fireStore.collection(PROMISE_COLLECTION_NAME)
+                    .document(code)
+                    .get().await().toObject(PromiseDocument::class.java)
+
+                gameInfo?.users?.filter {
+                    fireStore.collection(PROMISE_COLLECTION_NAME).document(code)
+                        .collection(USER_READY_COLLECTION_NAME).document(it.userId).get().await()
+                        .get("ready") == "READY"
+                }?.map {
+                    it.asUserModel()
+                } ?: listOf()
+            }
+            when (val exception = result.exceptionOrNull()) {
+                null -> {
+                    result
+                }
+                else -> {
+                    Result.failure(exception)
+                }
+            }
+        }
+
 
     override suspend fun getPromiseByCodeAndListen(code: String): Flow<Result<PromiseModel>> =
         callbackFlow {
@@ -317,7 +344,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val task = fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
@@ -336,7 +363,7 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun sendOutUser(gameCode: String, token: String): Result<Unit> =
         withContext(scope.coroutineContext) {
-            val result = kotlin.runCatching {
+            val result = runCatching {
                 val reference = fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
