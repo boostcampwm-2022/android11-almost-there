@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.woory.presentation.R
 import org.threeten.bp.Duration
 import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.format.DateTimeFormatter
 
 object TimeUtils {
 
@@ -71,5 +72,9 @@ object TimeUtils {
 
         fun withSuffix(context: Context, value: Int): String =
             context.getString(withSuffixResId, value)
+    }
+
+    fun getOffsetDateTimeToFormatString(offsetDateTime: OffsetDateTime): String {
+        return offsetDateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd a hh:mm"))
     }
 }
