@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="promise"
-            type="com.woory.presentation.model.Promise" />
+            name="promiseHistory"
+            type="com.woory.presentation.model.PromiseHistory" />
 
         <variable
             name="type"
@@ -37,7 +38,7 @@
                 android:ellipsize="end"
                 android:gravity="start"
                 android:maxLines="1"
-                android:text="@{@string/history_item_title(promise.data.host.data.name, promise.data.users.size - 1)}"
+                android:text="@{@string/history_item_title(promiseHistory.promise.data.host.data.name, promiseHistory.promise.data.users.size - 1)}"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -58,7 +59,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/almost_there_grey01"
-                app:date_time="@{promise.data.promiseDateTime}"
+                app:date_time="@{promiseHistory.promise.data.promiseDateTime}"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/hpLabel"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -73,7 +74,7 @@
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{promise.data.promiseLocation.address}"
+                android:text="@{promiseHistory.promise.data.promiseLocation.address}"
                 android:textColor="@color/almost_there_grey01"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toStartOf="@id/hp"
@@ -114,7 +115,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:itemRankPromise="@{promise}"
+                    app:itemRankPromise="@{promiseHistory}"
                     app:itemRankType="@{type}" />
 
             </HorizontalScrollView>
@@ -127,7 +128,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/users"
                 app:layout_constraintTop_toBottomOf="@id/rankBadgeContainerScrollView"
-                app:visibilityByType="@{type}" />
+                bind:promiseHistory="@{promiseHistory}"
+                bind:type="@{type}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/state"
@@ -138,7 +140,7 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:itemStatePromise="@{promise}"
+                app:itemStatePromise="@{promiseHistory.promise}"
                 app:itemStateType="@{type}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -165,6 +167,7 @@
                 android:layout_width="100dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="4dp"
+                app:hp="@{promiseHistory.userHP}"
                 app:itemHP="@{type}"
                 app:layout_constraintEnd_toEndOf="@id/state"
                 app:layout_constraintHorizontal_bias="1.0"
