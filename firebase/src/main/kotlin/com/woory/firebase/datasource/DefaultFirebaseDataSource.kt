@@ -294,7 +294,6 @@ class DefaultFirebaseDataSource @Inject constructor(
 
     override suspend fun updateInitialMagneticRadius(
         gameCode: String,
-        radius: Double
     ): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
@@ -306,10 +305,13 @@ class DefaultFirebaseDataSource @Inject constructor(
 
                 fireStore.runTransaction { transaction ->
                     val snapshot = transaction.get(reference)
-                    val serverRadius = snapshot.getLong(INITIAL_RADIUS_KEY) ?: return@runTransaction
+                    val initialRadius =
+                        snapshot.getDouble(INITIAL_RADIUS_KEY) ?: return@runTransaction
+                    val radius = snapshot.getLong(RADIUS_KEY) ?: return@runTransaction
 
-                    val maxValue = maxOf(serverRadius, radius.toLong())
-                    transaction.update(reference, mapOf(RADIUS_KEY to maxValue))
+                    if (initialRadius == 1.0) {
+                        transaction.update(reference, mapOf(INITIAL_RADIUS_KEY to radius))
+                    }
                 }.await()
             }
             when (val exception = result.exceptionOrNull()) {
@@ -330,13 +332,6 @@ class DefaultFirebaseDataSource @Inject constructor(
                 fireStore.runTransaction { transaction ->
                     val snapshot = transaction.get(reference)
                     val serverRadius = snapshot.getLong(RADIUS_KEY) ?: return@runTransaction
-                    val initialRadius =
-                        snapshot.getDouble(INITIAL_RADIUS_KEY) ?: return@runTransaction
-
-                    if (initialRadius == 1.0) {
-                        transaction.update(reference, mapOf(INITIAL_RADIUS_KEY to radius))
-                    }
-
                     val maxValue = maxOf(serverRadius, radius.toLong())
 
                     transaction.update(reference, mapOf(RADIUS_KEY to maxValue))
@@ -574,7 +569,6 @@ class DefaultFirebaseDataSource @Inject constructor(
             }
             awaitClose { subscription?.remove() }
         }
-
 
 
     override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
