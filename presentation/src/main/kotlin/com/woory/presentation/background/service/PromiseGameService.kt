@@ -25,6 +25,7 @@ import com.woory.presentation.background.notification.NotificationChannelProvide
 import com.woory.presentation.background.notification.NotificationProvider
 import com.woory.presentation.background.util.asPromiseAlarm
 import com.woory.presentation.background.util.putPromiseAlarm
+import com.woory.presentation.extension.repeatOnStarted
 import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.MagneticInfo
 import com.woory.presentation.model.PromiseAlarm
@@ -61,7 +62,8 @@ class PromiseGameService : LifecycleService() {
     private val userId: StateFlow<String?> = _userId.asStateFlow()
 
     private val _magneticZoneInitialRadius: MutableStateFlow<Double> = MutableStateFlow(
-        INITIAL_MAGNETIC_FIELD_RADIUS)
+        INITIAL_MAGNETIC_FIELD_RADIUS
+    )
     private val magneticZoneInitialRadius: StateFlow<Double> =
         _magneticZoneInitialRadius.asStateFlow()
 
@@ -112,11 +114,9 @@ class PromiseGameService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userRepository.userPreferences.collectLatest {
-                    _userId.emit(it.userID)
-                }
+        repeatOnStarted {
+            userRepository.userPreferences.collectLatest {
+                _userId.emit(it.userID)
             }
         }
 
@@ -142,6 +142,10 @@ class PromiseGameService : LifecycleService() {
 
         val gameJob = lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    promiseRepository.updateInitialMagneticRadius(promiseCode)
+                }
+
                 val userToken = userId.value ?: return@repeatOnLifecycle
 
                 promiseRepository.checkReEntryOfGame(promiseCode, userToken).onSuccess {

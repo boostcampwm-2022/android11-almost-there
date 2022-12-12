@@ -1,5 +1,6 @@
 package com.woory.presentation.ui.history
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -26,6 +27,7 @@ class PromiseHistoryAdapter(
     override fun onBindViewHolder(holder: PromiseHistoryViewHolder, position: Int) =
         holder.bind(getItem(position))
 
+    @SuppressLint("ClickableViewAccessibility")
     class PromiseHistoryViewHolder(
         private val binding: ItemPromiseHistoryBinding,
         private val onClick: (PromiseHistoryViewType?, PromiseHistory?) -> Unit
@@ -34,6 +36,9 @@ class PromiseHistoryAdapter(
         init {
             binding.root.setOnClickListener {
                 onClick(binding.type, binding.promiseHistory)
+            }
+            binding.progressLayout.progressbar.setOnTouchListener { _, _ ->
+                true
             }
         }
 
