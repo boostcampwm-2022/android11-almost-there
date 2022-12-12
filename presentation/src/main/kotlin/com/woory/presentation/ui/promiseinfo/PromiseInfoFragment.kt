@@ -32,6 +32,7 @@ import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.ReadyUser
 import com.woory.presentation.model.mapper.alarm.asUiModel
 import com.woory.presentation.ui.BaseFragment
+import com.woory.presentation.ui.gaming.GamingActivity
 import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -69,8 +70,9 @@ class PromiseInfoFragment :
         setUpButtonListener()
         setUsers()
 
-        viewModel.fetchPromiseDate()
+        viewModel.fetchIsStartedGame()
         viewModel.fetchReadyUsers()
+        viewModel.fetchPromiseDate()
 
         binding.apply {
             vm = viewModel
@@ -96,6 +98,10 @@ class PromiseInfoFragment :
 
                 launch {
                     setReadyButton()
+                }
+
+                launch {
+                    setDetectGameStart()
                 }
             }
         }
@@ -264,6 +270,17 @@ class PromiseInfoFragment :
                 viewModel.getPromiseAlarmByCode(promiseCode).onSuccess { promiseAlarm ->
                     alarmFunctions.registerAlarm(promiseAlarm.asUiModel().copy(state = AlarmState.START))
                 }
+            }
+        }
+    }
+
+    private suspend fun setDetectGameStart() {
+        viewModel.isStartedGame.collectLatest { isStarted ->
+            val promiseCode = viewModel.promiseModel.value?.code ?: return@collectLatest
+            val isUserReady = viewModel.isUserReady.value
+
+            if (isStarted && isUserReady == ReadyStatus.READY) {
+                GamingActivity.startActivity(requireActivity(), promiseCode)
             }
         }
     }

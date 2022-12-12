@@ -24,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_bottom_sheet"
+        android:clickable="true"
         android:padding="20dp"
         app:behavior_hideable="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -71,8 +72,8 @@
             android:id="@+id/hp_bar"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="20dp"
+            android:layout_marginEnd="16dp"
             android:padding="5dp"
             app:backgroundVisible="true"
             app:layout_constraintBottom_toBottomOf="@id/tv_hp_text"
@@ -123,8 +124,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:src="@drawable/ic_time"
             android:contentDescription="@string/time"
+            android:src="@drawable/ic_time"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/layout_character_img"
             app:layout_constraintTop_toBottomOf="@id/tv_location" />

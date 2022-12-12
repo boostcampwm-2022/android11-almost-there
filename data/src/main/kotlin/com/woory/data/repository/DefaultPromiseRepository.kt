@@ -1,6 +1,15 @@
 package com.woory.data.repository
 
-import com.woory.data.model.*
+import com.woory.data.model.AddedUserHpModel
+import com.woory.data.model.GeoPointModel
+import com.woory.data.model.LocationSearchModel
+import com.woory.data.model.MagneticInfoModel
+import com.woory.data.model.PromiseAlarmModel
+import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseModel
+import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
+import com.woory.data.model.UserRankingModel
 import com.woory.data.source.DatabaseDataSource
 import com.woory.data.source.FirebaseDataSource
 import com.woory.data.source.NetworkDataSource
@@ -111,6 +120,11 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
         firebaseDataSource.getIsFinishedPromise(gameCode)
 
+    override suspend fun setIsStartedGame(gameCode: String): Result<Unit> =
+        firebaseDataSource.setIsStartedGame(gameCode)
+
+    override suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>> =
+        firebaseDataSource.getIsStartedGame(gameCode)
 
     override suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>> {
         return runCatching {
@@ -167,4 +181,7 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>> =
         firebaseDataSource.getReadyUsers(gameCode)
+
+    override suspend fun getReadyUserList(code: String): Result<List<UserModel>> =
+        firebaseDataSource.getReadyUserList(code)
 }

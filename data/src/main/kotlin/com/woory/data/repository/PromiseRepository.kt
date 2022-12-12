@@ -1,6 +1,15 @@
 package com.woory.data.repository
 
-import com.woory.data.model.*
+import com.woory.data.model.AddedUserHpModel
+import com.woory.data.model.GeoPointModel
+import com.woory.data.model.LocationSearchModel
+import com.woory.data.model.MagneticInfoModel
+import com.woory.data.model.PromiseAlarmModel
+import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseModel
+import com.woory.data.model.UserLocationModel
+import com.woory.data.model.UserModel
+import com.woory.data.model.UserRankingModel
 import kotlinx.coroutines.flow.Flow
 
 interface PromiseRepository {
@@ -61,6 +70,10 @@ interface PromiseRepository {
 
     suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>>
 
+    suspend fun setIsStartedGame(gameCode: String): Result<Unit>
+
+    suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>>
+
     suspend fun getUserRankings(gameCode: String): Result<List<UserRankingModel>>
 
     suspend fun setUserReady(gameCode: String, token: String): Result<Unit>
@@ -68,4 +81,6 @@ interface PromiseRepository {
     suspend fun getIsReadyUser(gameCode: String, token: String): Flow<Result<Boolean>>
 
     suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>>
+
+    suspend fun getReadyUserList(code: String): Result<List<UserModel>>
 }

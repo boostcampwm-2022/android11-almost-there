@@ -56,9 +56,15 @@ interface FirebaseDataSource {
 
     suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>>
 
+    suspend fun setIsStartedGame(gameCode: String): Result<Unit>
+
+    suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>>
+
     suspend fun setUserReady(gameCode: String, token: String): Result<Unit>
 
     suspend fun getIsReadyUser(gameCode: String, token: String): Flow<Result<Boolean>>
 
     suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>>
+
+    suspend fun getReadyUserList(code: String): Result<List<UserModel>>
 }
