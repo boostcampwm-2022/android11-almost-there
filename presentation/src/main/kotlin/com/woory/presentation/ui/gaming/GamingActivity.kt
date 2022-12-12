@@ -69,8 +69,8 @@ class GamingActivity : BaseActivity<ActivityGameResultBinding>(R.layout.activity
 
     private fun setOnListenIsFinished() {
         lifecycleScope.launch {
-            viewModel.isFinished.collectLatest { isFinised ->
-                if (isFinised && gameCode != null) {
+            viewModel.isFinished.collectLatest { isFinished ->
+                if (isFinished && gameCode != null) {
                     GameResultActivity.startActivity(this@GamingActivity, requireNotNull(gameCode))
                     finish()
                 }
