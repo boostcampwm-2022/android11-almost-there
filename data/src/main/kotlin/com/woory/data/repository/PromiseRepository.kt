@@ -49,6 +49,8 @@ interface PromiseRepository {
 
     suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
 
+    suspend fun updateInitialMagneticRadius(gameCode: String): Result<Unit>
+
     suspend fun decreaseMagneticRadius(gameCode: String, minusValue: Double): Result<Unit>
 
     suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean>

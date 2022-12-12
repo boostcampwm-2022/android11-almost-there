@@ -82,6 +82,9 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit> =
         firebaseDataSource.updateMagneticRadius(gameCode, radius)
 
+    override suspend fun updateInitialMagneticRadius(gameCode: String): Result<Unit> =
+        firebaseDataSource.updateInitialMagneticRadius(gameCode)
+
     override suspend fun decreaseMagneticRadius(
         gameCode: String,
         minusValue: Double
