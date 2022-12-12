@@ -37,7 +37,6 @@ import com.woory.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.threeten.bp.Duration
 import java.util.ArrayList
 
 @AndroidEntryPoint
@@ -281,6 +280,7 @@ class PromiseInfoFragment :
 
             if (isStarted && isUserReady == ReadyStatus.READY) {
                 GamingActivity.startActivity(requireActivity(), promiseCode)
+                requireActivity().finish()
             }
         }
     }
@@ -342,6 +342,5 @@ class PromiseInfoFragment :
 
     companion object {
         private const val PROMISE_LOCATION_MARKER_ID = "promiseLocation"
-        private const val TAG = "123123"
     }
 }

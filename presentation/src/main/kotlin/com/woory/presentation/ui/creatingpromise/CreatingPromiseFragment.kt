@@ -22,6 +22,7 @@ import com.woory.presentation.databinding.FragmentCreatingPromiseBinding
 import com.woory.presentation.model.PromiseData
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.promiseinfo.PromiseInfoActivity
+import com.woory.presentation.util.TAG
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.animRightToLeftNavOption
 import com.woory.presentation.util.getExceptionMessage
@@ -216,8 +217,10 @@ class CreatingPromiseFragment :
 
     private fun showCheckPromiseDataDialog(promiseData: PromiseData) {
         try {
-            checkPromiseDataDialog.setPromiseData(promiseData)
-            checkPromiseDataDialog.show(parentFragmentManager, "TAG")
+            if (!checkPromiseDataDialog.isAdded) {
+                checkPromiseDataDialog.setPromiseData(promiseData)
+                checkPromiseDataDialog.show(parentFragmentManager, CheckPromiseDataDialog.TAG)
+            }
         } catch (e: Exception) {
             println(e.stackTraceToString())
             val message = getExceptionMessage(requireContext(), e)

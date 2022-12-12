@@ -7,11 +7,10 @@ import timber.log.Timber
 class TopItemResizeScrollListener(private val linearLayoutManager: LinearLayoutManager) :
     RecyclerView.OnScrollListener() {
 
-    private var firstVisibleItemIndex = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+    private var firstVisibleItemIndex = -1
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
-
         if (firstVisibleItemIndex == linearLayoutManager.findFirstCompletelyVisibleItemPosition()) return
         firstVisibleItemIndex = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
         val lastVisibleItemIndex = linearLayoutManager.findLastVisibleItemPosition()

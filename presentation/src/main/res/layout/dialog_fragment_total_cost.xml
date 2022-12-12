@@ -55,7 +55,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_amount_due"
-                    style="@style/Text10"
+                    style="@style/Text10.Black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"

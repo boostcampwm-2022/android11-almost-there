@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.AlmostThere" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.AlmostThere" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/almost_there_primary</item>
         <item name="colorPrimaryVariant">@color/almost_there_primary_dark</item>
@@ -23,7 +23,7 @@
         <item name="android:background">@color/splash_background</item>
     </style>
 
-    <style name="Theme.AlmostThere.GameResult" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.AlmostThere.GameResult" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/green</item>
         <item name="colorPrimaryVariant">@color/green_light</item>

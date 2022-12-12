@@ -34,6 +34,7 @@ import com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
 import com.woory.presentation.util.animRightToLeftNavOption
 import com.woory.presentation.util.getActivityContext
+import com.woory.presentation.util.getExceptionMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -99,7 +100,8 @@ class LocationSearchFragment :
                 }
                 launch {
                     fragmentViewModel.errorEvent.collectLatest {
-                        showSnackBar(it.message ?: DEFAULT_TEXT)
+                        val message = getExceptionMessage(requireContext(), it)
+                        showSnackBar(message)
                     }
                 }
             }
@@ -252,7 +254,6 @@ class LocationSearchFragment :
 
     companion object {
         private const val DEFAULT_ZOOM_LEVEL = 15
-        private const val DEFAULT_TEXT = ""
         private const val DEFAULT_LATITUDE = 37.3588602423595
         private const val DEFAULT_LONGITUDE = 127.105206334597
     }

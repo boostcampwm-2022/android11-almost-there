@@ -40,7 +40,6 @@ import com.woory.presentation.model.GeoPoint
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.DistanceUtil.getDistance
-import com.woory.presentation.util.NO_MAGNETIC_INFO_EXCEPTION
 import com.woory.presentation.util.TAG
 import com.woory.presentation.util.TimeConverter.asOffsetDateTime
 import com.woory.presentation.util.TimeUtils
@@ -131,7 +130,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
         binding.layoutBottomSheetPromise.vm = viewModel
         binding.layoutBottomSheetPromise.lifecycleOwner = viewLifecycleOwner
-        binding.layoutBottomSheetPromise.pattern = "yyyy:MM:hh hh:mm"
+        binding.layoutBottomSheetPromise.pattern = "yyyy:MM:hh a hh:mm"
 
         requestPermissions(
             arrayOf(
@@ -401,12 +400,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     private fun setCurrentLocation() {
         if (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener {
-                if (it.isSuccessful) {
-                    if (viewModel.centerLocation.value == null) {
-                        viewModel.setCenterLocation(
-                            GeoPoint(it.result.latitude, it.result.longitude)
-                        )
-                    }
+                if (it.isSuccessful && viewModel.centerLocation.value == null && it.result != null) {
+                    GeoPoint(it.result.latitude, it.result.longitude)
                 } else {
                     setDefaultLocation()
                 }
@@ -424,15 +419,11 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             dest
         )
 
-        if (distance < ARRIVE_STANDARD_LENGTH && !shakeDialog.isVisible) {
+        if (distance < ARRIVE_STANDARD_LENGTH && !shakeDialog.isAdded) {
             shakeDialog.show(
                 parentFragmentManager,
                 shakeDialog.TAG
             )
-        } else {
-            if (shakeDialog.isVisible) {
-                shakeDialog.dismiss()
-            }
         }
     }
 
