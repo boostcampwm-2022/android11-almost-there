@@ -172,7 +172,7 @@ class PromiseInfoViewModel @Inject constructor(
                             _isAvailSetAlarm.emit(true)
                             _uiState.emit(PromiseUiState.Success)
                         }
-                        .onFailure { throwable ->
+                        .onFailure { _ ->
                             _uiState.emit(PromiseUiState.Fail)
                             _errorState.emit(IllegalArgumentException("네트워크를 확인해주세요."))
                         }

@@ -1,7 +1,7 @@
 package com.woory.presentation.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.threeten.bp.OffsetDateTime
 
 @Parcelize
