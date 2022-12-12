@@ -31,10 +31,10 @@ class GameResultViewModel @Inject constructor(
 
     private val userPreferences = userRepository.userPreferences
 
-    private val _myRankingNumber: MutableStateFlow<Int?> = MutableStateFlow(0)
+    private val _myRankingNumber: MutableStateFlow<Int?> = MutableStateFlow(null)
     val myRankingNumber: StateFlow<Int?> = _myRankingNumber.asStateFlow()
 
-    private val _mySplitMoney: MutableStateFlow<Int?> = MutableStateFlow(0)
+    private val _mySplitMoney: MutableStateFlow<Int?> = MutableStateFlow(null)
     val mySplitMoney: StateFlow<Int?> = _mySplitMoney.asStateFlow()
 
     private val _userSplitMoneyItems: MutableStateFlow<List<UserSplitMoneyItem>?> =

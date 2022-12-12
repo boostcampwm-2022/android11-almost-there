@@ -431,10 +431,10 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             dest
         )
 
-        if (distance < ARRIVE_STANDARD_LENGTH && !shakeDialog.isAdded) {
+        if (distance < ARRIVE_STANDARD_LENGTH) {
             shakeDialog.show(
-                parentFragmentManager,
-                shakeDialog.TAG
+                parentFragmentManager.beginTransaction().remove(shakeDialog),
+                ShakeDeviceFragment.TAG
             )
         }
     }

@@ -61,7 +61,7 @@ class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.frag
                     viewModel.mySplitMoney.collectLatest {
                         binding.tvPayment.text = if (it != null) {
                             String.format(getString(R.string.payment), it)
-                        } else ""
+                        } else getString(R.string.null_value)
                     }
                 }
 

@@ -217,12 +217,12 @@ class CreatingPromiseFragment :
 
     private fun showCheckPromiseDataDialog(promiseData: PromiseData) {
         try {
-            if (!checkPromiseDataDialog.isAdded) {
-                checkPromiseDataDialog.setPromiseData(promiseData)
-                checkPromiseDataDialog.show(parentFragmentManager, CheckPromiseDataDialog.TAG)
-            }
+            checkPromiseDataDialog.setPromiseData(promiseData)
+            checkPromiseDataDialog.show(
+                parentFragmentManager.beginTransaction().remove(checkPromiseDataDialog),
+                CheckPromiseDataDialog.TAG
+            )
         } catch (e: Exception) {
-            println(e.stackTraceToString())
             val message = getExceptionMessage(requireContext(), e)
             showSnackBar(message)
         }
