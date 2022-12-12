@@ -42,21 +42,6 @@
                 app:layout_constraintTop_toBottomOf="@id/endThumb"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatSeekBar
-                android:id="@+id/progressbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:drawableStart="@drawable/ic_rank_label"
-                android:progressTint="@color/red"
-                android:thumb="@drawable/ic_bomb"
-                app:indicatorColor="@color/black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/startIcon"
-                app:progress="@{promiseHistory}" />
-
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/startThumb"
                 android:layout_width="wrap_content"
@@ -77,7 +62,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/endIcon" />
 
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/progressbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="3dp"
+                android:drawableStart="@drawable/ic_rank_label"
+                android:progressTint="@color/red"
+                android:thumb="@drawable/ic_bomb"
+                app:indicatorColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/startIcon"
+                app:progress="@{promiseHistory}" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
+
 </layout>

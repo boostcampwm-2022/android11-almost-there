@@ -121,6 +121,7 @@
             </HorizontalScrollView>
 
             <include
+                android:id="@+id/progressLayout"
                 layout="@layout/layout_history_progress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
