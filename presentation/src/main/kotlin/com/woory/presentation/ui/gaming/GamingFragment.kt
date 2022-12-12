@@ -37,6 +37,7 @@ import com.woory.presentation.binding.bindImage
 import com.woory.presentation.databinding.CustomviewCharacterMarkerBinding
 import com.woory.presentation.databinding.FragmentGamingBinding
 import com.woory.presentation.model.GeoPoint
+import com.woory.presentation.model.UserLocation
 import com.woory.presentation.model.UserProfileImage
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.util.DistanceUtil.getDistance
@@ -143,6 +144,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         dismissBottomSheet()
 
         setUpMapView()
+        setDetectIsArrived()
     }
 
     private fun setUpMapView() {
@@ -204,25 +206,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                                                     removeTMapMarkerItem(user.userId)
                                                     addTMapMarkerItem(markerMap[user.userId])
                                                 }
-                                            }
-
-                                            launch {
-                                                viewModel.isArrived.collectLatest { isArrived ->
-                                                    if (isArrived) {
-                                                        binding.konfetti.start(festive())
-                                                        return@collectLatest
-                                                    }
-                                                    if (userLocation?.token == viewModel.myUserInfo.userID) {
-                                                        viewModel.magneticInfo.collectLatest { magneticInfo ->
-                                                            if (magneticInfo != null) {
-                                                                alertShakeDialog(
-                                                                    userLocation.geoPoint,
-                                                                    magneticInfo.centerPoint
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                                checkIsArrived(userLocation)
                                             }
                                         }
                                     }
@@ -327,6 +311,32 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         }
 
         binding.containerMap.addView(mapView)
+    }
+
+    private fun checkIsArrived(userLocation: UserLocation?) {
+        val centerPoint = viewModel.magneticInfo.value?.centerPoint
+
+        if (userLocation?.token == viewModel.myUserInfo.userID) {
+
+
+            if (centerPoint != null) {
+                alertShakeDialog(
+                    userLocation.geoPoint,
+                    centerPoint
+                )
+            }
+
+        }
+    }
+
+    private fun setDetectIsArrived() {
+        lifecycleScope.launch {
+            viewModel.isArrived.collectLatest { isArrived ->
+                if (isArrived) {
+                    binding.konfetti.start(festive())
+                }
+            }
+        }
     }
 
     private fun showPromiseInfo() {
