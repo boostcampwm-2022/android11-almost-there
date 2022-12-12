@@ -149,7 +149,8 @@
     <string name="promise_time_hint">약속 시간 입력...</string>
     <string name="game_time_text">언제 출발하나요?</string>
     <string name="game_time_hint">게임 시간 설정...</string>
-    <string name="my_ranking">내 순위 : %d위</string>
+    <string name="my_ranking">내 순위 : %s위</string>
+    <string name="null_value">-</string>
     <string name="location_title">위치</string>
     <string name="promise_setting">약속 설정</string>
     <string name="game_setting">게임 설정</string>

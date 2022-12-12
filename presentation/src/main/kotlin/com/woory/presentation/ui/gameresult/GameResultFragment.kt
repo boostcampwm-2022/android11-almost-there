@@ -61,6 +61,7 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
 
             adapter = UserRankingAdapter()
 
+            itemAnimator = null
             addItemDecoration(TopItemResizeDecoration())
             addOnScrollListener(TopItemResizeScrollListener(linearLayoutManager))
         }
@@ -93,7 +94,10 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
                 launch {
                     viewModel.myRankingNumber.collectLatest {
                         binding.tvGameResultMyRanking.text =
-                            String.format(getString(R.string.my_ranking), it)
+                            String.format(
+                                getString(R.string.my_ranking),
+                                it?.toString() ?: getString(R.string.null_value)
+                            )
                     }
                 }
             }
