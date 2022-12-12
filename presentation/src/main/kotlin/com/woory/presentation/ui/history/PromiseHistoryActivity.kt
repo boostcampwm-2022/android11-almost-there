@@ -80,9 +80,14 @@ class PromiseHistoryActivity :
 
                 binding.adapter?.run {
                     submitList(state.data)
-                    notifyDataSetChanged()
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        binding.adapter = null
     }
 }

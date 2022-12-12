@@ -48,6 +48,8 @@ class PromiseHistoryAdapter(
             } else {
                 PromiseHistoryViewType.END
             }
+
+            binding.executePendingBindings()
         }
     }
 
