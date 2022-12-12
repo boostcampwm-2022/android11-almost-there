@@ -40,8 +40,32 @@ class DefaultNetworkDataSource @Inject constructor(
                 .getJSONObject(0)
                 .getJSONObject("info")
 
-            val time = routeInfo.getInt("totalTime")
+            val searchType = json.getInt("searchType")
+            var time = routeInfo.getInt("totalTime")
             val distance = routeInfo.getDouble("totalDistance")
+
+            if (searchType == 1) {
+                val stationInfo = json.getJSONArray("path")
+                    .getJSONObject(0)
+                    .getJSONArray("subPath")
+
+                val startStationInfo = stationInfo.getJSONObject(0)
+                val ssy = startStationInfo.getDouble("startY")
+                val ssx = startStationInfo.getDouble("startX")
+                val stationStartTime = getPublicTransitRoute(
+                    start = GeoPointModel(start.latitude, start.longitude),
+                    dest = GeoPointModel(ssy, ssx)
+                ).getOrThrow().time
+
+                val endStationInfo = stationInfo.getJSONObject(stationInfo.length() - 1)
+                val esy = endStationInfo.getDouble("endY")
+                val esx = endStationInfo.getDouble("endX")
+                val stationEndTime = getPublicTransitRoute(
+                    start = GeoPointModel(dest.latitude, dest.longitude),
+                    dest = GeoPointModel(esy, esx)
+                ).getOrThrow().time
+                time += stationStartTime + stationEndTime
+            }
 
             PathModel(
                 routeType = RouteType.PUBLIC_TRANSIT,
