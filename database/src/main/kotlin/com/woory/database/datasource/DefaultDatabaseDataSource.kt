@@ -6,6 +6,8 @@ import com.woory.data.source.DatabaseDataSource
 import com.woory.database.PromiseAlarmDao
 import com.woory.database.mapper.asPromiseAlarmEntity
 import com.woory.database.mapper.asPromiseAlarmModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DefaultDatabaseDataSource(private val dao: PromiseAlarmDao) : DatabaseDataSource {
 
@@ -44,4 +46,9 @@ class DefaultDatabaseDataSource(private val dao: PromiseAlarmDao) : DatabaseData
             dao.getPromiseAlarmWhereCode(promiseCode).asPromiseAlarmModel()
         }
     }
+
+    override fun getJoinedPromises(): Flow<List<PromiseAlarmModel>> =
+        dao.getJoinedPromises().map { entities ->
+            entities.asPromiseAlarmModel()
+        }
 }

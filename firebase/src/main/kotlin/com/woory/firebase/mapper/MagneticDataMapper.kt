@@ -16,6 +16,7 @@ object MagneticDataMapper : ModelMapper<MagneticInfoModel, MagneticInfoDocument>
                 domain.centerPoint.longitude
             ),
             radius = domain.radius,
+            initialRadius = domain.initialRadius,
             timeStamp = domain.updatedAt.asTimeStamp()
         )
 
@@ -27,6 +28,7 @@ object MagneticDataMapper : ModelMapper<MagneticInfoModel, MagneticInfoDocument>
                 model.centerPoint.longitude
             ),
             model.radius,
+            model.initialRadius,
             model.timeStamp.asOffsetDate()
         )
 }
