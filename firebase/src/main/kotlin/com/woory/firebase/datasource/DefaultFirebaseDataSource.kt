@@ -332,7 +332,7 @@ class DefaultFirebaseDataSource @Inject constructor(
                     val initialRadius =
                         snapshot.getDouble(INITIAL_RADIUS_KEY) ?: return@runTransaction
 
-                    if (initialRadius == 0.0) {
+                    if (initialRadius == 1.0) {
                         transaction.update(reference, mapOf(INITIAL_RADIUS_KEY to radius))
                     }
 
