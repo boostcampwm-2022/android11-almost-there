@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woory.presentation.databinding.ItemPromiseHistoryBinding
-import com.woory.presentation.model.Promise
+import com.woory.presentation.model.PromiseHistory
 import org.threeten.bp.OffsetDateTime
 
 class PromiseHistoryAdapter(
-    private val onClick: (PromiseHistoryViewType?, Promise?) -> Unit
-) : ListAdapter<Promise, PromiseHistoryAdapter.PromiseHistoryViewHolder>(diffUtil) {
+    private val onClick: (PromiseHistoryViewType?, PromiseHistory?) -> Unit
+) : ListAdapter<PromiseHistory, PromiseHistoryAdapter.PromiseHistoryViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PromiseHistoryViewHolder =
         PromiseHistoryViewHolder(
@@ -28,22 +28,22 @@ class PromiseHistoryAdapter(
 
     class PromiseHistoryViewHolder(
         private val binding: ItemPromiseHistoryBinding,
-        private val onClick: (PromiseHistoryViewType?, Promise?) -> Unit
+        private val onClick: (PromiseHistoryViewType?, PromiseHistory?) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.root.setOnClickListener {
-                onClick(binding.type, binding.promise)
+                onClick(binding.type, binding.promiseHistory)
             }
         }
 
-        fun bind(item: Promise) = with(binding) {
-            promise = item
+        fun bind(item: PromiseHistory) = with(binding) {
+            promiseHistory = item
 
             val currentTime = OffsetDateTime.now()
-            type = if (item.data.gameDateTime > currentTime) {
+            type = if (item.promise.data.gameDateTime > currentTime) {
                 PromiseHistoryViewType.BEFORE
-            } else if (item.data.promiseDateTime > currentTime) {
+            } else if (item.promise.data.promiseDateTime > currentTime) {
                 PromiseHistoryViewType.ONGOING
             } else {
                 PromiseHistoryViewType.END
@@ -52,12 +52,18 @@ class PromiseHistoryAdapter(
     }
 
     companion object {
-        private val diffUtil = object : DiffUtil.ItemCallback<Promise>() {
+        private val diffUtil = object : DiffUtil.ItemCallback<PromiseHistory>() {
 
-            override fun areItemsTheSame(oldItem: Promise, newItem: Promise): Boolean =
-                oldItem.code == newItem.code
+            override fun areItemsTheSame(
+                oldItem: PromiseHistory,
+                newItem: PromiseHistory
+            ): Boolean =
+                oldItem.promise.code == newItem.promise.code
 
-            override fun areContentsTheSame(oldItem: Promise, newItem: Promise): Boolean =
+            override fun areContentsTheSame(
+                oldItem: PromiseHistory,
+                newItem: PromiseHistory
+            ): Boolean =
                 oldItem == newItem
         }
     }

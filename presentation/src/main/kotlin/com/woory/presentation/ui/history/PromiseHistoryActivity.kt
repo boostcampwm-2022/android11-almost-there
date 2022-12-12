@@ -7,7 +7,7 @@ import androidx.navigation.navArgs
 import com.woory.presentation.R
 import com.woory.presentation.databinding.ActivityPromiseHistoryBinding
 import com.woory.presentation.extension.repeatOnStarted
-import com.woory.presentation.model.Promise
+import com.woory.presentation.model.PromiseHistory
 import com.woory.presentation.model.UiState
 import com.woory.presentation.ui.BaseActivity
 import com.woory.presentation.ui.gameresult.GameResultActivity
@@ -34,19 +34,21 @@ class PromiseHistoryActivity :
 
     private fun initViews() = with(binding) {
         vm = viewModel
-        adapter = PromiseHistoryAdapter(onClick = { type, promise ->
+        adapter = PromiseHistoryAdapter(onClick = { type, promiseHistory ->
             type ?: return@PromiseHistoryAdapter
-            promise ?: return@PromiseHistoryAdapter
+            promiseHistory ?: return@PromiseHistoryAdapter
+
+            val code = promiseHistory.promise.code
 
             when (type) {
                 PromiseHistoryViewType.BEFORE -> {
-                    PromiseInfoActivity.startActivity(this@PromiseHistoryActivity, promise.code)
+                    PromiseInfoActivity.startActivity(this@PromiseHistoryActivity, code)
                 }
                 PromiseHistoryViewType.ONGOING -> {
-                    GamingActivity.startActivity(this@PromiseHistoryActivity, promise.code)
+                    GamingActivity.startActivity(this@PromiseHistoryActivity, code)
                 }
                 PromiseHistoryViewType.END -> {
-                    GameResultActivity.startActivity(this@PromiseHistoryActivity, promise.code)
+                    GameResultActivity.startActivity(this@PromiseHistoryActivity, code)
                 }
             }
         })
@@ -65,7 +67,7 @@ class PromiseHistoryActivity :
         }
     }
 
-    private fun handleState(state: UiState<List<Promise>?>) = with(binding) {
+    private fun handleState(state: UiState<List<PromiseHistory>?>) = with(binding) {
         when (state) {
             is UiState.Loading -> handleLoading(loadingIndicator, true)
             is UiState.Error -> {

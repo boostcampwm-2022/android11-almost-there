@@ -4,11 +4,12 @@ package com.woory.presentation.ui.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.UserRepository
 import com.woory.presentation.di.PromiseHistoryModule
-import com.woory.presentation.model.Promise
+import com.woory.presentation.model.PromiseHistory
 import com.woory.presentation.model.UiState
 import com.woory.presentation.model.exception.AlmostThereException
-import com.woory.presentation.model.mapper.promise.asUiModel
+import com.woory.presentation.model.mapper.history.asUiModel
 import com.woory.presentation.util.flow.MutableEventFlow
 import com.woory.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PromiseHistoryViewModel @Inject constructor(
     @PromiseHistoryModule.HistoryType private val promiseHistoryType: PromiseHistoryType,
-    private val promiseRepository: PromiseRepository
+    private val promiseRepository: PromiseRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val joinedPromiseCodes: Flow<List<String>> = promiseRepository.getJoinedPromises()
@@ -40,8 +42,10 @@ class PromiseHistoryViewModel @Inject constructor(
             }
         }
 
-    private val _uiState = MutableEventFlow<UiState<List<Promise>?>>()
+    private val _uiState = MutableEventFlow<UiState<List<PromiseHistory>?>>()
     val uiState = _uiState.asEventFlow()
+
+    val userPreferences = userRepository.userPreferences
 
     init {
         observePromises()
@@ -61,9 +65,12 @@ class PromiseHistoryViewModel @Inject constructor(
                         if (list.isNullOrEmpty()) {
                             _uiState.emit(UiState.Error(AlmostThereException.FetchFailedException()))
                         } else {
-                            val result =
-                                list.map { it.asUiModel() }.sortedBy { it.data.gameDateTime }
-                            _uiState.emit(UiState.Success(result))
+                            userPreferences.collectLatest { user ->
+                                val result =
+                                    list.map { it.asUiModel(user.userID) }
+                                        .sortedBy { it.promise.data.gameDateTime }
+                                _uiState.emit(UiState.Success(result))
+                            }
                         }
                     }
             }
