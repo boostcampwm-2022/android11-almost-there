@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.woory.presentation.R
+import com.woory.presentation.background.receiver.AlarmReceiver
 import com.woory.presentation.background.receiver.AlarmTouchReceiver
 import com.woory.presentation.background.util.putPromiseAlarm
 import com.woory.presentation.model.PromiseAlarm
@@ -78,9 +79,11 @@ object NotificationProvider {
         val intent = Intent(context, intentClass)
         intent.putPromiseAlarm(promiseAlarm)
 
+        initActivityPendingIntent(context, promiseAlarm.alarmCode, intentClass)
+
         val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {
             addNextIntentWithParentStack(intent)
-            getPendingIntent(PROMISE_READY_COMPLETE_NOTIFICATION_ID, PendingIntent.FLAG_IMMUTABLE)
+            getPendingIntent(promiseAlarm.alarmCode, PendingIntent.FLAG_IMMUTABLE)
         } ?: return
 
         val notification = createNotificationBuilder(
@@ -93,4 +96,11 @@ object NotificationProvider {
         )
         notificationManager.notify(PROMISE_READY_COMPLETE_NOTIFICATION_ID, notification.build())
     }
+
+    private fun initActivityPendingIntent(context: Context, alarmCode: Int, intentClass: Class<*>) = PendingIntent.getActivity(
+        context,
+        alarmCode,
+        Intent(context, intentClass),
+        PendingIntent.FLAG_IMMUTABLE
+    ).cancel()
 }

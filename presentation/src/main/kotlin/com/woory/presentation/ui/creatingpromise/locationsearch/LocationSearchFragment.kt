@@ -34,6 +34,7 @@ import com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel
 import com.woory.presentation.util.REQUIRE_PERMISSION_TEXT
 import com.woory.presentation.util.animRightToLeftNavOption
 import com.woory.presentation.util.getActivityContext
+import com.woory.presentation.util.getExceptionMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -61,7 +62,7 @@ class LocationSearchFragment :
         object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
-                viewLifecycleOwner.lifecycleScope.launch{
+                viewLifecycleOwner.lifecycleScope.launch {
                     setUpMapView()
                 }
             }
@@ -99,7 +100,8 @@ class LocationSearchFragment :
                 }
                 launch {
                     fragmentViewModel.errorEvent.collectLatest {
-                        showSnackBar(it.message ?: DEFAULT_TEXT)
+                        val message = getExceptionMessage(requireContext(), it)
+                        showSnackBar(message)
                     }
                 }
             }
@@ -107,12 +109,12 @@ class LocationSearchFragment :
         registerNetworkCallback()
     }
 
-    private fun registerNetworkCallback(){
+    private fun registerNetworkCallback() {
         val request = NetworkRequest.Builder().build()
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
 
-    private fun unregisterNetworkCallback(){
+    private fun unregisterNetworkCallback() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
@@ -120,6 +122,7 @@ class LocationSearchFragment :
         mapView = TMapView(getActivityContext(requireContext())).apply {
             setSKTMapApiKey(BuildConfig.MAP_API_KEY)
             setOnMapReadyListener {
+                setVisibleLogo(false)
                 zoomLevel = DEFAULT_ZOOM_LEVEL
                 fragmentViewModel.setIsMapReady(true)
                 binding.iconCenterLocationMarker.visibility = View.VISIBLE
@@ -147,6 +150,15 @@ class LocationSearchFragment :
                 }
             }
 
+            setOnLongClickListenerCallback { _, _, tMapPoint ->
+                activityViewModel.setChoosedLocation(
+                    GeoPoint(
+                        tMapPoint.latitude,
+                        tMapPoint.longitude
+                    )
+                )
+            }
+
             setOnClickListenerCallback(object : TMapView.OnClickListenerCallback {
                 override fun onPressDown(
                     p0: ArrayList<TMapMarkerItem>?,
@@ -160,7 +172,7 @@ class LocationSearchFragment :
                 override fun onPressUp(
                     p0: ArrayList<TMapMarkerItem>?,
                     p1: ArrayList<TMapPOIItem>?,
-                    centerPoint: TMapPoint?,
+                    p2: TMapPoint?,
                     p3: PointF?
                 ) {
                     centerPoint?.let {
@@ -202,21 +214,35 @@ class LocationSearchFragment :
 
     @SuppressLint("MissingPermission")
     private fun setCurrentLocation() {
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                if (it != null && activityViewModel.choosedLocation.value == null) {
-                    activityViewModel.setChoosedLocation(
-                        GeoPoint(it.latitude, it.longitude)
-                    )
+        if (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+            fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (it.result != null) {
+                        if (activityViewModel.choosedLocation.value == null) {
+                            activityViewModel.setChoosedLocation(
+                                GeoPoint(it.result.latitude, it.result.longitude)
+                            )
+                        }
+                    }
+                } else {
+                    setDefaultLocation()
                 }
             }.addOnFailureListener {
-                showSnackBar(it.message ?: DEFAULT_TEXT)
+                setDefaultLocation()
             }
+        } else {
+            setDefaultLocation()
         }
     }
 
     private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun setDefaultLocation() {
+        activityViewModel.setChoosedLocation(
+            GeoPoint(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
+        )
     }
 
     override fun onDestroyView() {
@@ -228,6 +254,7 @@ class LocationSearchFragment :
 
     companion object {
         private const val DEFAULT_ZOOM_LEVEL = 15
-        private const val DEFAULT_TEXT = ""
+        private const val DEFAULT_LATITUDE = 37.3588602423595
+        private const val DEFAULT_LONGITUDE = 127.105206334597
     }
 }

@@ -4,15 +4,20 @@ package com.woory.presentation.ui.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woory.data.repository.PromiseRepository
+import com.woory.data.repository.UserRepository
 import com.woory.presentation.di.PromiseHistoryModule
-import com.woory.presentation.model.Promise
-import com.woory.presentation.model.mapper.promise.asUiModel
+import com.woory.presentation.model.PromiseHistory
+import com.woory.presentation.model.UiState
+import com.woory.presentation.model.exception.AlmostThereException
+import com.woory.presentation.model.mapper.history.asUiModel
+import com.woory.presentation.util.flow.MutableEventFlow
+import com.woory.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.threeten.bp.OffsetDateTime
 import javax.inject.Inject
@@ -20,52 +25,55 @@ import javax.inject.Inject
 @HiltViewModel
 class PromiseHistoryViewModel @Inject constructor(
     @PromiseHistoryModule.HistoryType private val promiseHistoryType: PromiseHistoryType,
-    private val promiseRepository: PromiseRepository
+    private val promiseRepository: PromiseRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val joinedPromiseCodes: Flow<List<String>> = promiseRepository.getJoinedPromises()
+        .map { promises ->
+            promises.filter { promise ->
+                if (promiseHistoryType == PromiseHistoryType.PAST) {
+                    OffsetDateTime.now().isAfter(promise.endTime)
+                } else {
+                    OffsetDateTime.now().isBefore(promise.endTime)
+                }
+            }.map {
+                it.promiseCode
+            }
+        }
 
-    private val _isError: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isError: StateFlow<Boolean> = _isError.asStateFlow()
+    private val _uiState = MutableEventFlow<UiState<List<PromiseHistory>?>>()
+    val uiState = _uiState.asEventFlow()
 
-    private val _promiseList: MutableStateFlow<List<Promise>?> = MutableStateFlow(null)
-    val promiseList: StateFlow<List<Promise>?> = _promiseList.asStateFlow()
+    val userPreferences = userRepository.userPreferences
 
     init {
-        observePromiseList()
+        observePromises()
     }
 
-    private fun observePromiseList() {
+    private fun observePromises() {
         viewModelScope.launch {
-            _isLoading.value = true
-
-            promiseRepository.getJoinedPromiseList()
-                .onSuccess { promises ->
-                    _isLoading.emit(false)
-                    _isError.emit(false)
-
-                    _promiseList.emit(
-                        promises.filter { promise ->
-                            if (promiseHistoryType == PromiseHistoryType.PAST) {
-                                OffsetDateTime.now().isAfter(promise.endTime)
-                            } else {
-                                OffsetDateTime.now().isBefore(promise.endTime)
+            joinedPromiseCodes.collectLatest { codes ->
+                promiseRepository.getPromisesByCodes(codes)
+                    .onStart {
+                        _uiState.emit(UiState.Loading)
+                    }
+                    .catch {
+                        _uiState.emit(UiState.Error(AlmostThereException.FetchFailedException()))
+                    }
+                    .collectLatest { list ->
+                        if (list.isNullOrEmpty()) {
+                            _uiState.emit(UiState.Error(AlmostThereException.FetchFailedException()))
+                        } else {
+                            userPreferences.collectLatest { user ->
+                                val result =
+                                    list.map { it.asUiModel(user.userID) }
+                                        .sortedBy { it.promise.data.gameDateTime }
+                                _uiState.emit(UiState.Success(result))
                             }
-                        }.map { promise ->
-                            viewModelScope.async {
-                                promiseRepository.getPromiseByCode(promise.promiseCode).getOrThrow()
-                                    .asUiModel()
-                            }
-                        }.awaitAll().toList().sortedByDescending { promise ->
-                            promise.data.promiseDateTime
                         }
-                    )
-                }.onFailure {
-                    _isLoading.emit(false)
-                    _isError.emit(true)
-                    _promiseList.emit(null)
-                }
+                    }
+            }
         }
     }
 }

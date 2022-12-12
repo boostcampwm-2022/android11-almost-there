@@ -16,9 +16,7 @@ class AlarmFunctions(private val context: Context) {
         promiseAlarm: PromiseAlarm
     ) {
         val timeInMillis = when (promiseAlarm.state) {
-//            ALARM_STATUS_READY -> promiseAlarm.startTime.minusMinutes(5)
-            // Todo :: 테스트용 코드
-            AlarmState.READY -> promiseAlarm.startTime.minusSeconds(5)
+            AlarmState.READY -> promiseAlarm.startTime.minusMinutes(5)
             AlarmState.START -> promiseAlarm.startTime
             AlarmState.END -> promiseAlarm.endTime
         }.asMillis()
@@ -46,7 +44,7 @@ class AlarmFunctions(private val context: Context) {
     }
 
     fun cancelAlarm(alarmCode: Int) {
-        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
 
         val pendingIntent = PendingIntent.getBroadcast(

@@ -59,7 +59,7 @@
         <activity
             android:name=".ui.join.ProfileActivity"
             android:exported="false"
-            android:launchMode="singleTop" />
+            android:parentActivityName=".ui.join.JoinActivity" />
         <activity
             android:name=".ui.join.JoinActivity"
             android:exported="false"

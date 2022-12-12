@@ -15,6 +15,7 @@ object MagneticInfoMapper : UiModelMapper<MagneticInfo, MagneticInfoModel> {
                 domain.centerPoint.longitude
             ),
             domain.radius,
+            domain.initialRadius,
             domain.updatedAt
         )
 
@@ -26,6 +27,7 @@ object MagneticInfoMapper : UiModelMapper<MagneticInfo, MagneticInfoModel> {
                 uiModel.centerPoint.longitude
             ),
             uiModel.radius,
+            uiModel.initialRadius,
             uiModel.updatedAt
         )
 }

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            style="@style/Text16.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/check_promise_data_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_promise_location_const"
+            style="@style/Text12.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:text="@string/promise_location"
+            android:textColor="@color/black"
+            app:drawableStartCompat="@drawable/ic_location"
+            app:layout_constraintEnd_toStartOf="@id/tv_promise_location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_dialog_title" />
+
+        <TextView
+            android:id="@+id/tv_promise_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_location_const"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_promise_location_const"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="나랏말싸미 듕귁에 달아 문자와로 서로 사맛디 아니할쎄" />
+
+        <TextView
+            android:id="@+id/tv_promise_date_time_const"
+            style="@style/Text12.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:text="@string/promise_date_time"
+            android:textColor="@color/black"
+            app:drawableStartCompat="@drawable/ic_calendar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_location" />
+
+        <TextView
+            android:id="@+id/tv_promise_date_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_promise_date_time_const"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_promise_date_time_const"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="나랏말싸미 듕귁에 달아 문자와로 서로 사맛디 아니할쎄" />
+
+        <TextView
+            android:id="@+id/tv_game_time_const"
+            style="@style/Text12.Black.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:text="@string/game_time"
+            android:textColor="@color/black"
+            app:drawableStartCompat="@drawable/ic_hourglass"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_promise_date_time" />
+
+        <TextView
+            android:id="@+id/tv_game_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="172dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_game_time_const"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/tv_game_time_const"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="나랏말싸미 듕귁에 달아 문자와로 서로 사맛디 아니할쎄" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/cancel"
+            android:textColor="?attr/colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_submit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_game_time" />
+
+        <Button
+            android:id="@+id/btn_submit"
+            style="@style/Text14.Black.Bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/ok"
+            android:textColor="?attr/colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_cancel" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
