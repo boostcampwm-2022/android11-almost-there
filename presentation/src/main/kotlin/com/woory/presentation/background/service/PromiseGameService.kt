@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.woory.data.repository.PromiseRepository
 import com.woory.data.repository.UserRepository
+import com.woory.data.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
 import com.woory.presentation.R
 import com.woory.presentation.background.notification.NotificationChannelProvider
 import com.woory.presentation.background.notification.NotificationProvider
@@ -201,7 +202,7 @@ class PromiseGameService : LifecycleService() {
 
                                                         // TODO : 주기적으로 자기장 update 하기
                                                         while (true) {
-                                                            delay((1000 * MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL).toLong())
+                                                            delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
                                                             promiseRepository.decreaseMagneticRadius(
                                                                 promiseCode,
                                                                 magneticZoneInitialRadius.value / gameTimeInitialValue.value
@@ -295,7 +296,6 @@ class PromiseGameService : LifecycleService() {
 
     companion object {
         private const val LOCATION_UPDATE_SECOND_INTERVAL = 20L
-        private const val MAGNETIC_FIELD_UPDATE_SECOND_INTERVAL = 30
         private const val INITIAL_MAGNETIC_FIELD_RADIUS = 10000.0
         private const val INITIAL_GAME_TIME = 1
     }

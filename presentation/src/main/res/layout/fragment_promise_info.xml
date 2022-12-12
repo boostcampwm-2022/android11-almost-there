@@ -59,21 +59,23 @@
 
                 <TextView
                     android:id="@+id/tv_promise_code"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
+                    android:layout_marginEnd="10dp"
                     android:text="@{vm.promiseModel.code}"
                     android:textSize="24sp"
                     android:textStyle="italic|bold"
                     android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/container_map" />
+                    app:layout_constraintTop_toTopOf="@id/btn_code_copy"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_code_copy"
+                    app:layout_constraintStart_toStartOf="@id/cv_promise_info"
+                    app:layout_constraintTop_toBottomOf="@id/container_map"
+                    tools:text="TEXT12456456789456" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_code_copy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
                     android:text="@string/code_copy"
                     android:textSize="18sp"
                     android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
@@ -190,7 +192,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
                     android:text="@string/participant"
-                    android:textSize="32sp"
+                    android:textSize="24sp"
                     android:visibility="@{vm.uiState instanceof PromiseUiState.Fail ? View.GONE : View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cv_promise_info" />

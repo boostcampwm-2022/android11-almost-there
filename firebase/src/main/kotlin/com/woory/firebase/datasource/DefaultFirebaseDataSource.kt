@@ -15,6 +15,7 @@ import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
 import com.woory.data.source.FirebaseDataSource
+import com.woory.data.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
 import com.woory.firebase.mapper.asDomain
 import com.woory.firebase.mapper.asModel
 import com.woory.firebase.mapper.asPromiseParticipant
@@ -830,7 +831,6 @@ class DefaultFirebaseDataSource @Inject constructor(
         private const val FINISHED_PROMISE_KEY = "finished"
         private const val STARTED_PROMISE_KEY = "started"
         private const val USERS_KEY = "users"
-        private const val MAGNETIC_FIELD_UPDATE_TERM_SECOND = 30
         private val UNMATCHED_STATE_EXCEPTION = IllegalStateException("Unmatched State with Server")
         private val READY_DATA = mapOf("ready" to "READY")
     }
