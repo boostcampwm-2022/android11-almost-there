@@ -17,8 +17,10 @@ import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.google.android.material.snackbar.Snackbar
 import com.woory.presentation.R
 import com.woory.presentation.databinding.FragmentLocationSearchResultBinding
+import com.woory.presentation.model.exception.NotFoundSearchResult
 import com.woory.presentation.ui.BaseFragment
 import com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel
+import com.woory.presentation.util.getExceptionMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -93,7 +95,14 @@ class LocationSearchResultFragment :
                 }
                 launch {
                     fragmentViewModel.errorEvent.collectLatest {
-                        showSnackBar(it.message ?: DEFAULT_STRING)
+                        val message = getExceptionMessage(
+                            requireContext(),
+                            when (it) {
+                                is KotlinNullPointerException -> NotFoundSearchResult()
+                                else -> it
+                            }
+                        )
+                        showSnackBar(message)
                     }
                 }
             }
@@ -115,9 +124,5 @@ class LocationSearchResultFragment :
 
     private fun showSnackBar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
-    }
-
-    companion object {
-        private const val DEFAULT_STRING = ""
     }
 }

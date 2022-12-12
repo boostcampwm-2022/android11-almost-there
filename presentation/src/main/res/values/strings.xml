@@ -168,4 +168,5 @@
     <item>6시간 전</item>
     </string-array>
     <string name="snack_bar_not_implementation">"아직 구현되지 않은 기능입니다."</string>
+    <string name="not_found_search_result_message">검색 결과가 없습니다.</string>
 </resources>
