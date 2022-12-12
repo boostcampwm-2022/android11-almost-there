@@ -348,6 +348,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     private fun showBottomSheet(id: String) {
         profileBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        binding.layoutBottomSheet.tvExpectedTime.text = getString(R.string.loading_text)
 
         val image = viewModel.getUserImage(id) ?: defaultProfileImage
         binding.layoutBottomSheet.layoutCharacterImg.profileImage = image
@@ -372,7 +373,6 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     private fun dismissBottomSheet() {
         profileBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         promiseInfoBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        binding.layoutBottomSheet.tvExpectedTime.text = getString(R.string.loading_text)
     }
 
     private fun makeSnackBar(text: String) {
