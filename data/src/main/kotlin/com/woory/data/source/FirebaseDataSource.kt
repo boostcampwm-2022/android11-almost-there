@@ -3,6 +3,7 @@ package com.woory.data.source
 import com.woory.data.model.AddedUserHpModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseHistoryModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
@@ -27,6 +28,8 @@ interface FirebaseDataSource {
     suspend fun getMagneticInfoByCodeAndListen(code: String): Flow<Result<MagneticInfoModel>>
 
     suspend fun updateMagneticRadius(gameCode: String, radius: Double): Result<Unit>
+
+    suspend fun updateInitialMagneticRadius(gameCode: String, radius: Double): Result<Unit>
 
     suspend fun decreaseMagneticRadius(gameCode: String, minusValue: Double): Result<Unit>
 
@@ -64,5 +67,5 @@ interface FirebaseDataSource {
 
     suspend fun getReadyUserList(code: String): Result<List<UserModel>>
 
-    suspend fun getPromisesByCodes(codes: List<String>): Flow<List<PromiseModel>?>
+    suspend fun getPromisesByCodes(codes: List<String>): Flow<List<PromiseHistoryModel>?>
 }

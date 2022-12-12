@@ -6,6 +6,7 @@ import com.woory.data.model.LocationSearchModel
 import com.woory.data.model.MagneticInfoModel
 import com.woory.data.model.PromiseAlarmModel
 import com.woory.data.model.PromiseDataModel
+import com.woory.data.model.PromiseHistoryModel
 import com.woory.data.model.PromiseModel
 import com.woory.data.model.UserLocationModel
 import com.woory.data.model.UserModel
@@ -183,6 +184,6 @@ class DefaultPromiseRepository @Inject constructor(
     override fun getJoinedPromises(): Flow<List<PromiseAlarmModel>> =
         databaseDataSource.getJoinedPromises()
 
-    override suspend fun getPromisesByCodes(codes: List<String>): Flow<List<PromiseModel>?> =
+    override suspend fun getPromisesByCodes(codes: List<String>): Flow<List<PromiseHistoryModel>?> =
         firebaseDataSource.getPromisesByCodes(codes)
 }
