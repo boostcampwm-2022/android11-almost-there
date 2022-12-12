@@ -2,6 +2,7 @@ package com.woory.presentation.binding
 
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.FrameLayout
 import androidx.databinding.BindingAdapter
 import com.woory.presentation.ui.history.PromiseHistoryViewType
 
@@ -27,6 +28,14 @@ fun View.bindItemHP(type: PromiseHistoryViewType) {
     visibility = when (type) {
         PromiseHistoryViewType.ONGOING -> View.VISIBLE
         else -> View.GONE
+    }
+}
+
+@BindingAdapter("visibilityByType")
+fun FrameLayout.bindVisibilityByType(type: PromiseHistoryViewType) {
+    visibility = when (type) {
+        PromiseHistoryViewType.END -> View.GONE
+        else -> View.VISIBLE
     }
 }
 

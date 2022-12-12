@@ -62,7 +62,7 @@ class LocationSearchFragment :
         object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
-                viewLifecycleOwner.lifecycleScope.launch{
+                viewLifecycleOwner.lifecycleScope.launch {
                     setUpMapView()
                 }
             }
@@ -109,12 +109,12 @@ class LocationSearchFragment :
         registerNetworkCallback()
     }
 
-    private fun registerNetworkCallback(){
+    private fun registerNetworkCallback() {
         val request = NetworkRequest.Builder().build()
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
 
-    private fun unregisterNetworkCallback(){
+    private fun unregisterNetworkCallback() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
@@ -151,7 +151,12 @@ class LocationSearchFragment :
             }
 
             setOnLongClickListenerCallback { _, _, tMapPoint ->
-                activityViewModel.setChoosedLocation(GeoPoint(tMapPoint.latitude, tMapPoint.longitude))
+                activityViewModel.setChoosedLocation(
+                    GeoPoint(
+                        tMapPoint.latitude,
+                        tMapPoint.longitude
+                    )
+                )
             }
 
             setOnClickListenerCallback(object : TMapView.OnClickListenerCallback {
@@ -212,10 +217,12 @@ class LocationSearchFragment :
         if (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener {
                 if (it.isSuccessful) {
-                    if (activityViewModel.choosedLocation.value == null) {
-                        activityViewModel.setChoosedLocation(
-                            GeoPoint(it.result.latitude, it.result.longitude)
-                        )
+                    if (it.result != null) {
+                        if (activityViewModel.choosedLocation.value == null) {
+                            activityViewModel.setChoosedLocation(
+                                GeoPoint(it.result.latitude, it.result.longitude)
+                            )
+                        }
                     }
                 } else {
                     setDefaultLocation()
