@@ -75,17 +75,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
     }
 
     private fun registerAlarm(promiseAlarm: PromiseAlarm) {
-        // FIXME: 테스트용 코드
-        alarmFunctions.registerAlarm(
-            PromiseAlarm(
-                alarmCode = promiseAlarm.alarmCode,
-                promiseCode = promiseAlarm.promiseCode,
-                state = promiseAlarm.state,
-                startTime = OffsetDateTime.now().plusSeconds(10),
-                endTime = OffsetDateTime.now().plusSeconds(30)
-            )
-        )
-
+        alarmFunctions.registerAlarm(promiseAlarm)
         PromiseInfoActivity.startActivity(this@ProfileActivity, promiseAlarm.promiseCode)
         finish()
     }
