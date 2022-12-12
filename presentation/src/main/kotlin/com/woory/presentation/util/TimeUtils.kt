@@ -19,12 +19,10 @@ object TimeUtils {
         val days = duration.toDaysPart()
         val hours = duration.toHoursPart()
         val minutes = duration.toMinutesPart()
-        val seconds = duration.toSecondsPart()
 
         val daysWithSuffix = getTimeStringWithSuffix(context, DateTimeType.DAY, days.toInt())
         val hoursWithSuffix = getTimeStringWithSuffix(context, DateTimeType.HOUR, hours)
         val minutesWithSuffix = getTimeStringWithSuffix(context, DateTimeType.MINUTE, minutes)
-        val secondsWithSuffix = getTimeStringWithSuffix(context, DateTimeType.SECOND, seconds)
 
         return if (days > 0L) {
             daysWithSuffix
@@ -43,7 +41,11 @@ object TimeUtils {
         if (value > 0) {
             dateTimeType.withSuffix(context, value)
         } else {
-            ""
+            if (dateTimeType == DateTimeType.MINUTE && value == 0) {
+                dateTimeType.withSuffix(context, value)
+            } else {
+                ""
+            }
         }
 
     fun getStringInMinuteToDay(
