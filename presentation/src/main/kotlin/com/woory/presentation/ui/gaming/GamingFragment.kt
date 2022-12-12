@@ -95,6 +95,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         val isGranted = permissionResults.values.reduce { acc, b -> acc && b }
         if (isGranted) {
             setCurrentLocation()
+        } else {
+            setDefaultLocation()
         }
     }
 
@@ -411,7 +413,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         if (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
             fusedLocationProviderClient.lastLocation.addOnCompleteListener {
                 if (it.isSuccessful && viewModel.centerLocation.value == null && it.result != null) {
-                    GeoPoint(it.result.latitude, it.result.longitude)
+                    viewModel.setCenterLocation(GeoPoint(it.result.latitude, it.result.longitude))
                 } else {
                     setDefaultLocation()
                 }
