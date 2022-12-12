@@ -4,6 +4,7 @@ import com.woory.presentation.util.SoftKeyboardUtils
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.viewModels
 import com.woory.presentation.R
 import com.woory.presentation.background.alarm.AlarmFunctions
@@ -87,6 +88,13 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>(R.layout.activity_p
 
         PromiseInfoActivity.startActivity(this@ProfileActivity, promiseAlarm.promiseCode)
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {
