@@ -352,17 +352,11 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         binding.layoutBottomSheet.rank = viewModel.getUserRanking(id)
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    val address = viewModel.getAddress(id) ?: getString(R.string.unknown_error)
-                    binding.layoutBottomSheet.tvLocation.text = address
-                }
-                launch {
-                    val remainTime = viewModel.getRemainTime(id) ?: -1
-                    binding.layoutBottomSheet.tvExpectedTime.text =
-                        TimeUtils.getStringInMinuteToDay(requireContext(), remainTime)
-                }
-            }
+            binding.layoutBottomSheet.tvLocation.text = viewModel.getAddress(id)
+
+            val remainTime = viewModel.getRemainTime(id) ?: -1
+            binding.layoutBottomSheet.tvExpectedTime.text =
+                TimeUtils.getStringInMinuteToDay(requireContext(), remainTime)
         }
     }
 
