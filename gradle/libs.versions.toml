@@ -1,0 +1,97 @@
+[versions]
+agp = "7.3.1"
+kotlin = "1.7.22"
+hilt = "2.44.2"
+spotless = "6.12.0"
+navigation = "2.5.3"
+multidex = "2.0.1"
+timber = "5.0.1"
+threeten = "1.4.4"
+kakao = "2.11.2"
+junit = "4.13.2"
+androidxTestJunit = "1.1.4"
+espresso = "3.5.0"
+material = "1.7.0"
+recyclerView = "1.2.1"
+constraintLayout = "2.1.4"
+androidxLifecycle = "2.5.1"
+androidxCore = "1.9.0"
+androidxAppcompat = "1.5.1"
+playServiceLocation = "21.0.1"
+lottie = "5.2.0"
+konfetti = "2.0.2"
+junitJupiter = "5.8.2"
+datastore = "1.0.0"
+coroutines = "1.6.4"
+retrofit = "2.9.0"
+moshi = "1.14.0"
+androidxRoom = "2.4.3"
+roomPersistence = "1.1.1"
+androidxStartup = "1.1.1"
+androidxFragment = "1.5.1"
+google-services = "4.3.14"
+firebase-bom = "31.1.1"
+firebase-analytics = "21.2.0"
+firebase-firestore = "24.4.1"
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-test = { id = "com.android.test", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+hilt-plugin = { id = "dagger.hilt.android.plugin", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+
+[libraries]
+agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+navigation-safeArgs = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
+hilt-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
+multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
+threeten = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threeten" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+kakao-share = { module = "com.kakao.sdk:v2-share", version.ref = "kakao" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestJunit" }
+androidx-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidxCore"}
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat"}
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayout"}
+recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
+androidx-lifecycle = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServiceLocation" }
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+konfetti = { module = "nl.dionsegijn:konfetti-xml", version.ref = "konfetti" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitJupiter" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidxRoom" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidxRoom" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "androidxRoom" }
+room-persistence = { module = "android.arch.persistence.room:compiler", version.ref = "roomPersistence" }
+google-services = { module = "com.google.gms:google-services", version.ref = "google-services" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx", version.ref = "firebase-analytics" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx", version.ref = "firebase-firestore" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidxStartup" }
+androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidxFragment" }

@@ -23,11 +23,6 @@ class GameResultActivity : BaseActivity<ActivityGameResultBinding>(R.layout.acti
         viewModel.setGameCode(gameCode)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right)
-    }
-
     companion object {
         fun startActivity(context: Context, promiseCode: String) =
             context.startActivity(Intent(context, GameResultActivity::class.java).apply {

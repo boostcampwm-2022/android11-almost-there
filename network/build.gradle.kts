@@ -1,19 +1,21 @@
-import java.util.*
+import java.util.Properties
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    id(libs.plugins.android.library.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 android {
     namespace = "com.woory.network"
-    compileSdk = 33
+    buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
+    compileSdk = Configuration.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 33
+        minSdk = Configuration.MIN_SDK
+        targetSdk = Configuration.TARGET_SDK
 
         val projectProperties = readProperties(file("../local.properties"))
         buildConfigField("String", "MAP_API_KEY", projectProperties["MAP_API_KEY"] as String)
@@ -21,34 +23,28 @@ android {
     }
 }
 
+dependencies {
+    implementation(project(":data"))
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.moshi)
+
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+
+    implementation(libs.threeten)
+
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
+}
+
 fun readProperties(propertiesFile: File) = Properties().apply {
     propertiesFile.inputStream().use { fis ->
         load(fis)
     }
-}
-
-dependencies {
-    // modules
-    implementation(project(":data"))
-
-    // di
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
-
-    // retrofit
-    val retrofit_version = "2.9.0"
-    implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
-
-    // moshi converter
-    implementation("com.squareup.moshi:moshi:1.9.3")
-    implementation("com.squareup.moshi:moshi-kotlin:1.9.3")
-    implementation("com.squareup.retrofit2:converter-moshi:$retrofit_version")
-
-    // ThreeTenABP
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
-    
-    testImplementation("junit:junit:4.13.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
 }

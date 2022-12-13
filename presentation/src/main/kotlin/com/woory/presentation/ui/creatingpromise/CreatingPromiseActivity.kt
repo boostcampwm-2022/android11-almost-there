@@ -23,11 +23,6 @@ class CreatingPromiseActivity :
         initToolbar(binding.containerToolbar.toolbar, getString(R.string.promise_creation))
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {

@@ -1,41 +1,37 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    id(libs.plugins.android.library.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 android {
     namespace = "com.woory.database"
-    compileSdk = 33
+    buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
+    compileSdk = Configuration.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 33
+        minSdk = Configuration.MIN_SDK
+        targetSdk = Configuration.TARGET_SDK
     }
 }
 
 dependencies {
-    // Modules
     implementation(project(":data"))
 
-    // di
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    // room
-    val room_version = "2.4.3"
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    kapt(libs.room.persistence)
+    testImplementation(libs.androidx.room.testing)
 
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
-    kapt("android.arch.persistence.room:compiler:1.1.1")
-    testImplementation("androidx.room:room-testing:$room_version")
+    implementation(libs.threeten)
 
-    // ThreeTenABP
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
 }

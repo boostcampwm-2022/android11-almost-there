@@ -1,21 +1,43 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+@Suppress("DSL_SCOPE_VIOLATION")
+plugins {
+    alias(libs.plugins.spotless)
+}
+
 buildscript {
     repositories {
         google()
         mavenCentral()
-        maven{ url = uri("https://devrepo.kakao.com/nexus/content/groups/public/")}
+        gradlePluginPortal()
+        maven(url = "https://devrepo.kakao.com/nexus/content/groups/public/")
     }
 
     dependencies {
-        classpath("com.google.gms:google-services:4.3.14")
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3")
+        classpath(libs.agp)
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.hilt.plugin)
+        classpath(libs.google.services)
+        classpath(libs.navigation.safeArgs)
     }
 }
 
-plugins {
-    id("org.jetbrains.kotlin.android") version "1.7.10" apply false
-    id("com.android.application") version "7.3.1" apply false
-    id("com.android.library") version "7.3.1" apply false
-    id("org.jetbrains.kotlin.jvm") version "1.7.10" apply false
-    id("com.google.dagger.hilt.android") version "2.44" apply false
+subprojects {
+    apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xopt-in=kotlin.time.ExperimentalTime",
+        )
+    }
+
+    extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        kotlin {
+            targetExclude("$buildDir/**/*.kt")
+            ktlint()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+    }
 }
