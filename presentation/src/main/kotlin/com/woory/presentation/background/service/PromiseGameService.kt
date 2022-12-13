@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.OffsetDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -188,6 +189,20 @@ class PromiseGameService : LifecycleService() {
                                                                         )
                                                                     }
                                                                 }
+                                                        }
+
+                                                        launch {
+                                                            promiseRepository.getPlayerArrived(
+                                                                promiseCode,
+                                                                userToken
+                                                            ).collectLatest { arrivedResult ->
+                                                                if (arrivedResult.isSuccess && arrivedResult.getOrDefault(
+                                                                        false
+                                                                    )
+                                                                ) {
+                                                                    stopUpdateLocation()
+                                                                }
+                                                            }
                                                         }
 
                                                         launch {

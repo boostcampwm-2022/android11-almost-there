@@ -303,8 +303,7 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
                         p1: ArrayList<TMapPOIItem>?,
                         p2: TMapPoint?,
                         p3: PointF?
-                    ) {
-                    }
+                    ) = Unit
                 })
                 binding.layoutPromiseInfo.setOnClickListener {
                     showPromiseInfo()
@@ -317,11 +316,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
     private fun checkIsArrived(userLocation: UserLocation?) {
         val centerPoint = viewModel.magneticInfo.value?.centerPoint
-
         if (userLocation?.token == viewModel.myUserInfo.userID) {
-
-
-            if (centerPoint != null) {
+            if (centerPoint != null && viewModel.isArrived.value.not()) {
                 alertShakeDialog(
                     userLocation.geoPoint,
                     centerPoint
