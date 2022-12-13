@@ -82,7 +82,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_margin="10dp"
-                android:onClick="@{() -> vm.getMyLocation()}"
+                android:onClick="@{(view) -> vm.getMyLocation()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

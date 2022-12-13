@@ -3,19 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.woory.almostthere">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
 
     <queries>
-        <package android:name="com.kakao.talk"/>
+        <package android:name="com.kakao.talk" />
     </queries>
 
     <application
@@ -28,23 +30,26 @@
         android:roundIcon="@mipmap/ic_woory_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AlmostThere"
-        tools:targetApi="31">
+        tools:targetApi="33">
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.woory.almostthere.androidx-startup"
+            android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge">
 
             <meta-data
                 android:name="com.woory.almostthere.initializer.TimberInitializer"
                 android:value="androidx.startup" />
+
             <meta-data
                 android:name="com.woory.almostthere.initializer.ThreeTenInitializer"
                 android:value="androidx.startup" />
+
             <meta-data
                 android:name="com.woory.almostthere.initializer.KakaoSdkInitializer"
-                android:value="androidx.startup"/>
+                android:value="androidx.startup" />
+
         </provider>
 
     </application>
