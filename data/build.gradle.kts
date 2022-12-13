@@ -1,32 +1,31 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    id(libs.plugins.android.library.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 android {
     namespace = "com.woory.data"
-    compileSdk = 33
+    buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
+    compileSdk = Configuration.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 33
+        minSdk = Configuration.MIN_SDK
+        targetSdk = Configuration.TARGET_SDK
     }
 }
 
 dependencies {
-    // di
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    // ThreeTenABP
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+    implementation(libs.threeten)
 
-    // Preferences DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.datastore.preferences)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
 }

@@ -1,89 +1,79 @@
 import java.util.Properties
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    id(libs.plugins.android.application.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 android {
-    namespace = "com.woory.almostthere"
-    compileSdk = 33
+    buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
+    compileSdk = Configuration.COMPILE_SDK
 
     defaultConfig {
         applicationId = "com.woory.almostthere"
-        minSdk = 23
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = Configuration.MIN_SDK
+        targetSdk = Configuration.TARGET_SDK
+        versionCode = Configuration.VERSION_CODE
+        versionName = Configuration.VERSION_NAME
+
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         val projectProperties = readProperties(file("../local.properties"))
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", projectProperties["KAKAO_NATIVE_APP_KEY"] as String)
-
-        buildTypes {
-            getByName("release") {
-                isMinifyEnabled = false
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
-            }
-        }
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
-        }
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-        hilt {
-            enableAggregatingTask = true
-        }
-        buildFeatures {
-            dataBinding = true
-        }
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_APP_KEY",
+            projectProperties["KAKAO_NATIVE_APP_KEY"] as String
+        )
     }
-}
 
-fun readProperties(propertiesFile: File) = Properties().apply {
-    propertiesFile.inputStream().use { fis ->
-        load(fis)
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+
+    hilt {
+        enableAggregatingTask = true
     }
 }
 
 dependencies {
-    // Modules
     implementation(project(":presentation"))
     implementation(project(":data"))
     implementation(project(":network"))
     implementation(project(":database"))
     implementation(project(":firebase"))
 
-    // Multidex
-    implementation("androidx.multidex:multidex:2.0.1")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.testing)
+    kaptAndroidTest(libs.hilt.compiler)
 
-    // DI
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
+    implementation(libs.androidx.startup)
 
-    // Timber
-    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation(libs.multidex)
 
-    // ThreeThen
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+    implementation(libs.timber)
 
-    // Kakao Message
-    implementation("com.kakao.sdk:v2-share:2.11.2")
+    implementation(libs.threeten)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    implementation(libs.kakao.share)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
 }
 
-kapt {
-    correctErrorTypes = true
+fun readProperties(propertiesFile: File) = Properties().apply {
+    propertiesFile.inputStream().use { fis ->
+        load(fis)
+    }
 }

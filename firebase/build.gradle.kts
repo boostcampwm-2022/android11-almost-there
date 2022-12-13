@@ -1,41 +1,40 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    id(libs.plugins.android.library.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.kotlin.kapt.get().pluginId)
+    id(libs.plugins.hilt.plugin.get().pluginId)
+    id(libs.plugins.google.services.get().pluginId)
 }
 
 android {
     namespace = "com.woory.firebase"
-    compileSdk = 33
+    buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
+    compileSdk = Configuration.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 33
+        minSdk = Configuration.MIN_SDK
+        targetSdk = Configuration.TARGET_SDK
     }
+
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
 }
 
 dependencies {
-    // Modules
     implementation(project(":data"))
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:31.0.3"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-messaging-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore)
 
-    // di
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.3")
+    implementation(libs.threeten)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
 }
