@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResult" />
+            type="com.woory.almostthere.presentation.ui.creatingpromise.locationsearch.LocationSearchResult" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

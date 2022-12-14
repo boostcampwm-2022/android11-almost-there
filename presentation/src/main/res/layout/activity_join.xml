@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.join.JoinViewModel" />
+            type="com.woory.almostthere.presentation.ui.join.JoinViewModel" />
     </data>
 
     <ScrollView

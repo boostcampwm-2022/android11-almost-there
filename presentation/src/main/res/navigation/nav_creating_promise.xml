@@ -7,22 +7,22 @@
 
     <fragment
         android:id="@+id/nav_profile_frag"
-        android:name="com.woory.presentation.ui.creatingpromise.ProfileFragment"
+        android:name="com.woory.almostthere.presentation.ui.creatingpromise.ProfileFragment"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/nav_creating_promise_frag"
-        android:name="com.woory.presentation.ui.creatingpromise.CreatingPromiseFragment"
+        android:name="com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseFragment"
         tools:layout="@layout/fragment_creating_promise" />
 
     <fragment
         android:id="@+id/nav_location_find_frag"
-        android:name="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchFragment"
+        android:name="com.woory.almostthere.presentation.ui.creatingpromise.locationsearch.LocationSearchFragment"
         tools:layout="@layout/fragment_location_search" />
 
     <fragment
         android:id="@+id/nav_location_search_graf"
-        android:name="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResultFragment"
+        android:name="com.woory.almostthere.presentation.ui.creatingpromise.locationsearch.LocationSearchResultFragment"
         tools:layout="@layout/fragment_location_search_result"/>
 
 </navigation>

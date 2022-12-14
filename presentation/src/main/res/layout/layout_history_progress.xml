@@ -6,11 +6,11 @@
 
         <variable
             name="type"
-            type="com.woory.presentation.ui.history.PromiseHistoryViewType" />
+            type="com.woory.almostthere.presentation.ui.history.PromiseHistoryViewType" />
 
         <variable
             name="promiseHistory"
-            type="com.woory.presentation.model.PromiseHistory" />
+            type="com.woory.almostthere.presentation.model.PromiseHistory" />
     </data>
 
     <FrameLayout

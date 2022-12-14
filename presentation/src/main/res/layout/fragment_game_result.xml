@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.gameresult.GameResultViewModel" />
+            type="com.woory.almostthere.presentation.ui.gameresult.GameResultViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

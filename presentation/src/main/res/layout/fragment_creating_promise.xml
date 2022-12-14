@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
+        <import type="com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
+            type="com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

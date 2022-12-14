@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
-    <com.woory.presentation.ui.customview.HPBar
+    <com.woory.almostthere.presentation.ui.customview.HPBar
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:padding="10dp"

@@ -7,9 +7,9 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.gaming.GamingViewModel" />
+            type="com.woory.almostthere.presentation.ui.gaming.GamingViewModel" />
 
-        <import type="com.woory.presentation.util.TimeUtils" />
+        <import type="com.woory.almostthere.presentation.util.TimeUtils" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

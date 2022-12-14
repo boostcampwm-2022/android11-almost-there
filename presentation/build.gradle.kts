@@ -1,4 +1,4 @@
-import java.util.Properties
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.woory.presentation"
+    namespace = "com.woory.almostthere.presentation"
     buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
     compileSdk = Configuration.COMPILE_SDK
 
@@ -19,9 +19,8 @@ android {
         minSdk = Configuration.MIN_SDK
         targetSdk = Configuration.TARGET_SDK
 
-        val projectProperties = readProperties(file("../local.properties"))
-        buildConfigField("String", "MAP_API_KEY", projectProperties["MAP_API_KEY"] as String)
-        manifestPlaceholders["KAKAO_APP_KEY"] = projectProperties["KAKAO_NATIVE_APP_KEY"] as String
+        buildConfigField("String", "MAP_API_KEY", getApiKey("MAP_API_KEY"))
+        manifestPlaceholders["KAKAO_APP_KEY"] = getApiKey("KAKAO_NATIVE_APP_KEY")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,17 +49,21 @@ android {
 }
 
 dependencies {
+    // Modules
     implementation(project(":data"))
 
+    // DI
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // Androidx
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
-
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle)
-
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
 
@@ -68,6 +71,7 @@ dependencies {
     implementation(files("libs/tmap-sdk-1.1.aar"))
     implementation(files("libs/vsm-tmap-sdk-v2-android-1.6.60.aar"))
 
+    // Hilt
     implementation(libs.hilt.android)
     implementation(libs.play.services.location)
     kapt(libs.hilt.compiler)
@@ -82,6 +86,7 @@ dependencies {
 
     implementation(libs.konfetti)
 
+    // Unit test
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.params)
@@ -90,8 +95,4 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso)
 }
 
-fun readProperties(propertiesFile: File) = Properties().apply {
-    propertiesFile.inputStream().use { fis ->
-        load(fis)
-    }
-}
+fun getApiKey(propertyKey: String): String = gradleLocalProperties(rootDir).getProperty(propertyKey)

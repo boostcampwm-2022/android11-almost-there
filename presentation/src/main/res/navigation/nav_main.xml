@@ -11,32 +11,32 @@
 
         <argument
             android:name="promise_history_type"
-            app:argType="com.woory.presentation.ui.history.PromiseHistoryType" />
+            app:argType="com.woory.almostthere.presentation.ui.history.PromiseHistoryType" />
     </action>
 
     <fragment
         android:id="@+id/nav_main_frag"
-        android:name="com.woory.presentation.ui.main.MainFragment"
+        android:name="com.woory.almostthere.presentation.ui.main.MainFragment"
         tools:layout="@layout/fragment_main" />
 
     <fragment
         android:id="@+id/nav_find_promise_frag"
-        android:name="com.woory.presentation.ui.main.FindPromiseFragment"
+        android:name="com.woory.almostthere.presentation.ui.main.FindPromiseFragment"
         tools:layout="@layout/fragment_find_promise" />
 
     <activity
         android:id="@+id/nav_join_act"
-        android:name="com.woory.presentation.ui.join.JoinActivity"
+        android:name="com.woory.almostthere.presentation.ui.join.JoinActivity"
         tools:layout="@layout/activity_join" />
 
     <activity
         android:id="@+id/nav_promise_history_act"
-        android:name="com.woory.presentation.ui.history.PromiseHistoryActivity"
+        android:name="com.woory.almostthere.presentation.ui.history.PromiseHistoryActivity"
         tools:layout="@layout/activity_promise_history">
 
         <argument
             android:name="promise_history_type"
-            app:argType="com.woory.presentation.ui.history.PromiseHistoryType" />
+            app:argType="com.woory.almostthere.presentation.ui.history.PromiseHistoryType" />
 
     </activity>
 
