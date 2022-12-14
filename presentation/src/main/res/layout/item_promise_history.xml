@@ -8,11 +8,11 @@
 
         <variable
             name="promiseHistory"
-            type="com.woory.presentation.model.PromiseHistory" />
+            type="com.woory.almostthere.presentation.model.PromiseHistory" />
 
         <variable
             name="type"
-            type="com.woory.presentation.ui.history.PromiseHistoryViewType" />
+            type="com.woory.almostthere.presentation.ui.history.PromiseHistoryViewType" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -163,7 +163,7 @@
                 app:layout_constraintStart_toStartOf="@id/hp"
                 app:layout_constraintTop_toBottomOf="@id/state" />
 
-            <com.woory.presentation.ui.customview.HPBar
+            <com.woory.almostthere.presentation.ui.customview.HPBar
                 android:id="@+id/hp"
                 android:layout_width="100dp"
                 android:layout_height="20dp"

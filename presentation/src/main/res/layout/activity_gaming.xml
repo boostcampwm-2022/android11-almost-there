@@ -10,7 +10,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_gaming"
-            android:name="com.woory.presentation.ui.gaming.GamingFragment"
+            android:name="com.woory.almostthere.presentation.ui.gaming.GamingFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

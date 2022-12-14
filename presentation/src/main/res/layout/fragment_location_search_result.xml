@@ -6,9 +6,9 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchResultViewModel" />
+            type="com.woory.almostthere.presentation.ui.creatingpromise.locationsearch.LocationSearchResultViewModel" />
 
-        <import type="com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
+        <import type="com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
 
     </data>
 

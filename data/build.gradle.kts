@@ -3,11 +3,10 @@ plugins {
     id(libs.plugins.android.library.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.kotlin.kapt.get().pluginId)
-    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 android {
-    namespace = "com.woory.data"
+    namespace = "com.woory.almostthere.data"
     buildToolsVersion = Configuration.BUILD_TOOLS_VERSION
     compileSdk = Configuration.COMPILE_SDK
 
@@ -18,13 +17,18 @@ android {
 }
 
 dependencies {
+    implementation(libs.threeten)
+
+    // DI
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation(libs.threeten)
+    // Coroutines
+    implementation(libs.coroutines)
+    testImplementation(libs.coroutines)
+    testImplementation(libs.coroutines.test)
 
-    implementation(libs.datastore.preferences)
-
+    // Unit test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso)

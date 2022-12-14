@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="item"
-            type="com.woory.presentation.model.ReadyUser" />
+            type="com.woory.almostthere.presentation.model.ReadyUser" />
 
         <import type="android.graphics.Color" />
 
-        <import type="com.woory.presentation.model.ProfileImage" />
+        <import type="com.woory.almostthere.presentation.model.ProfileImage" />
 
         <import type="android.view.View" />
 

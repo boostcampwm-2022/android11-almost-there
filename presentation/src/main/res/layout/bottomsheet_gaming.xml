@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.gaming.GamingViewModel" />
+            type="com.woory.almostthere.presentation.ui.gaming.GamingViewModel" />
 
         <variable
             name="id"
@@ -68,7 +68,7 @@
             app:layout_constraintBottom_toBottomOf="@id/layout_character_img"
             app:layout_constraintStart_toStartOf="@id/tv_name" />
 
-        <com.woory.presentation.ui.customview.HPBar
+        <com.woory.almostthere.presentation.ui.customview.HPBar
             android:id="@+id/hp_bar"
             android:layout_width="0dp"
             android:layout_height="0dp"

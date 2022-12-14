@@ -9,7 +9,7 @@
 
         <variable
             name="profileImage"
-            type="com.woory.presentation.model.UserProfileImage" />
+            type="com.woory.almostthere.presentation.model.UserProfileImage" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

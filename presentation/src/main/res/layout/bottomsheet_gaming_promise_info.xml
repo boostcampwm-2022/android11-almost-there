@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.gaming.GamingViewModel" />
+            type="com.woory.almostthere.presentation.ui.gaming.GamingViewModel" />
 
         <variable
             name="pattern"

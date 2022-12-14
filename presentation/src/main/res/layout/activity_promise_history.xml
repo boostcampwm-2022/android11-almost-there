@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.history.PromiseHistoryViewModel" />
+            type="com.woory.almostthere.presentation.ui.history.PromiseHistoryViewModel" />
 
         <variable
             name="adapter"
-            type="com.woory.presentation.ui.history.PromiseHistoryAdapter" />
+            type="com.woory.almostthere.presentation.ui.history.PromiseHistoryAdapter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

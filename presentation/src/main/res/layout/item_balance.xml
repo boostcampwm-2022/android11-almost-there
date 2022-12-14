@@ -7,7 +7,7 @@
 
         <variable
             name="balance"
-            type="com.woory.presentation.model.user.gameresult.UserSplitMoneyItem.Balance" />
+            type="com.woory.almostthere.presentation.model.user.gameresult.UserSplitMoneyItem.Balance" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

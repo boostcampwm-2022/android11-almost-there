@@ -6,13 +6,13 @@
 
         <variable
             name="vm"
-            type="com.woory.presentation.ui.creatingpromise.locationsearch.LocationSearchViewModel" />
+            type="com.woory.almostthere.presentation.ui.creatingpromise.locationsearch.LocationSearchViewModel" />
 
         <variable
             name="activityVm"
-            type="com.woory.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
+            type="com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseViewModel" />
 
-        <import type="com.woory.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
+        <import type="com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseUiState"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
