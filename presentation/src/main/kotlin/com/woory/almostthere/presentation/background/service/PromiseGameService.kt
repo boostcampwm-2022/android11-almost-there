@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Intent
-import android.location.Location
 import android.os.Build
 import android.os.Looper
 import androidx.core.app.NotificationCompat
@@ -13,6 +12,7 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.threeten.bp.OffsetDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -91,18 +92,26 @@ class PromiseGameService : LifecycleService() {
         override fun onLocationResult(p0: LocationResult) {
             super.onLocationResult(p0)
             val loc = p0.lastLocation
+            Timber.tag("123123").d("$loc")
             loc?.let { location ->
-                onUpdateLocation(location)
+                val userLocation = GeoPoint(location.latitude, location.longitude)
+                onUpdateLocation(userLocation)
+            }
+        }
+
+        override fun onLocationAvailability(p0: LocationAvailability) {
+            super.onLocationAvailability(p0)
+            if (p0.isLocationAvailable.not()) {
+                Timber.tag("123123").d("not available")
             }
         }
     }
 
-    private fun onUpdateLocation(location: Location) {
+    private fun onUpdateLocation(location: GeoPoint) {
         lifecycleScope.launch {
-            val userLocation = GeoPoint(location.latitude, location.longitude)
             userId.value?.let { id ->
-                setUserLocation(id, userLocation)
-                updateHp(id, userLocation)
+                setUserLocation(id, location)
+                updateHp(id, location)
             }
         }
     }
@@ -264,15 +273,13 @@ class PromiseGameService : LifecycleService() {
     }
 
     private fun fetchPlayerFinished(promiseCode: String) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                promiseRepository.getIsFinishedPromise(
-                    promiseCode
-                ).collectLatest { result ->
-                    result.onSuccess { isFinished ->
-                        if (isFinished) {
-                            stopGame(promiseCode)
-                        }
+        repeatOnStarted {
+            promiseRepository.getIsFinishedPromise(
+                promiseCode
+            ).collectLatest { result ->
+                result.onSuccess { isFinished ->
+                    if (isFinished) {
+                        stopGame(promiseCode)
                     }
                 }
             }

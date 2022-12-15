@@ -3,14 +3,12 @@ package com.woory.almostthere.presentation.ui.gameresult
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.databinding.FragmentGameResultBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.ui.BaseFragment
 import com.woory.almostthere.presentation.ui.customview.topitemresize.TopItemResizeDecoration
 import com.woory.almostthere.presentation.ui.customview.topitemresize.TopItemResizeScrollListener
@@ -68,37 +66,35 @@ class GameResultFragment : BaseFragment<FragmentGameResultBinding>(R.layout.frag
     }
 
     private fun observeData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.errorEvent.collect {
-                        Snackbar.make(requireView(), it.message.toString(), Snackbar.LENGTH_SHORT)
-                            .show()
-                        delay(1000) // TODO("예외 처리 리팩토링 필요")
-                        requireActivity().finish()
-                    }
+        repeatOnStarted {
+            launch {
+                viewModel.errorEvent.collect {
+                    Snackbar.make(requireView(), it.message.toString(), Snackbar.LENGTH_SHORT)
+                        .show()
+                    delay(1000) // TODO("예외 처리 리팩토링 필요")
+                    requireActivity().finish()
                 }
+            }
 
-                launch {
-                    viewModel.gameCode.collectLatest {
-                        viewModel.fetchUserRankingList()
-                    }
+            launch {
+                viewModel.gameCode.collectLatest {
+                    viewModel.fetchUserRankingList()
                 }
+            }
 
-                launch {
-                    viewModel.userRankingList.collectLatest {
-                        (binding.rvRanking.adapter as UserRankingAdapter).submitList(it)
-                    }
+            launch {
+                viewModel.userRankingList.collectLatest {
+                    (binding.rvRanking.adapter as UserRankingAdapter).submitList(it)
                 }
+            }
 
-                launch {
-                    viewModel.myRankingNumber.collectLatest {
-                        binding.tvGameResultMyRanking.text =
-                            String.format(
-                                getString(R.string.my_ranking),
-                                it?.toString() ?: getString(R.string.null_value)
-                            )
-                    }
+            launch {
+                viewModel.myRankingNumber.collectLatest {
+                    binding.tvGameResultMyRanking.text =
+                        String.format(
+                            getString(R.string.my_ranking),
+                            it?.toString() ?: getString(R.string.null_value)
+                        )
                 }
             }
         }

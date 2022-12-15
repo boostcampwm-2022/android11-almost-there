@@ -3,11 +3,9 @@ package com.woory.almostthere.presentation.ui.gameresult
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.databinding.FragmentSplitMoneyBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.ui.BaseFragment
 import com.woory.almostthere.presentation.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,26 +47,25 @@ class SplitMoneyFragment : BaseFragment<FragmentSplitMoneyBinding>(R.layout.frag
     }
 
     private fun observeData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.userSplitMoneyItems.collectLatest {
-                        (binding.rvPayments.adapter as UserSplitMoneyAdapter).submitList(it)
-                    }
-                }
 
-                launch {
-                    viewModel.mySplitMoney.collectLatest {
-                        binding.tvPayment.text = if (it != null) {
-                            String.format(getString(R.string.payment), it)
-                        } else getString(R.string.null_value)
-                    }
+        repeatOnStarted {
+            launch {
+                viewModel.userSplitMoneyItems.collectLatest {
+                    (binding.rvPayments.adapter as UserSplitMoneyAdapter).submitList(it)
                 }
+            }
 
-                launch {
-                    viewModel.showDialogEvent.collectLatest {
-                        showAmountDueDialog()
-                    }
+            launch {
+                viewModel.mySplitMoney.collectLatest {
+                    binding.tvPayment.text = if (it != null) {
+                        String.format(getString(R.string.payment), it)
+                    } else getString(R.string.null_value)
+                }
+            }
+
+            launch {
+                viewModel.showDialogEvent.collectLatest {
+                    showAmountDueDialog()
                 }
             }
         }

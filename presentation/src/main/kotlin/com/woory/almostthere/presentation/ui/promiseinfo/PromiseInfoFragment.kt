@@ -12,9 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
@@ -27,6 +24,7 @@ import com.woory.almostthere.presentation.BuildConfig
 import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.background.alarm.AlarmFunctions
 import com.woory.almostthere.presentation.databinding.FragmentPromiseInfoBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.model.AlarmState
 import com.woory.almostthere.presentation.model.GeoPoint
 import com.woory.almostthere.presentation.model.ReadyUser
@@ -77,31 +75,28 @@ class PromiseInfoFragment :
             defaultString = ""
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-
-                launch {
-                    viewModel.errorState.collect {
-                        val errorMessage =
-                            it.message
-                                ?: requireContext().resources.getString(R.string.unknown_error)
-                        makeSnackBar(
-                            "Error : $errorMessage"
-                        )
-                    }
+        repeatOnStarted {
+            launch {
+                viewModel.errorState.collect {
+                    val errorMessage =
+                        it.message
+                            ?: requireContext().resources.getString(R.string.unknown_error)
+                    makeSnackBar(
+                        "Error : $errorMessage"
+                    )
                 }
+            }
 
-                launch {
-                    setAlarm()
-                }
+            launch {
+                setAlarm()
+            }
 
-                launch {
-                    setReadyButton()
-                }
+            launch {
+                setReadyButton()
+            }
 
-                launch {
-                    setDetectGameStart()
-                }
+            launch {
+                setDetectGameStart()
             }
         }
     }
@@ -129,16 +124,14 @@ class PromiseInfoFragment :
 
             setOnMapReadyListener {
                 binding.rvPromiseParticipant.adapter = participantAdapter
-                viewLifecycleOwner.lifecycleScope.launch {
-                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.promiseModel.collect { promise ->
-                            if (promise != null) {
-                                setMapItem(
-                                    this@apply,
-                                    promise.data.promiseLocation.geoPoint.latitude,
-                                    promise.data.promiseLocation.geoPoint.longitude
-                                )
-                            }
+                repeatOnStarted {
+                    viewModel.promiseModel.collect { promise ->
+                        if (promise != null) {
+                            setMapItem(
+                                this@apply,
+                                promise.data.promiseLocation.geoPoint.latitude,
+                                promise.data.promiseLocation.geoPoint.longitude
+                            )
                         }
                     }
                 }
@@ -148,15 +141,14 @@ class PromiseInfoFragment :
     }
 
     private fun setUsers() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.users.collectLatest { users ->
-                    viewModel.readyUsers.collectLatest { readyUsers ->
-                        participantAdapter.submitList(users.map { user ->
-                            val isReady = user.userId in readyUsers
-                            ReadyUser(isReady, user)
-                        })
-                    }
+
+        repeatOnStarted {
+            viewModel.users.collectLatest { users ->
+                viewModel.readyUsers.collectLatest { readyUsers ->
+                    participantAdapter.submitList(users.map { user ->
+                        val isReady = user.userId in readyUsers
+                        ReadyUser(isReady, user)
+                    })
                 }
             }
         }

@@ -14,9 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -28,6 +26,7 @@ import com.skt.tmap.poi.TMapPOIItem
 import com.woory.almostthere.presentation.BuildConfig
 import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.databinding.FragmentLocationSearchBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.model.GeoPoint
 import com.woory.almostthere.presentation.ui.BaseFragment
 import com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseViewModel
@@ -88,21 +87,19 @@ class LocationSearchFragment :
         binding.vm = fragmentViewModel
         binding.activityVm = activityViewModel
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    fragmentViewModel.promiseLocation.collectLatest {
-                        if (it != null) {
-                            activityViewModel.setPromiseLocation(it)
-                            findNavController().popBackStack()
-                        }
+        repeatOnStarted {
+            launch {
+                fragmentViewModel.promiseLocation.collectLatest {
+                    if (it != null) {
+                        activityViewModel.setPromiseLocation(it)
+                        findNavController().popBackStack()
                     }
                 }
-                launch {
-                    fragmentViewModel.errorEvent.collectLatest {
-                        val message = getExceptionMessage(requireContext(), it)
-                        showSnackBar(message)
-                    }
+            }
+            launch {
+                fragmentViewModel.errorEvent.collectLatest {
+                    val message = getExceptionMessage(requireContext(), it)
+                    showSnackBar(message)
                 }
             }
         }
@@ -135,16 +132,14 @@ class LocationSearchFragment :
                     )
                 )
 
-                viewLifecycleOwner.lifecycleScope.launch {
-                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        activityViewModel.choosedLocation.collectLatest {
-                            if (it != null) {
+                repeatOnStarted {
+                    activityViewModel.choosedLocation.collectLatest {
+                        if (it != null) {
 
-                                val latitude = it.latitude
-                                val longitude = it.longitude
+                            val latitude = it.latitude
+                            val longitude = it.longitude
 
-                                setCenterPoint(latitude, longitude)
-                            }
+                            setCenterPoint(latitude, longitude)
                         }
                     }
                 }

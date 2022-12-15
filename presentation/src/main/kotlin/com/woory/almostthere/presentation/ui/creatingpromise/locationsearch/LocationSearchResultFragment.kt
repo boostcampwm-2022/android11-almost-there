@@ -8,15 +8,13 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.google.android.material.snackbar.Snackbar
 import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.databinding.FragmentLocationSearchResultBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.model.exception.NotFoundSearchResult
 import com.woory.almostthere.presentation.ui.BaseFragment
 import com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseViewModel
@@ -86,24 +84,22 @@ class LocationSearchResultFragment :
             false
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    fragmentViewModel.locationSearchResult.collectLatest {
-                        locationSearchResultAdapter.submitList(it)
-                    }
+        repeatOnStarted {
+            launch {
+                fragmentViewModel.locationSearchResult.collectLatest {
+                    locationSearchResultAdapter.submitList(it)
                 }
-                launch {
-                    fragmentViewModel.errorEvent.collectLatest {
-                        val message = getExceptionMessage(
-                            requireContext(),
-                            when (it) {
-                                is KotlinNullPointerException -> NotFoundSearchResult()
-                                else -> it
-                            }
-                        )
-                        showSnackBar(message)
-                    }
+            }
+            launch {
+                fragmentViewModel.errorEvent.collectLatest {
+                    val message = getExceptionMessage(
+                        requireContext(),
+                        when (it) {
+                            is KotlinNullPointerException -> NotFoundSearchResult()
+                            else -> it
+                        }
+                    )
+                    showSnackBar(message)
                 }
             }
         }

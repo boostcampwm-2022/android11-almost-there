@@ -18,9 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -35,6 +33,7 @@ import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.binding.bindImage
 import com.woory.almostthere.presentation.databinding.CustomviewCharacterMarkerBinding
 import com.woory.almostthere.presentation.databinding.FragmentGamingBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.model.GeoPoint
 import com.woory.almostthere.presentation.model.MagneticInfo
 import com.woory.almostthere.presentation.model.User
@@ -50,6 +49,7 @@ import com.woory.almostthere.presentation.util.festive
 import com.woory.almostthere.presentation.util.getActivityContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -109,13 +109,9 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
     ): View? {
         viewModel.fetchPromise()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.errorState.collectLatest {
-                        makeSnackBar(it.message ?: resources.getString(R.string.unknown_error))
-                    }
-                }
+        repeatOnStarted {
+            viewModel.errorState.collectLatest {
+                makeSnackBar(it.message ?: resources.getString(R.string.unknown_error))
             }
         }
 
@@ -157,61 +153,59 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
             setOnMapReadyListener {
                 setVisibleLogo(false)
 
-                viewLifecycleOwner.lifecycleScope.launch {
-                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        fetchPromiseModel()
+                repeatOnStarted {
+                    fetchPromiseModel()
 
-                        checkCenterLocation {
-                            val latitude = it.latitude
-                            val longitude = it.longitude
-                            setCenterPoint(latitude, longitude)
-                        }
-
-                        fetchAllUserInfo { user, userLocation ->
-                            viewModel.fetchGameRanking()
-                            if (markerMap[user.userId] == null) {
-                                makeNewUserMarker(user, userLocation.geoPoint)
-                            } else {
-                                updateUserMarker(user, userLocation.geoPoint)
-                                removeTMapMarkerItem(user.userId)
-                            }
-                            addTMapMarkerItem(markerMap[user.userId])
-                            checkIsArrived(userLocation)
-                        }
-
-                        fetchMagneticInfo {
-                            removeAllTMapCircle()
-                            addTMapCircle(
-                                WooryTMapCircle(
-                                    it.centerPoint.latitude,
-                                    it.centerPoint.longitude,
-                                    it.radius
-                                )
-                            )
-                            removeTMapMarkerItem(PROMISE_LOCATION_MARKER_ID)
-                            addTMapMarkerItem(TMapMarkerItem().apply {
-                                id = PROMISE_LOCATION_MARKER_ID
-                                icon = markerImage
-                                tMapPoint = TMapPoint(
-                                    it.centerPoint.latitude,
-                                    it.centerPoint.longitude
-                                )
-                            }
-                            )
-
-                            setRemainTime()
-                        }
-
-                        checkLocationCenterToMe { location ->
-                            setCenterPoint(
-                                location.latitude,
-                                location.longitude
-                            )
-                            mapView.zoomLevel = DEFAULT_ZOOM_LEVEL
-                        }
-
-                        fetchRanking()
+                    checkCenterLocation {
+                        val latitude = it.latitude
+                        val longitude = it.longitude
+                        setCenterPoint(latitude, longitude)
                     }
+
+                    fetchAllUserInfo { user, userLocation ->
+                        viewModel.fetchGameRanking()
+                        if (markerMap[user.userId] == null) {
+                            makeNewUserMarker(user, userLocation.geoPoint)
+                        } else {
+                            updateUserMarker(user, userLocation.geoPoint)
+                            removeTMapMarkerItem(user.userId)
+                        }
+                        addTMapMarkerItem(markerMap[user.userId])
+                        checkIsArrived(userLocation)
+                    }
+
+                    fetchMagneticInfo {
+                        removeAllTMapCircle()
+                        addTMapCircle(
+                            WooryTMapCircle(
+                                it.centerPoint.latitude,
+                                it.centerPoint.longitude,
+                                it.radius
+                            )
+                        )
+                        removeTMapMarkerItem(PROMISE_LOCATION_MARKER_ID)
+                        addTMapMarkerItem(TMapMarkerItem().apply {
+                            id = PROMISE_LOCATION_MARKER_ID
+                            icon = markerImage
+                            tMapPoint = TMapPoint(
+                                it.centerPoint.latitude,
+                                it.centerPoint.longitude
+                            )
+                        }
+                        )
+
+                        setRemainTime()
+                    }
+
+                    checkLocationCenterToMe { location ->
+                        setCenterPoint(
+                            location.latitude,
+                            location.longitude
+                        )
+                        mapView.zoomLevel = DEFAULT_ZOOM_LEVEL
+                    }
+
+                    fetchRanking()
                 }
 
                 setOnClickListenerCallback(object : OnClickListenerCallback {
@@ -332,10 +326,8 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         callback: (MagneticInfo) -> Unit
     ) {
         lifecycleScope.launch {
-            viewModel.magneticInfo.collectLatest {
-                if (it != null) {
-                    callback(it)
-                }
+            viewModel.magneticInfo.filterNotNull().collectLatest {
+                callback(it)
             }
         }
     }
