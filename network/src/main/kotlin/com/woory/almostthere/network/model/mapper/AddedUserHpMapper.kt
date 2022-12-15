@@ -1,13 +1,13 @@
 package com.woory.almostthere.network.model.mapper
 
-import com.woory.almostthere.data.model.AddedUserHpModel
-import com.woory.almostthere.network.model.AddedUserHpDocument
+import com.woory.almostthere.data.model.UserHpModel
+import com.woory.almostthere.network.model.UserHpDocument
 import com.woory.almostthere.network.util.TimeConverter.asOffsetDate
 import com.woory.almostthere.network.util.TimeConverter.asTimeStamp
 
-object AddedUserHpMapper : ModelMapper<AddedUserHpModel, AddedUserHpDocument> {
-    override fun asModel(domain: AddedUserHpModel): AddedUserHpDocument =
-        AddedUserHpDocument(
+object AddedUserHpMapper : ModelMapper<UserHpModel, UserHpDocument> {
+    override fun asModel(domain: UserHpModel): UserHpDocument =
+        UserHpDocument(
             userId = domain.userId,
             hp = domain.hp,
             arrived = domain.arrived,
@@ -15,8 +15,8 @@ object AddedUserHpMapper : ModelMapper<AddedUserHpModel, AddedUserHpDocument> {
             updatedAt = domain.updatedAt.asTimeStamp()
         )
 
-    override fun asDomain(model: AddedUserHpDocument): AddedUserHpModel =
-        AddedUserHpModel(
+    override fun asDomain(model: UserHpDocument): UserHpModel =
+        UserHpModel(
             userId = model.userId,
             hp = model.hp,
             arrived = model.arrived,
@@ -25,6 +25,6 @@ object AddedUserHpMapper : ModelMapper<AddedUserHpModel, AddedUserHpDocument> {
         )
 }
 
-internal fun AddedUserHpModel.asModel() = AddedUserHpMapper.asModel(this)
+internal fun UserHpModel.asModel() = AddedUserHpMapper.asModel(this)
 
-internal fun AddedUserHpDocument.asDomain() = AddedUserHpMapper.asDomain(this)
+internal fun UserHpDocument.asDomain() = AddedUserHpMapper.asDomain(this)

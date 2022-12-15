@@ -4,7 +4,7 @@ data class PromiseHistory(
     val userId: String? = null,
     val promise: Promise,
     val magnetic: MagneticInfo? = null,
-    val users: List<AddedUserHp>? = null
+    val users: List<UserHp>? = null
 ) {
 
     val ranking: List<String>?

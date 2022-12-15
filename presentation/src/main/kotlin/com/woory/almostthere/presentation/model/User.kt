@@ -3,10 +3,11 @@ package com.woory.almostthere.presentation.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ReadyUser(
     val isReady: Boolean,
     val user: User,
-)
+) : Parcelable
 
 @Parcelize
 data class User(
@@ -24,17 +25,4 @@ data class UserData(
 data class UserProfileImage(
     val color: String,
     val imageIndex: Int
-) : Parcelable
-
-@Parcelize
-data class UserState(
-    val userId: String,
-    val hp: Int,
-    val location: Location
-) : Parcelable
-
-@Parcelize
-data class UserHp(
-    val userId: String,
-    val hp: Int
 ) : Parcelable

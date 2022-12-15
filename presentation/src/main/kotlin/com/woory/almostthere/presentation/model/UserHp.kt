@@ -1,8 +1,8 @@
-package com.woory.almostthere.data.model
+package com.woory.almostthere.presentation.model
 
 import org.threeten.bp.OffsetDateTime
 
-data class AddedUserHpModel(
+data class UserHp(
     val userId: String,
     val hp: Int,
     val arrived: Boolean,

@@ -1,6 +1,6 @@
 package com.woory.almostthere.data.repository
 
-import com.woory.almostthere.data.model.AddedUserHpModel
+import com.woory.almostthere.data.model.UserHpModel
 import com.woory.almostthere.data.model.GeoPointModel
 import com.woory.almostthere.data.model.LocationSearchModel
 import com.woory.almostthere.data.model.MagneticInfoModel
@@ -25,7 +25,7 @@ interface PromiseRepository {
 
     suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
 
-    suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit>
+    suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
 
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 
@@ -61,13 +61,13 @@ interface PromiseRepository {
 
     suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
 
-    suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
+    suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<UserHpModel>>
 
     suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
 
     suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
 
-    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>>
+    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<UserHpModel>>>
 
     suspend fun setIsFinishedPromise(gameCode: String): Result<Unit>
 

@@ -1,12 +1,12 @@
 package com.woory.almostthere.presentation.model.mapper.user
 
-import com.woory.almostthere.data.model.AddedUserHpModel
-import com.woory.almostthere.presentation.model.AddedUserHp
+import com.woory.almostthere.data.model.UserHpModel
+import com.woory.almostthere.presentation.model.UserHp
 import com.woory.almostthere.presentation.model.mapper.UiModelMapper
 
-object AddedUserHpMapper : UiModelMapper<AddedUserHp, AddedUserHpModel> {
-    override fun asUiModel(domain: AddedUserHpModel): AddedUserHp =
-        AddedUserHp(
+object AddedUserHpMapper : UiModelMapper<UserHp, UserHpModel> {
+    override fun asUiModel(domain: UserHpModel): UserHp =
+        UserHp(
             userId = domain.userId,
             hp = domain.hp,
             arrived = domain.arrived,
@@ -14,8 +14,8 @@ object AddedUserHpMapper : UiModelMapper<AddedUserHp, AddedUserHpModel> {
             updatedAt = domain.updatedAt
         )
 
-    override fun asDomain(uiModel: AddedUserHp): AddedUserHpModel =
-        AddedUserHpModel(
+    override fun asDomain(uiModel: UserHp): UserHpModel =
+        UserHpModel(
             userId = uiModel.userId,
             hp = uiModel.hp,
             arrived = uiModel.arrived,
@@ -24,6 +24,6 @@ object AddedUserHpMapper : UiModelMapper<AddedUserHp, AddedUserHpModel> {
         )
 }
 
-internal fun AddedUserHpModel.asUiState() = AddedUserHpMapper.asUiModel(this)
+internal fun UserHpModel.asUiState() = AddedUserHpMapper.asUiModel(this)
 
-internal fun AddedUserHp.asDomain() = AddedUserHpMapper.asDomain(this)
+internal fun UserHp.asDomain() = AddedUserHpMapper.asDomain(this)

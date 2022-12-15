@@ -1,6 +1,6 @@
 package com.woory.almostthere.data.repository
 
-import com.woory.almostthere.data.model.AddedUserHpModel
+import com.woory.almostthere.data.model.UserHpModel
 import com.woory.almostthere.data.model.GeoPointModel
 import com.woory.almostthere.data.model.LocationSearchModel
 import com.woory.almostthere.data.model.MagneticInfoModel
@@ -56,7 +56,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         networkDataSource.setUserLocation(userLocationModel)
 
-    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
+    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
         networkDataSource.setUserHp(gameToken, userHpModel)
 
     override suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>> =
@@ -104,7 +104,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getUserHpAndListen(
         gameCode: String,
         token: String
-    ): Flow<Result<AddedUserHpModel>> =
+    ): Flow<Result<UserHpModel>> =
         networkDataSource.getUserHpAndListen(gameCode, token)
 
     override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
@@ -113,7 +113,7 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
         networkDataSource.getPlayerArrived(gameCode, token)
 
-    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
+    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<UserHpModel>>> =
         networkDataSource.getGameRealtimeRanking(gameCode)
 
     override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
@@ -135,7 +135,7 @@ class DefaultPromiseRepository @Inject constructor(
                 it.userId to it.data
             }
 
-            val mapUserRankingModel = { addedUserHpModel: AddedUserHpModel, rankingNumber: Int ->
+            val mapUserRankingModel = { addedUserHpModel: UserHpModel, rankingNumber: Int ->
                 UserRankingModel(
                     addedUserHpModel.userId,
                     userProfiles[addedUserHpModel.userId]
