@@ -25,8 +25,6 @@ interface PromiseRepository {
 
     suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
 
-    suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit>
-
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 
     suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>>
@@ -40,8 +38,6 @@ interface PromiseRepository {
     suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit>
 
     suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
-
-    suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>>
 
     suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel>
 
@@ -66,8 +62,6 @@ interface PromiseRepository {
     suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
 
     suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
-
-    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<UserHpModel>>>
 
     suspend fun setIsFinishedPromise(gameCode: String): Result<Unit>
 

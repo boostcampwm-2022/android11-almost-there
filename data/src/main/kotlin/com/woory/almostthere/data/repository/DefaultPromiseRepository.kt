@@ -56,9 +56,6 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         networkDataSource.setUserLocation(userLocationModel)
 
-    override suspend fun setUserHp(gameToken: String, userHpModel: UserHpModel): Result<Unit> =
-        networkDataSource.setUserHp(gameToken, userHpModel)
-
     override suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>> =
         networkDataSource.getUserLocationById(userId)
 
@@ -67,9 +64,6 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
         networkDataSource.searchLocationByKeyword(keyword)
-
-    override suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>> =
-        databaseDataSource.getAll()
 
     override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
         networkDataSource.getMagneticInfoByCode(promiseCode)
@@ -112,9 +106,6 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
         networkDataSource.getPlayerArrived(gameCode, token)
-
-    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<UserHpModel>>> =
-        networkDataSource.getGameRealtimeRanking(gameCode)
 
     override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
         networkDataSource.setIsFinishedPromise(gameCode)
