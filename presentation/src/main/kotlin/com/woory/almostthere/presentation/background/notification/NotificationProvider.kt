@@ -26,8 +26,7 @@ object NotificationProvider {
     ): NotificationCompat.Builder {
 
         return NotificationCompat.Builder(context, channelId).apply {
-            // Todo :: 앱 아이콘 변경 필요
-            setSmallIcon(R.drawable.ic_launcher_foreground)
+            setSmallIcon(R.drawable.ic_woory_icon_foreground)
             setContentTitle(title)
             setContentText(content)
             setAutoCancel(true)
