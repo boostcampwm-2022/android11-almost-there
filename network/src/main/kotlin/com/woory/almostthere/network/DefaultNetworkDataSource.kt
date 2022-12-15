@@ -3,11 +3,9 @@ package com.woory.almostthere.network
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.woory.almostthere.data.model.AddedUserHpModel
+import com.google.firebase.firestore.ktx.snapshots
 import com.woory.almostthere.data.model.GeoPointModel
 import com.woory.almostthere.data.model.LocationSearchModel
 import com.woory.almostthere.data.model.MagneticInfoModel
@@ -16,13 +14,14 @@ import com.woory.almostthere.data.model.PromiseDataModel
 import com.woory.almostthere.data.model.PromiseHistoryModel
 import com.woory.almostthere.data.model.PromiseModel
 import com.woory.almostthere.data.model.RouteType
+import com.woory.almostthere.data.model.UserHpModel
 import com.woory.almostthere.data.model.UserLocationModel
 import com.woory.almostthere.data.model.UserModel
 import com.woory.almostthere.data.source.NetworkDataSource
 import com.woory.almostthere.data.util.MAGNETIC_FIELD_UPDATE_TERM_SECOND
-import com.woory.almostthere.network.model.AddedUserHpDocument
 import com.woory.almostthere.network.model.MagneticInfoDocument
 import com.woory.almostthere.network.model.PromiseDocument
+import com.woory.almostthere.network.model.UserHpDocument
 import com.woory.almostthere.network.model.UserLocationDocument
 import com.woory.almostthere.network.model.mapper.asDomain
 import com.woory.almostthere.network.model.mapper.asModel
@@ -32,6 +31,7 @@ import com.woory.almostthere.network.model.mapper.extractMagnetic
 import com.woory.almostthere.network.service.ODsayService
 import com.woory.almostthere.network.service.TMapService
 import com.woory.almostthere.network.util.InviteCodeUtil
+import com.woory.almostthere.network.util.InviteCodeUtil.isValidInviteCode
 import com.woory.almostthere.network.util.TimeConverter.asMillis
 import com.woory.almostthere.network.util.TimeConverter.asTimeStamp
 import kotlinx.coroutines.CoroutineScope
@@ -39,12 +39,15 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 class DefaultNetworkDataSource @Inject constructor(
     private val tMapService: TMapService,
@@ -179,18 +182,17 @@ class DefaultNetworkDataSource @Inject constructor(
     }
 
     override suspend fun getPromiseByCode(code: String): Result<PromiseModel> =
-        withContext(scope.coroutineContext) {
+        withContext(scope.coroutineContext)
+        {
             val result = runCatching {
-                val task = fireStore
+                fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(code)
                     .get()
-                Tasks.await(task)
-                val res = task.result
+                    .await()
                     .toObject(PromiseDocument::class.java)
                     ?.asDomain()
                     ?: throw UNMATCHED_STATE_EXCEPTION
-                res
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -199,18 +201,28 @@ class DefaultNetworkDataSource @Inject constructor(
             }
         }
 
+    override suspend fun getPromiseByCodeAndListen(code: String): Flow<Result<PromiseModel>> =
+        fireStore
+            .collection(PROMISE_COLLECTION_NAME).document(code).snapshots().map {
+                runCatching {
+                    it.toObject(PromiseDocument::class.java)?.asDomain()
+                        ?: throw UNMATCHED_STATE_EXCEPTION
+                }
+            }
+
     override suspend fun getReadyUserList(code: String): Result<List<UserModel>> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
-                val gameInfo = fireStore.collection(PROMISE_COLLECTION_NAME)
+                fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(code)
                     .get().await().toObject(PromiseDocument::class.java)
-
-                gameInfo?.users?.filter {
-                    fireStore.collection(PROMISE_COLLECTION_NAME).document(code)
-                        .collection(USER_READY_COLLECTION_NAME).document(it.userId).get().await()
-                        .get("ready") == "READY"
-                }?.map {
+                    ?.users
+                    ?.filter {
+                        fireStore.collection(PROMISE_COLLECTION_NAME).document(code)
+                            .collection(USER_READY_COLLECTION_NAME).document(it.userId).get()
+                            .await()
+                            .get("ready") == "READY"
+                    }?.map {
                     it.asUserModel()
                 } ?: listOf()
             }
@@ -224,35 +236,6 @@ class DefaultNetworkDataSource @Inject constructor(
             }
         }
 
-
-    override suspend fun getPromiseByCodeAndListen(code: String): Flow<Result<PromiseModel>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore.collection(PROMISE_COLLECTION_NAME).document(code)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
-                runCatching {
-                    val result = value.toObject(PromiseDocument::class.java)
-                    result?.let {
-                        trySend(Result.success(it.asDomain()))
-                    } ?: throw UNMATCHED_STATE_EXCEPTION
-                }.onFailure {
-                    trySend(Result.failure(it))
-                }
-            }
-
-            awaitClose { subscription?.remove() }
-        }
-
     override suspend fun setPromise(promiseDataModel: PromiseDataModel): Result<String> =
         withContext(scope.coroutineContext) {
             var generatedCode = ""
@@ -260,6 +243,8 @@ class DefaultNetworkDataSource @Inject constructor(
                 var isDone = false
                 while (isDone.not()) {
                     generatedCode = InviteCodeUtil.getRandomInviteCode()
+                    if (generatedCode.isValidInviteCode().not()) continue
+
                     val task = fireStore
                         .collection(PROMISE_COLLECTION_NAME)
                         .document(requireNotNull(generatedCode))
@@ -290,61 +275,24 @@ class DefaultNetworkDataSource @Inject constructor(
         }
 
     override suspend fun getUserLocationById(id: String): Flow<Result<UserLocationModel>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
+        fireStore.collection(LOCATION_COLLECTION_NAME).document(id).snapshots().map {
             runCatching {
-                documentReference = fireStore.collection(LOCATION_COLLECTION_NAME).document(id)
-            }.onFailure {
-                trySend(Result.failure(it))
+                it.toObject(UserLocationDocument::class.java)?.asDomain()
+                    ?: throw UNMATCHED_STATE_EXCEPTION
             }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
-                runCatching {
-                    val result = value.toObject(UserLocationDocument::class.java)
-                    result?.let {
-                        trySend(Result.success(it.asDomain()))
-                    } ?: throw UNMATCHED_STATE_EXCEPTION
-                }.onFailure {
-                    trySend(Result.failure(it))
-                }
-            }
-
-            awaitClose { subscription?.remove() }
         }
 
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
-                val res = fireStore
+                fireStore
                     .collection(LOCATION_COLLECTION_NAME)
                     .document(userLocationModel.id)
                     .set(userLocationModel.asModel()).await()
             }
 
             when (val exception = result.exceptionOrNull()) {
-                null -> result
-                else -> Result.failure(exception)
-            }
-        }
-
-    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
-        withContext(scope.coroutineContext) {
-            val result = runCatching {
-                val res = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameToken)
-                    .collection(HP_COLLECTION_NAME)
-                    .document(userHpModel.userId)
-                    .set(userHpModel.asModel()).await()
-            }
-
-            when (val exception = result.exceptionOrNull()) {
-                null -> result
+                null -> Result.success(Unit)
                 else -> Result.failure(exception)
             }
         }
@@ -352,7 +300,7 @@ class DefaultNetworkDataSource @Inject constructor(
     override suspend fun addPlayer(code: String, user: UserModel): Result<Unit> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
-                val res = fireStore
+                fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(code)
                     .update(USERS_KEY, FieldValue.arrayUnion(user.asPromiseParticipant()))
@@ -360,7 +308,7 @@ class DefaultNetworkDataSource @Inject constructor(
             }
 
             when (val exception = result.exceptionOrNull()) {
-                null -> result
+                null -> Result.success(Unit)
                 else -> Result.failure(exception)
             }
         }
@@ -369,55 +317,29 @@ class DefaultNetworkDataSource @Inject constructor(
      * 자기장 반지름과 중심 좌표를 가져오는 함수
      */
     override suspend fun getMagneticInfoByCodeAndListen(code: String): Flow<Result<MagneticInfoModel>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(code)
-                    .collection(MAGNETIC_COLLECTION_NAME)
-                    .document(code)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
+        fireStore.collection(PROMISE_COLLECTION_NAME)
+            .document(code)
+            .collection(MAGNETIC_COLLECTION_NAME)
+            .document(code).snapshots().map {
                 runCatching {
-                    val result = value.toObject(MagneticInfoDocument::class.java)
-                    result?.let {
-                        trySend(Result.success(it.asDomain()))
-                    } ?: throw UNMATCHED_STATE_EXCEPTION
-                }.onFailure {
-                    trySend(Result.failure(it))
+                    it.toObject(MagneticInfoDocument::class.java)?.asDomain()
+                        ?: throw UNMATCHED_STATE_EXCEPTION
                 }
             }
-
-            awaitClose { subscription?.remove() }
-        }
 
     override suspend fun getMagneticInfoByCode(code: String): Result<MagneticInfoModel> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
-                val task = fireStore
+                fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(code)
                     .collection(MAGNETIC_COLLECTION_NAME)
                     .document(code)
                     .get()
-                Tasks.await(task)
-
-                val res = task
-                    .result
+                    .await()
                     .toObject(MagneticInfoDocument::class.java)
                     ?.asDomain()
                     ?: throw UNMATCHED_STATE_EXCEPTION
-
-                res
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -513,15 +435,11 @@ class DefaultNetworkDataSource @Inject constructor(
     override suspend fun checkReEntryOfGame(gameCode: String, token: String): Result<Boolean> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
-                val task = fireStore.collection(PROMISE_COLLECTION_NAME)
+                fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
                     .document(token)
-                    .get()
-
-                Tasks.await(task)
-
-                task.result.data.isNullOrEmpty()
+                    .get().await().data.isNullOrEmpty()
             }
             when (val exception = result.exceptionOrNull()) {
                 null -> result
@@ -547,22 +465,23 @@ class DefaultNetworkDataSource @Inject constructor(
             }
         }
 
-    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
+    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Int> =
         withContext(scope.coroutineContext) {
+
+            val initialHpDocument = UserHpDocument(
+                userId = token,
+                updatedAt = System.currentTimeMillis().asTimeStamp()
+            )
+
             val result = runCatching {
                 fireStore.collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .collection(GAME_INFO_COLLECTION_NAME)
                     .document(token)
-                    .set(
-                        AddedUserHpDocument(
-                            userId = token,
-                            updatedAt = System.currentTimeMillis().asTimeStamp()
-                        )
-                    ).await()
+                    .set(initialHpDocument).await()
             }
             when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(Unit)
+                null -> Result.success(initialHpDocument.hp)
                 else -> Result.failure(exception)
             }
         }
@@ -590,38 +509,18 @@ class DefaultNetworkDataSource @Inject constructor(
     override suspend fun getUserHpAndListen(
         gameCode: String,
         token: String
-    ): Flow<Result<AddedUserHpModel>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(GAME_INFO_COLLECTION_NAME)
-                    .document(token)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
+    ): Flow<Result<UserHpModel>> =
+        fireStore.collection(PROMISE_COLLECTION_NAME)
+            .document(gameCode)
+            .collection(GAME_INFO_COLLECTION_NAME)
+            .document(token).snapshots().map {
                 runCatching {
-                    val result = value.toObject(AddedUserHpDocument::class.java)
-                    result?.let {
-                        trySend(Result.success(it.asDomain()))
-                    } ?: throw UNMATCHED_STATE_EXCEPTION
-                }.onFailure {
-                    trySend(Result.failure(it))
+                    it.toObject(UserHpDocument::class.java)?.asDomain()
+                        ?: throw UNMATCHED_STATE_EXCEPTION
                 }
             }
-            awaitClose { subscription?.remove() }
-        }
 
-    override suspend fun getUserHpList(gameCode: String): Result<List<AddedUserHpModel>> =
+    override suspend fun getUserHpList(gameCode: String): Result<List<UserHpModel>> =
         withContext(scope.coroutineContext) {
             runCatching {
                 fireStore.collection(PROMISE_COLLECTION_NAME)
@@ -630,7 +529,7 @@ class DefaultNetworkDataSource @Inject constructor(
                     .get()
                     .await()
                     .map {
-                        it.toObject(AddedUserHpDocument::class.java)
+                        it.toObject(UserHpDocument::class.java)
                             .asDomain()
                     }
             }
@@ -639,16 +538,14 @@ class DefaultNetworkDataSource @Inject constructor(
     override suspend fun getUserInfoList(gameCode: String): Result<List<UserModel>> =
         withContext(scope.coroutineContext) {
             val result = runCatching {
-                val task = fireStore
+                fireStore
                     .collection(PROMISE_COLLECTION_NAME)
                     .document(gameCode)
                     .get()
-                Tasks.await(task)
-                val res = task.result
+                    .await()
                     .toObject(PromiseDocument::class.java)
-                    ?.asDomain()
+                    ?.asDomain()?.data?.users
                     ?: throw UNMATCHED_STATE_EXCEPTION
-                res.data.users
             }
 
             when (val exception = result.exceptionOrNull()) {
@@ -659,225 +556,111 @@ class DefaultNetworkDataSource @Inject constructor(
 
 
     override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
-        withContext(scope.coroutineContext) {
-            val result = runCatching {
-                fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(GAME_INFO_COLLECTION_NAME)
-                    .document(token)
-                    .update(USER_ARRIVED_KEY, true).await()
-            }
-
-            when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(Unit)
-                else -> Result.failure(exception)
-            }
+        suspendCancellableCoroutine { cancellableContinuation ->
+            fireStore
+                .collection(PROMISE_COLLECTION_NAME)
+                .document(gameCode)
+                .collection(GAME_INFO_COLLECTION_NAME)
+                .document(token)
+                .update(USER_ARRIVED_KEY, true)
+                .addOnSuccessListener {
+                    cancellableContinuation.resume(Result.success(Unit))
+                }
+                .addOnFailureListener {
+                    cancellableContinuation.resume(Result.failure(it))
+                }
         }
 
     override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(GAME_INFO_COLLECTION_NAME)
-                    .document(token)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                value ?: return@addSnapshotListener
-
-                val result = runCatching {
-                    value.getBoolean(USER_ARRIVED_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
+        fireStore
+            .collection(PROMISE_COLLECTION_NAME)
+            .document(gameCode)
+            .collection(GAME_INFO_COLLECTION_NAME)
+            .document(token).snapshots().map {
+                runCatching {
+                    it.getBoolean(USER_ARRIVED_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
                 }
-                trySend(result)
             }
-            awaitClose { subscription?.remove() }
-        }
-
-
-    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
-        callbackFlow {
-            var documentReference: Query? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(GAME_INFO_COLLECTION_NAME)
-                    .orderBy(HP_KEY)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                if (value == null) {
-                    return@addSnapshotListener
-                }
-
-                val result = runCatching {
-                    val changedResult =
-                        value.documents.map { it.toObject(AddedUserHpDocument::class.java) }
-                    changedResult.map {
-                        it?.asDomain() ?: throw UNMATCHED_STATE_EXCEPTION
-                    }
-                }
-                trySend(result)
-            }
-
-            awaitClose { subscription?.remove() }
-        }
 
     override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
-        withContext(scope.coroutineContext) {
-            val result = runCatching {
-                fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .update(FINISHED_PROMISE_KEY, true)
-                    .await()
-            }
-
-            when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(Unit)
-                else -> Result.failure(exception)
-            }
+        suspendCancellableCoroutine { cancellableContinuation ->
+            fireStore
+                .collection(PROMISE_COLLECTION_NAME)
+                .document(gameCode)
+                .update(FINISHED_PROMISE_KEY, true)
+                .addOnSuccessListener {
+                    cancellableContinuation.resume(Result.success(Unit))
+                }
+                .addOnFailureListener {
+                    cancellableContinuation.resume(Result.failure(it))
+                }
         }
 
     override suspend fun getIsFinishedPromise(gameCode: String): Flow<Result<Boolean>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                value ?: return@addSnapshotListener
-
-                val result = runCatching {
-                    value.getBoolean(FINISHED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
+        fireStore.collection(PROMISE_COLLECTION_NAME)
+            .document(gameCode).snapshots().map {
+                runCatching {
+                    it.getBoolean(FINISHED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
                 }
-                trySend(result)
             }
-
-            awaitClose { subscription?.remove() }
-        }
 
     override suspend fun setIsStartedGame(gameCode: String): Result<Unit> =
-        withContext(scope.coroutineContext) {
-            val result = runCatching {
-                fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .update(STARTED_PROMISE_KEY, true)
-                    .await()
-            }
-
-            when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(Unit)
-                else -> Result.failure(exception)
-            }
+        suspendCancellableCoroutine { cancellableContinuation ->
+            fireStore
+                .collection(PROMISE_COLLECTION_NAME)
+                .document(gameCode)
+                .update(STARTED_PROMISE_KEY, true)
+                .addOnSuccessListener {
+                    cancellableContinuation.resume(Result.success(Unit))
+                }
+                .addOnFailureListener {
+                    cancellableContinuation.resume(Result.failure(it))
+                }
         }
 
     override suspend fun getIsStartedGame(gameCode: String): Flow<Result<Boolean>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                value ?: return@addSnapshotListener
-
-                val result = runCatching {
-                    value.getBoolean(STARTED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
+        fireStore.collection(PROMISE_COLLECTION_NAME)
+            .document(gameCode).snapshots().map {
+                runCatching {
+                    it.getBoolean(STARTED_PROMISE_KEY) ?: throw UNMATCHED_STATE_EXCEPTION
                 }
-                trySend(result)
             }
-
-            awaitClose { subscription?.remove() }
-        }
 
     override suspend fun setUserReady(gameCode: String, token: String): Result<Unit> =
-        withContext(scope.coroutineContext) {
-            val result = runCatching {
-                fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(USER_READY_COLLECTION_NAME)
-                    .document(token)
-                    .set(READY_DATA)
-                    .await()
-            }
-
-            when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(Unit)
-                else -> Result.failure(exception)
-            }
+        suspendCancellableCoroutine { cancellableContinuation ->
+            fireStore
+                .collection(PROMISE_COLLECTION_NAME)
+                .document(gameCode)
+                .collection(USER_READY_COLLECTION_NAME)
+                .document(token)
+                .set(READY_DATA)
+                .addOnSuccessListener {
+                    cancellableContinuation.resume(Result.success(Unit))
+                }
+                .addOnFailureListener {
+                    cancellableContinuation.resume(Result.failure(it))
+                }
         }
 
     override suspend fun getIsReadyUser(gameCode: String, token: String): Flow<Result<Boolean>> =
-        callbackFlow {
-            var documentReference: DocumentReference? = null
-
-            runCatching {
-                documentReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(USER_READY_COLLECTION_NAME)
-                    .document(token)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-            val subscription = documentReference?.addSnapshotListener { value, _ ->
-                value ?: return@addSnapshotListener
-
-                val result = runCatching {
-                    value.exists()
+        fireStore
+            .collection(PROMISE_COLLECTION_NAME)
+            .document(gameCode)
+            .collection(USER_READY_COLLECTION_NAME)
+            .document(token).snapshots().map {
+                runCatching {
+                    it.exists()
                 }
-                trySend(result)
             }
-
-            awaitClose { subscription?.remove() }
-        }
 
     override suspend fun getReadyUsers(gameCode: String): Flow<Result<List<String>>> =
-        callbackFlow {
-            var collectionReference: CollectionReference? = null
-
-            runCatching {
-                collectionReference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(USER_READY_COLLECTION_NAME)
-            }.onFailure {
-                trySend(Result.failure(it))
-            }
-
-            val subscription = collectionReference?.addSnapshotListener { value, _ ->
-                value ?: return@addSnapshotListener
-                val result = runCatching {
-                    value.documents.map { it.id }
+        fireStore.collection(PROMISE_COLLECTION_NAME)
+            .document(gameCode)
+            .collection(USER_READY_COLLECTION_NAME).snapshots().map {
+                runCatching {
+                    it.documents.map { it.id }
                 }
-                trySend(result)
             }
-            awaitClose { subscription?.remove() }
-        }
 
     override suspend fun getPromisesByCodes(codes: List<String>): Flow<List<PromiseHistoryModel>?> =
         callbackFlow {
