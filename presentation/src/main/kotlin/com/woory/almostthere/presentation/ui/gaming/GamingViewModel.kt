@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -139,8 +138,6 @@ class GamingViewModel @Inject constructor(
                     val uiLocationModel = userLocationModel.asUiModel()
 
                     requireNotNull(userLocationMap[user.userId]).emit(uiLocationModel)
-                }.onFailure {
-                    Timber.tag("123123").d(it)
                 }
             }
         }

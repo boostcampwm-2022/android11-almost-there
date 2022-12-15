@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.os.Looper
 import androidx.core.app.NotificationCompat
@@ -85,28 +86,43 @@ class PromiseGameService : LifecycleService() {
             super.onLocationResult(p0)
             val loc = p0.lastLocation
             loc?.let { location ->
-                lifecycleScope.launch {
-                    val curLocation = GeoPoint(location.latitude, location.longitude)
-                    userId.value?.let { id ->
-                        promiseRepository.setUserLocation(
-                            UserLocation(id, curLocation, System.currentTimeMillis()).asDomain()
-                        )
+                onUpdateLocation(location)
+            }
+        }
+    }
 
-                        magneticZoneInfo.value?.let {
-                            if (DistanceUtil.getDistance(it.centerPoint, curLocation) > it.radius) {
-                                launch {
-                                    promiseRepository.decreaseUserHp(it.gameCode, id)
-                                        .onSuccess { updatedHp ->
-                                            if (updatedHp <= 0L) {
-                                                stopUpdateLocation()
-                                            }
-                                        }
+    private fun onUpdateLocation(location: Location) {
+        lifecycleScope.launch {
+            val userLocation = GeoPoint(location.latitude, location.longitude)
+            userId.value?.let { id ->
+                setUserLocation(id, userLocation)
+                updateHp(id, userLocation)
+            }
+        }
+    }
+
+    private fun updateHp(userToken: String, userLocation: GeoPoint) {
+        lifecycleScope.launch {
+            magneticZoneInfo.value?.let {
+                if (DistanceUtil.getDistance(it.centerPoint, userLocation) > it.radius) {
+                    launch {
+                        promiseRepository.decreaseUserHp(it.gameCode, userToken)
+                            .onSuccess { updatedHp ->
+                                if (updatedHp <= 0L) {
+                                    stopUpdateLocation()
                                 }
                             }
-                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun setUserLocation(userToken: String, userLocation: GeoPoint) {
+        lifecycleScope.launch {
+            promiseRepository.setUserLocation(
+                UserLocation(userToken, userLocation, System.currentTimeMillis()).asDomain()
+            )
         }
     }
 
@@ -151,97 +167,14 @@ class PromiseGameService : LifecycleService() {
                 promiseRepository.checkReEntryOfGame(promiseCode, userToken).onSuccess {
                     when (it) {
                         true -> {
-                            promiseRepository.setUserInitialHpData(promiseCode, userToken)
-                                .onSuccess {
-                                    promiseRepository.getMagneticInfoByCode(promiseCode)
-                                        .onSuccess { magneticModel ->
-                                            _magneticZoneInitialRadius.emit(magneticModel.asUiModel().radius)
-                                            promiseRepository.getPromiseByCode(promiseCode)
-                                                .onSuccess { promiseModel ->
-                                                    val promiseUiModel = promiseModel.asUiModel()
-
-                                                    if (promiseUiModel.data.gameDateTime.asMillis() - System.currentTimeMillis() > 20 * 1000) {
-                                                        promiseRepository.sendOutUser(
-                                                            promiseCode,
-                                                            userToken
-                                                        )
-                                                        stopUpdateLocation()
-                                                    } else {
-                                                        _gameTimeInitialValue.emit(
-                                                            extractTimeDifference(
-                                                                promiseUiModel.data.gameDateTime,
-                                                                promiseUiModel.data.promiseDateTime
-                                                            )
-                                                        )
-
-                                                        // TODO : 자기장 flow 받아오기
-                                                        launch {
-                                                            promiseRepository.getMagneticInfoByCodeAndListen(
-                                                                promiseCode
-                                                            )
-                                                                .collect { result ->
-                                                                    result.onSuccess { magneticInfoModel ->
-                                                                        val uiModel =
-                                                                            magneticInfoModel.asUiModel()
-                                                                        _magneticZoneInfo.emit(
-                                                                            uiModel
-                                                                        )
-                                                                    }
-                                                                }
-                                                        }
-
-                                                        launch {
-                                                            promiseRepository.getPlayerArrived(
-                                                                promiseCode,
-                                                                userToken
-                                                            ).collectLatest { arrivedResult ->
-                                                                if (arrivedResult.isSuccess && arrivedResult.getOrDefault(
-                                                                        false
-                                                                    )
-                                                                ) {
-                                                                    stopUpdateLocation()
-                                                                }
-                                                            }
-                                                        }
-
-                                                        launch {
-                                                            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                                                promiseRepository.getIsFinishedPromise(
-                                                                    promiseCode
-                                                                ).collectLatest { result ->
-                                                                    result.onSuccess { isFinished ->
-                                                                        if (isFinished) {
-                                                                            stopGame(promiseCode)
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-
-                                                        // TODO : 주기적으로 자기장 update 하기
-                                                        while (true) {
-                                                            delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
-                                                            promiseRepository.decreaseMagneticRadius(
-                                                                promiseCode,
-                                                                magneticZoneInitialRadius.value / gameTimeInitialValue.value
-                                                            )
-
-                                                        }
-                                                    }
-                                                }
-                                        }
-                                }
+                            setInitialHpDate(promiseCode, userToken)
                         }
-                        // TODO : Service 에 다시 즐어왔을 때 로직 -> 게임에서 제외시켜버리기
                         false -> {
-                            promiseRepository.sendOutUser(promiseCode, userToken)
-                            stopUpdateLocation()
+                            kickOutFromGame(promiseCode, userToken)
                         }
                     }
                 }.onFailure {
-                    // TODO : 통신 실패시 로직 -> 게임에서 제외시켜버리기
-                    promiseRepository.sendOutUser(promiseCode, userToken)
-                    stopUpdateLocation()
+                    kickOutFromGame(promiseCode, userToken)
                 }
             }
         }
@@ -249,6 +182,118 @@ class PromiseGameService : LifecycleService() {
         jobByGame[promiseCode] = gameJob
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun setInitialHpDate(promiseCode: String, userToken: String) {
+        lifecycleScope.launch {
+            promiseRepository.setUserInitialHpData(promiseCode, userToken)
+                .onSuccess {
+                    fetchInitialMagneticInfo(promiseCode, userToken)
+                }
+        }
+    }
+
+    private fun fetchInitialMagneticInfo(promiseCode: String, userToken: String) {
+        lifecycleScope.launch {
+            promiseRepository.getMagneticInfoByCode(promiseCode)
+                .onSuccess { magneticModel ->
+                    _magneticZoneInitialRadius.emit(magneticModel.asUiModel().initialRadius)
+                    fetchInitialPromiseInfo(promiseCode, userToken)
+                }
+        }
+    }
+
+    private fun fetchInitialPromiseInfo(promiseCode: String, userToken: String) {
+        lifecycleScope.launch {
+            promiseRepository.getPromiseByCode(promiseCode)
+                .onSuccess { promiseModel ->
+                    val promiseUiModel = promiseModel.asUiModel()
+
+                    if (promiseUiModel.data.gameDateTime.asMillis() - System.currentTimeMillis() > 20 * 1000) {
+                        kickOutFromGame(promiseCode, userToken)
+                    } else {
+                        _gameTimeInitialValue.emit(
+                            extractTimeDifference(
+                                promiseUiModel.data.gameDateTime,
+                                promiseUiModel.data.promiseDateTime
+                            )
+                        )
+
+                        fetchMagneticInfo(promiseCode)
+                        fetchPlayerArrival(promiseCode, userToken)
+                        fetchPlayerFinished(promiseCode)
+                        updateMagneticInfo(promiseCode)
+                    }
+                }
+        }
+    }
+
+    private fun kickOutFromGame(promiseCode: String, userToken: String) {
+        lifecycleScope.launch {
+            promiseRepository.sendOutUser(promiseCode, userToken)
+            stopUpdateLocation()
+        }
+    }
+
+    private fun updateMagneticInfo(promiseCode: String) {
+        lifecycleScope.launch {
+            while (true) {
+                delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
+                promiseRepository.decreaseMagneticRadius(
+                    promiseCode,
+                    magneticZoneInitialRadius.value / gameTimeInitialValue.value
+                )
+            }
+        }
+    }
+
+    private fun fetchPlayerFinished(promiseCode: String) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                promiseRepository.getIsFinishedPromise(
+                    promiseCode
+                ).collectLatest { result ->
+                    result.onSuccess { isFinished ->
+                        if (isFinished) {
+                            stopGame(promiseCode)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchPlayerArrival(promiseCode: String, userToken: String) {
+        lifecycleScope.launch {
+            promiseRepository.getPlayerArrived(
+                promiseCode,
+                userToken
+            ).collectLatest { arrivedResult ->
+                if (arrivedResult.isSuccess && arrivedResult.getOrDefault(
+                        false
+                    )
+                ) {
+                    stopUpdateLocation()
+                }
+            }
+        }
+    }
+
+    private fun fetchMagneticInfo(promiseCode: String) {
+        lifecycleScope.launch {
+            promiseRepository.getMagneticInfoByCodeAndListen(
+                promiseCode
+            )
+                .collect { result ->
+                    result.onSuccess { magneticInfoModel ->
+                        val uiModel =
+                            magneticInfoModel.asUiModel()
+                        _magneticZoneInfo.emit(
+                            uiModel
+                        )
+                    }
+                }
+        }
     }
 
     private fun startForeground(promiseAlarm: PromiseAlarm) {

@@ -28,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.skt.tmap.TMapPoint
 import com.skt.tmap.TMapView
 import com.skt.tmap.TMapView.OnClickListenerCallback
-import com.skt.tmap.overlay.TMapCircle
 import com.skt.tmap.overlay.TMapMarkerItem
 import com.skt.tmap.poi.TMapPOIItem
 import com.woory.almostthere.presentation.BuildConfig
@@ -37,8 +36,11 @@ import com.woory.almostthere.presentation.binding.bindImage
 import com.woory.almostthere.presentation.databinding.CustomviewCharacterMarkerBinding
 import com.woory.almostthere.presentation.databinding.FragmentGamingBinding
 import com.woory.almostthere.presentation.model.GeoPoint
+import com.woory.almostthere.presentation.model.MagneticInfo
+import com.woory.almostthere.presentation.model.User
 import com.woory.almostthere.presentation.model.UserLocation
 import com.woory.almostthere.presentation.model.UserProfileImage
+import com.woory.almostthere.presentation.model.WooryTMapCircle
 import com.woory.almostthere.presentation.ui.BaseFragment
 import com.woory.almostthere.presentation.util.DistanceUtil.getDistance
 import com.woory.almostthere.presentation.util.TAG
@@ -157,130 +159,58 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        launch {
-                            viewModel.promiseModel.collectLatest {
-                                if (it != null) {
-                                    viewModel.fetchUserList()
-                                    viewModel.fetchMagneticField(it)
-                                    viewModel.fetchUserArrival()
-                                    viewModel.fetchPromiseEnding()
-                                }
-                            }
+                        fetchPromiseModel()
+
+                        checkCenterLocation {
+                            val latitude = it.latitude
+                            val longitude = it.longitude
+                            setCenterPoint(latitude, longitude)
                         }
 
-                        launch {
-                            viewModel.centerLocation.collectLatest {
-                                if (it != null) {
-                                    val latitude = it.latitude
-                                    val longitude = it.longitude
-                                    setCenterPoint(latitude, longitude)
-                                }
+                        fetchAllUserInfo { user, userLocation ->
+                            viewModel.fetchGameRanking()
+                            if (markerMap[user.userId] == null) {
+                                makeNewUserMarker(user, userLocation.geoPoint)
+                            } else {
+                                updateUserMarker(user, userLocation.geoPoint)
+                                removeTMapMarkerItem(user.userId)
                             }
+                            addTMapMarkerItem(markerMap[user.userId])
+                            checkIsArrived(userLocation)
                         }
 
-                        launch {
-                            viewModel.allUsers.collectLatest {
-                                it?.forEach { user ->
-                                    launch {
-                                        viewModel.fetchUserLocation(user)
-                                        viewModel.fetchUserHp(user.userId)
-                                        requireNotNull(viewModel.userLocationMap[user.userId]).collect { userLocation ->
-                                            if (userLocation != null) {
-                                                viewModel.fetchGameRanking()
-                                                if (markerMap[user.userId] == null) {
-                                                    markerMap[user.userId] =
-                                                        TMapMarkerItem().apply {
-                                                            id = user.userId
-                                                            tMapPoint = TMapPoint(
-                                                                userLocation.geoPoint.latitude,
-                                                                userLocation.geoPoint.longitude
-                                                            )
-                                                            icon =
-                                                                getUserMarker(user.data.profileImage)
-                                                        }
-                                                    addTMapMarkerItem(markerMap[user.userId])
-                                                } else {
-                                                    markerMap[user.userId]?.tMapPoint =
-                                                        TMapPoint(
-                                                            userLocation.geoPoint.latitude,
-                                                            userLocation.geoPoint.longitude
-                                                        )
-                                                    removeTMapMarkerItem(user.userId)
-                                                    addTMapMarkerItem(markerMap[user.userId])
-                                                }
-                                                checkIsArrived(userLocation)
-                                            }
-                                        }
-                                    }
-                                }
+                        fetchMagneticInfo {
+                            removeAllTMapCircle()
+                            addTMapCircle(
+                                WooryTMapCircle(
+                                    it.centerPoint.latitude,
+                                    it.centerPoint.longitude,
+                                    it.radius
+                                )
+                            )
+                            removeTMapMarkerItem(PROMISE_LOCATION_MARKER_ID)
+                            addTMapMarkerItem(TMapMarkerItem().apply {
+                                id = PROMISE_LOCATION_MARKER_ID
+                                icon = markerImage
+                                tMapPoint = TMapPoint(
+                                    it.centerPoint.latitude,
+                                    it.centerPoint.longitude
+                                )
                             }
+                            )
+
+                            setRemainTime()
                         }
 
-                        launch {
-                            viewModel.magneticInfo.collectLatest {
-                                if (it != null) {
-                                    removeAllTMapCircle()
-                                    addTMapCircle(
-                                        TMapCircle(
-                                            MAGNETIC_CIRCLE_KEY,
-                                            it.centerPoint.latitude,
-                                            it.centerPoint.longitude
-                                        ).apply {
-                                            radius = it.radius
-                                            circleWidth = 2f
-                                            areaAlpha = 10
-                                            areaColor = Color.RED
-                                            lineColor = Color.RED
-                                        }
-                                    )
-
-                                    removeTMapMarkerItem(PROMISE_LOCATION_MARKER_ID)
-                                    addTMapMarkerItem(TMapMarkerItem().apply {
-                                        id = PROMISE_LOCATION_MARKER_ID
-                                        icon = markerImage
-                                        tMapPoint = TMapPoint(
-                                            it.centerPoint.latitude,
-                                            it.centerPoint.longitude
-                                        )
-                                    }
-                                    )
-
-                                    viewModel.promiseModel.value?.let { promise ->
-                                        binding.tvTime.text =
-                                            TimeUtils.getDurationStringInMinuteToDay(
-                                                requireContext(),
-                                                System.currentTimeMillis()
-                                                    .asOffsetDateTime(),
-                                                promise.data.promiseDateTime
-                                            )
-                                    }
-                                }
-                            }
+                        checkLocationCenterToMe { location ->
+                            setCenterPoint(
+                                location.latitude,
+                                location.longitude
+                            )
+                            mapView.zoomLevel = DEFAULT_ZOOM_LEVEL
                         }
 
-                        launch {
-                            viewModel.centerLocationToMe.collectLatest {
-                                val myToken = viewModel.userId.value
-                                if (myToken != null) {
-                                    val location = viewModel.getUserLocation(myToken)
-                                    if (location != null) {
-                                        setCenterPoint(
-                                            location.geoPoint.latitude,
-                                            location.geoPoint.longitude
-                                        )
-                                        mapView.zoomLevel = 100
-                                    }
-                                }
-                            }
-                        }
-
-                        launch {
-                            viewModel.ranking.collectLatest {
-                                if (it.isNotEmpty()) {
-                                    rankingAdapter.submitList(it.chunked(3)[0])
-                                }
-                            }
-                        }
+                        fetchRanking()
                     }
                 }
 
@@ -312,6 +242,128 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         }
 
         binding.containerMap.addView(mapView)
+    }
+
+    private fun updateUserMarker(user: User, userLocation: GeoPoint) {
+        markerMap[user.userId]?.tMapPoint =
+            TMapPoint(
+                userLocation.latitude,
+                userLocation.longitude
+            )
+    }
+
+    private fun makeNewUserMarker(user: User, userLocation: GeoPoint) {
+        markerMap[user.userId] =
+            TMapMarkerItem().apply {
+                id = user.userId
+                tMapPoint = TMapPoint(
+                    userLocation.latitude,
+                    userLocation.longitude
+                )
+                icon = getUserMarker(user.data.profileImage)
+            }
+    }
+
+    private fun fetchPromiseModel() {
+        lifecycleScope.launch {
+            viewModel.promiseModel.collectLatest {
+                if (it != null) {
+                    viewModel.fetchUserList()
+                    viewModel.fetchMagneticField(it)
+                    viewModel.fetchUserArrival()
+                    viewModel.fetchPromiseEnding()
+                }
+            }
+        }
+    }
+
+    private fun checkCenterLocation(
+        locationCallback: (GeoPoint) -> Unit
+    ) {
+        lifecycleScope.launch {
+            viewModel.centerLocation.collectLatest {
+                if (it != null) {
+                    locationCallback(it)
+                }
+            }
+        }
+    }
+
+    private fun fetchAllUserInfo(
+        userLocationCallback: (User, UserLocation) -> Unit
+    ) {
+        lifecycleScope.launch {
+            viewModel.allUsers.collectLatest {
+                it?.forEach { user ->
+                    fetchUserInfo(user, userLocationCallback)
+                }
+            }
+        }
+    }
+
+    private fun fetchUserInfo(
+        user: User,
+        userLocationCallback: (User, UserLocation) -> Unit
+    ) {
+        lifecycleScope.launch {
+            viewModel.fetchUserLocation(user)
+            viewModel.fetchUserHp(user.userId)
+            requireNotNull(viewModel.userLocationMap[user.userId]).collect { userLocation ->
+                if (userLocation != null) {
+                    userLocationCallback(user, userLocation)
+                }
+            }
+        }
+    }
+
+    private fun setRemainTime() {
+        viewModel.promiseModel.value?.let { promise ->
+            binding.tvTime.text =
+                TimeUtils.getDurationStringInMinuteToDay(
+                    requireContext(),
+                    System.currentTimeMillis()
+                        .asOffsetDateTime(),
+                    promise.data.promiseDateTime
+                )
+        }
+    }
+
+    private fun fetchMagneticInfo(
+        callback: (MagneticInfo) -> Unit
+    ) {
+        lifecycleScope.launch {
+            viewModel.magneticInfo.collectLatest {
+                if (it != null) {
+                    callback(it)
+                }
+            }
+        }
+    }
+
+    private fun fetchRanking() {
+        lifecycleScope.launch {
+            viewModel.ranking.collectLatest {
+                if (it.isNotEmpty()) {
+                    rankingAdapter.submitList(it.chunked(3)[0])
+                }
+            }
+        }
+    }
+
+    private fun checkLocationCenterToMe(
+        callback: (GeoPoint) -> Unit
+    ) {
+        lifecycleScope.launch {
+            viewModel.centerLocationToMe.collectLatest {
+                val myToken = viewModel.userId.value
+                if (myToken != null) {
+                    val location = viewModel.getUserLocation(myToken)
+                    if (location != null) {
+                        callback(location.geoPoint)
+                    }
+                }
+            }
+        }
     }
 
     private fun checkIsArrived(userLocation: UserLocation?) {
@@ -438,11 +490,16 @@ class GamingFragment : BaseFragment<FragmentGamingBinding>(R.layout.fragment_gam
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getMyLocation()
+    }
+
     companion object {
-        private const val MAGNETIC_CIRCLE_KEY = "Magnetic"
         private const val ARRIVE_STANDARD_LENGTH = 20
         private const val PROMISE_LOCATION_MARKER_ID = "PromiseLocation"
         private const val DEFAULT_LATITUDE = 37.3588602423595
         private const val DEFAULT_LONGITUDE = 127.105206334597
+        private const val DEFAULT_ZOOM_LEVEL = 15
     }
 }
