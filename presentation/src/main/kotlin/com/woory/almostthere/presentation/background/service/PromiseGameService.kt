@@ -80,6 +80,9 @@ class PromiseGameService : LifecycleService() {
     private val _userHp: MutableStateFlow<Int> = MutableStateFlow(-1)
     private val userHp: StateFlow<Int> = _userHp.asStateFlow()
 
+    private val _magneticZoneRadius: MutableStateFlow<Double> = MutableStateFlow(0.0)
+    private val magneticZoneRadius: StateFlow<Double> = _magneticZoneRadius.asStateFlow()
+
     private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(this)
     }
@@ -107,7 +110,11 @@ class PromiseGameService : LifecycleService() {
     private fun updateHp(userToken: String, userLocation: GeoPoint) {
         lifecycleScope.launch {
             magneticZoneInfo.value?.let {
-                if (DistanceUtil.getDistance(it.centerPoint, userLocation) > it.radius) {
+                if (magneticZoneRadius.value != 0.0 && DistanceUtil.getDistance(
+                        it.centerPoint,
+                        userLocation
+                    ) > magneticZoneRadius.value
+                ) {
                     _userHp.value -= 1
                     promiseRepository.decreaseUserHp(it.gameCode, userToken, userHp.value)
                         .onSuccess { updatedHp ->
@@ -200,7 +207,12 @@ class PromiseGameService : LifecycleService() {
         lifecycleScope.launch {
             promiseRepository.getMagneticInfoByCode(promiseCode)
                 .onSuccess { magneticModel ->
-                    _magneticZoneInitialRadius.emit(magneticModel.asUiModel().initialRadius)
+                    val magneticUiModel = magneticModel.asUiModel()
+
+                    _magneticZoneInfo.emit(magneticUiModel)
+                    _magneticZoneInitialRadius.emit(magneticUiModel.initialRadius)
+                    _magneticZoneRadius.emit(magneticUiModel.radius)
+
                     fetchInitialPromiseInfo(promiseCode, userToken)
                 }
         }
@@ -222,7 +234,6 @@ class PromiseGameService : LifecycleService() {
                             )
                         )
 
-                        fetchMagneticInfo(promiseCode)
                         fetchPlayerArrival(promiseCode, userToken)
                         fetchPlayerFinished(promiseCode)
                         updateMagneticInfo(promiseCode)
@@ -242,9 +253,11 @@ class PromiseGameService : LifecycleService() {
         lifecycleScope.launch {
             while (true) {
                 delay((1000 * MAGNETIC_FIELD_UPDATE_TERM_SECOND).toLong())
+
+                _magneticZoneRadius.value -= magneticZoneInitialRadius.value / gameTimeInitialValue.value
                 promiseRepository.decreaseMagneticRadius(
                     promiseCode,
-                    magneticZoneInitialRadius.value / gameTimeInitialValue.value
+                    magneticZoneRadius.value
                 )
             }
         }
@@ -272,27 +285,11 @@ class PromiseGameService : LifecycleService() {
                 promiseCode,
                 userToken
             ).collectLatest { arrivedResult ->
-                if (arrivedResult.isSuccess && arrivedResult.getOrDefault(
-                        false
-                    )
+                if (arrivedResult.isSuccess && arrivedResult.getOrDefault(false)
                 ) {
                     stopUpdateLocation()
                 }
             }
-        }
-    }
-
-    private fun fetchMagneticInfo(promiseCode: String) {
-        lifecycleScope.launch {
-            promiseRepository.getMagneticInfoByCodeAndListen(
-                promiseCode
-            )
-                .collect { result ->
-                    result.onSuccess { magneticInfoModel ->
-                        val uiModel = magneticInfoModel.asUiModel()
-                        _magneticZoneInfo.emit(uiModel)
-                    }
-                }
         }
     }
 

@@ -313,9 +313,6 @@ class DefaultNetworkDataSource @Inject constructor(
             }
         }
 
-    /**
-     * 자기장 반지름과 중심 좌표를 가져오는 함수
-     */
     override suspend fun getMagneticInfoByCodeAndListen(code: String): Flow<Result<MagneticInfoModel>> =
         fireStore.collection(PROMISE_COLLECTION_NAME)
             .document(code)
@@ -419,7 +416,7 @@ class DefaultNetworkDataSource @Inject constructor(
                     if (isFirstAccess(updateTime)) {
                         transaction.update(
                             reference, mapOf(
-                                RADIUS_KEY to serverRadius - minusValue,
+                                RADIUS_KEY to minusValue,
                                 TIMESTAMP_KEY to System.currentTimeMillis().asTimeStamp()
                             )
                         )
