@@ -13,8 +13,7 @@ import com.woory.almostthere.presentation.model.PromiseAlarm
 
 object NotificationProvider {
     const val PROMISE_READY_NOTIFICATION_ID = 80
-    const val PROMISE_READY_COMPLETE_NOTIFICATION_ID = 81
-    const val PROMISE_START_NOTIFICATION_ID = 82
+    private const val PROMISE_READY_COMPLETE_NOTIFICATION_ID = 81
 
     fun createNotificationBuilder(
         context: Context,

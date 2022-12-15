@@ -45,7 +45,7 @@ class PromiseHistoryViewModel @Inject constructor(
     private val _uiState = MutableEventFlow<UiState<List<PromiseHistory>?>>()
     val uiState = _uiState.asEventFlow()
 
-    val userPreferences = userRepository.userPreferences
+    private val userPreferences = userRepository.userPreferences
 
     init {
         observePromises()
