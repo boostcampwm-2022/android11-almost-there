@@ -50,9 +50,9 @@ interface NetworkDataSource {
 
     suspend fun sendOutUser(gameCode: String, token: String): Result<Unit>
 
-    suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit>
+    suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Int>
 
-    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
+    suspend fun decreaseUserHp(gameCode: String, token: String, newHp: Int): Result<Int>
 
     suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<UserHpModel>>
 

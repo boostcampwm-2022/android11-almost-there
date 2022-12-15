@@ -77,6 +77,9 @@ class PromiseGameService : LifecycleService() {
     private val _location: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
     val location: StateFlow<GeoPoint?> = _location.asStateFlow()
 
+    private val _userHp: MutableStateFlow<Int> = MutableStateFlow(-1)
+    private val userHp: StateFlow<Int> = _userHp.asStateFlow()
+
     private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(this)
     }
@@ -105,14 +108,13 @@ class PromiseGameService : LifecycleService() {
         lifecycleScope.launch {
             magneticZoneInfo.value?.let {
                 if (DistanceUtil.getDistance(it.centerPoint, userLocation) > it.radius) {
-                    launch {
-                        promiseRepository.decreaseUserHp(it.gameCode, userToken)
-                            .onSuccess { updatedHp ->
-                                if (updatedHp <= 0L) {
-                                    stopUpdateLocation()
-                                }
+                    _userHp.value -= 1
+                    promiseRepository.decreaseUserHp(it.gameCode, userToken, userHp.value)
+                        .onSuccess { updatedHp ->
+                            if (updatedHp <= 0L) {
+                                stopUpdateLocation()
                             }
-                    }
+                        }
                 }
             }
         }
@@ -188,6 +190,7 @@ class PromiseGameService : LifecycleService() {
         lifecycleScope.launch {
             promiseRepository.setUserInitialHpData(promiseCode, userToken)
                 .onSuccess {
+                    _userHp.emit(it)
                     fetchInitialMagneticInfo(promiseCode, userToken)
                 }
         }
@@ -286,11 +289,8 @@ class PromiseGameService : LifecycleService() {
             )
                 .collect { result ->
                     result.onSuccess { magneticInfoModel ->
-                        val uiModel =
-                            magneticInfoModel.asUiModel()
-                        _magneticZoneInfo.emit(
-                            uiModel
-                        )
+                        val uiModel = magneticInfoModel.asUiModel()
+                        _magneticZoneInfo.emit(uiModel)
                     }
                 }
         }

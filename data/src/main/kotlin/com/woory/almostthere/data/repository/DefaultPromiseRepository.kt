@@ -89,11 +89,11 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun sendOutUser(gameCode: String, token: String): Result<Unit> =
         networkDataSource.sendOutUser(gameCode, token)
 
-    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
+    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Int> =
         networkDataSource.setUserInitialHpData(gameCode, token)
 
-    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long> =
-        networkDataSource.decreaseUserHp(gameCode, token)
+    override suspend fun decreaseUserHp(gameCode: String, token: String, newHp: Int): Result<Int> =
+        networkDataSource.decreaseUserHp(gameCode, token, newHp)
 
     override suspend fun getUserHpAndListen(
         gameCode: String,

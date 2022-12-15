@@ -567,27 +567,23 @@ class DefaultNetworkDataSource @Inject constructor(
             }
         }
 
-    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long> =
-        withContext(scope.coroutineContext) {
-            var userHp: Long = -1
-            val result = runCatching {
-                val reference = fireStore
-                    .collection(PROMISE_COLLECTION_NAME)
-                    .document(gameCode)
-                    .collection(GAME_INFO_COLLECTION_NAME)
-                    .document(token)
+    override suspend fun decreaseUserHp(gameCode: String, token: String, newHp: Int): Result<Int> =
 
-                fireStore.runTransaction { transaction ->
-                    val snapShot = transaction.get(reference)
-                    userHp = snapShot.getLong(HP_KEY) ?: return@runTransaction
+        suspendCancellableCoroutine { cancellableContinuation ->
+            val reference = fireStore
+                .collection(PROMISE_COLLECTION_NAME)
+                .document(gameCode)
+                .collection(GAME_INFO_COLLECTION_NAME)
+                .document(token)
 
-                    transaction.update(reference, mapOf(HP_KEY to userHp - 1))
-                }.await()
-            }
+            fireStore.runTransaction { transaction ->
+                val snapShot = transaction.get(reference)
 
-            when (val exception = result.exceptionOrNull()) {
-                null -> Result.success(userHp - 1)
-                else -> Result.failure(exception)
+                transaction.update(reference, mapOf(HP_KEY to newHp))
+            }.addOnSuccessListener {
+                cancellableContinuation.resume(Result.success(newHp))
+            }.addOnFailureListener {
+                cancellableContinuation.resume(Result.failure(it))
             }
         }
 
