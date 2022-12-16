@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.os.Looper
 import androidx.core.app.NotificationCompat
@@ -14,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
@@ -92,17 +94,9 @@ class PromiseGameService : LifecycleService() {
         override fun onLocationResult(p0: LocationResult) {
             super.onLocationResult(p0)
             val loc = p0.lastLocation
-            Timber.tag("123123").d("$loc")
             loc?.let { location ->
                 val userLocation = GeoPoint(location.latitude, location.longitude)
                 onUpdateLocation(userLocation)
-            }
-        }
-
-        override fun onLocationAvailability(p0: LocationAvailability) {
-            super.onLocationAvailability(p0)
-            if (p0.isLocationAvailable.not()) {
-                Timber.tag("123123").d("not available")
             }
         }
     }
