@@ -2,7 +2,7 @@ package com.woory.almostthere.network.model
 
 import com.google.firebase.Timestamp
 
-data class AddedUserHpDocument(
+data class UserHpDocument(
     val userId: String = "",
     val hp: Int = 100,
     val arrived: Boolean = false,

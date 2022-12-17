@@ -5,9 +5,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -19,6 +16,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.woory.almostthere.presentation.R
 import com.woory.almostthere.presentation.background.alarm.AlarmFunctions
 import com.woory.almostthere.presentation.databinding.FragmentCreatingPromiseBinding
+import com.woory.almostthere.presentation.extension.repeatOnStarted
 import com.woory.almostthere.presentation.model.PromiseData
 import com.woory.almostthere.presentation.ui.BaseFragment
 import com.woory.almostthere.presentation.ui.promiseinfo.PromiseInfoActivity
@@ -101,56 +99,54 @@ class CreatingPromiseFragment :
     }
 
     private fun setUpCollector() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.promiseLocation.collectLatest {
-                        binding.btnPromiseLocation.text = it?.address ?: DEFAULT_STRING
-                    }
+        repeatOnStarted {
+            launch {
+                viewModel.promiseLocation.collectLatest {
+                    binding.btnPromiseLocation.text = it?.address ?: DEFAULT_STRING
                 }
+            }
 
-                launch {
-                    viewModel.promiseDate.collectLatest {
-                        binding.btnPromiseDate.text = it?.toString() ?: DEFAULT_STRING
-                    }
+            launch {
+                viewModel.promiseDate.collectLatest {
+                    binding.btnPromiseDate.text = it?.toString() ?: DEFAULT_STRING
                 }
+            }
 
-                launch {
-                    viewModel.promiseTime.collectLatest {
-                        binding.btnPromiseTime.text = it?.toString() ?: DEFAULT_STRING
-                    }
+            launch {
+                viewModel.promiseTime.collectLatest {
+                    binding.btnPromiseTime.text = it?.toString() ?: DEFAULT_STRING
                 }
+            }
 
-                launch {
-                    viewModel.isEnabled.collect {
-                        binding.btnCreatePromise.btnSubmit.isEnabled = it
-                    }
+            launch {
+                viewModel.isEnabled.collect {
+                    binding.btnCreatePromise.btnSubmit.isEnabled = it
                 }
+            }
 
-                launch {
-                    viewModel.requestSetPromiseEvent.collectLatest {
-                        showCheckPromiseDataDialog(it)
-                    }
+            launch {
+                viewModel.requestSetPromiseEvent.collectLatest {
+                    showCheckPromiseDataDialog(it)
                 }
+            }
 
-                launch {
-                    viewModel.setPromiseSuccessEvent.collectLatest { promiseAlarm ->
-                        alarmFunctions.registerAlarm(promiseAlarm)
-                        viewModel.setPromiseAlarm(promiseAlarm)
+            launch {
+                viewModel.setPromiseSuccessEvent.collectLatest { promiseAlarm ->
+                    alarmFunctions.registerAlarm(promiseAlarm)
+                    viewModel.setPromiseAlarm(promiseAlarm)
 
-                        PromiseInfoActivity.startActivity(
-                            requireContext(),
-                            promiseAlarm.promiseCode
-                        )
-                        requireActivity().finish()
-                    }
+                    PromiseInfoActivity.startActivity(
+                        requireContext(),
+                        promiseAlarm.promiseCode
+                    )
+                    requireActivity().finish()
                 }
+            }
 
-                launch {
-                    viewModel.errorEvent.collectLatest {
-                        val message = getExceptionMessage(requireContext(), it)
-                        showSnackBar(message)
-                    }
+            launch {
+                viewModel.errorEvent.collectLatest {
+                    val message = getExceptionMessage(requireContext(), it)
+                    showSnackBar(message)
                 }
             }
         }

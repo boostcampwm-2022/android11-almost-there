@@ -13,8 +13,7 @@ import com.woory.almostthere.presentation.model.PromiseAlarm
 
 object NotificationProvider {
     const val PROMISE_READY_NOTIFICATION_ID = 80
-    const val PROMISE_READY_COMPLETE_NOTIFICATION_ID = 81
-    const val PROMISE_START_NOTIFICATION_ID = 82
+    private const val PROMISE_READY_COMPLETE_NOTIFICATION_ID = 81
 
     fun createNotificationBuilder(
         context: Context,
@@ -26,8 +25,7 @@ object NotificationProvider {
     ): NotificationCompat.Builder {
 
         return NotificationCompat.Builder(context, channelId).apply {
-            // Todo :: 앱 아이콘 변경 필요
-            setSmallIcon(R.drawable.ic_launcher_foreground)
+            setSmallIcon(R.drawable.ic_woory_icon_foreground)
             setContentTitle(title)
             setContentText(content)
             setAutoCancel(true)

@@ -24,11 +24,8 @@ import com.woory.almostthere.presentation.util.flow.MutableEventFlow
 import com.woory.almostthere.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -74,8 +71,8 @@ class CreatingPromiseViewModel @Inject constructor(
     private val _requestSetPromiseEvent: MutableEventFlow<PromiseData> = MutableEventFlow()
     val requestSetPromiseEvent: EventFlow<PromiseData> = _requestSetPromiseEvent.asEventFlow()
 
-    private val _setPromiseSuccessEvent: MutableSharedFlow<PromiseAlarm> = MutableSharedFlow()
-    val setPromiseSuccessEvent: SharedFlow<PromiseAlarm> = _setPromiseSuccessEvent.asSharedFlow()
+    private val _setPromiseSuccessEvent: MutableEventFlow<PromiseAlarm> = MutableEventFlow()
+    val setPromiseSuccessEvent: EventFlow<PromiseAlarm> = _setPromiseSuccessEvent.asEventFlow()
 
     private val _choosedLocation: MutableStateFlow<GeoPoint?> = MutableStateFlow(null)
     val choosedLocation: StateFlow<GeoPoint?> = _choosedLocation.asStateFlow()
@@ -87,8 +84,8 @@ class CreatingPromiseViewModel @Inject constructor(
         MutableStateFlow(CreatingPromiseUiState.Success)
     val uiState: StateFlow<CreatingPromiseUiState> = _uiState.asStateFlow()
 
-    private val _errorEvent: MutableSharedFlow<Throwable> = MutableSharedFlow()
-    val errorEvent: SharedFlow<Throwable> = _errorEvent.asSharedFlow()
+    private val _errorEvent: MutableEventFlow<Throwable> = MutableEventFlow()
+    val errorEvent: EventFlow<Throwable> = _errorEvent.asEventFlow()
 
     private fun setStateLoading() {
         viewModelScope.launch {

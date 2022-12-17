@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.woory.almostthere.data.repository.PromiseRepository
 import com.woory.almostthere.presentation.model.mapper.searchlocation.SearchResultMapper
 import com.woory.almostthere.presentation.ui.creatingpromise.CreatingPromiseUiState
+import com.woory.almostthere.presentation.util.flow.EventFlow
+import com.woory.almostthere.presentation.util.flow.MutableEventFlow
+import com.woory.almostthere.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +32,8 @@ class LocationSearchResultViewModel @Inject constructor(
         MutableStateFlow(CreatingPromiseUiState.Success)
     val uiState: StateFlow<CreatingPromiseUiState> = _uiState.asStateFlow()
 
-    private val _errorEvent: MutableSharedFlow<Throwable> = MutableSharedFlow()
-    val errorEvent: SharedFlow<Throwable> = _errorEvent.asSharedFlow()
+    private val _errorEvent: MutableEventFlow<Throwable> = MutableEventFlow()
+    val errorEvent: EventFlow<Throwable> = _errorEvent.asEventFlow()
 
     fun searchLocation(query: String) {
         viewModelScope.launch {

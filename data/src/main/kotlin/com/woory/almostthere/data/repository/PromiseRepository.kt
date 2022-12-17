@@ -1,6 +1,6 @@
 package com.woory.almostthere.data.repository
 
-import com.woory.almostthere.data.model.AddedUserHpModel
+import com.woory.almostthere.data.model.UserHpModel
 import com.woory.almostthere.data.model.GeoPointModel
 import com.woory.almostthere.data.model.LocationSearchModel
 import com.woory.almostthere.data.model.MagneticInfoModel
@@ -25,8 +25,6 @@ interface PromiseRepository {
 
     suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit>
 
-    suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit>
-
     suspend fun addPlayer(code: String, user: UserModel): Result<Unit>
 
     suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>>
@@ -40,8 +38,6 @@ interface PromiseRepository {
     suspend fun setPromiseAlarmByPromiseAlarmModel(promiseAlarmModel: PromiseAlarmModel): Result<Unit>
 
     suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>>
-
-    suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>>
 
     suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel>
 
@@ -57,17 +53,15 @@ interface PromiseRepository {
 
     suspend fun sendOutUser(gameCode: String, token: String): Result<Unit>
 
-    suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit>
+    suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Int>
 
-    suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long>
+    suspend fun decreaseUserHp(gameCode: String, token: String, newHp: Int): Result<Int>
 
-    suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<AddedUserHpModel>>
+    suspend fun getUserHpAndListen(gameCode: String, token: String): Flow<Result<UserHpModel>>
 
     suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit>
 
     suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>>
-
-    suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>>
 
     suspend fun setIsFinishedPromise(gameCode: String): Result<Unit>
 

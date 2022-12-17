@@ -1,6 +1,6 @@
 package com.woory.almostthere.data.repository
 
-import com.woory.almostthere.data.model.AddedUserHpModel
+import com.woory.almostthere.data.model.UserHpModel
 import com.woory.almostthere.data.model.GeoPointModel
 import com.woory.almostthere.data.model.LocationSearchModel
 import com.woory.almostthere.data.model.MagneticInfoModel
@@ -56,9 +56,6 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun setUserLocation(userLocationModel: UserLocationModel): Result<Unit> =
         networkDataSource.setUserLocation(userLocationModel)
 
-    override suspend fun setUserHp(gameToken: String, userHpModel: AddedUserHpModel): Result<Unit> =
-        networkDataSource.setUserHp(gameToken, userHpModel)
-
     override suspend fun getUserLocation(userId: String): Flow<Result<UserLocationModel>> =
         networkDataSource.getUserLocationById(userId)
 
@@ -67,9 +64,6 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getSearchedLocationByKeyword(keyword: String): Result<List<LocationSearchModel>> =
         networkDataSource.searchLocationByKeyword(keyword)
-
-    override suspend fun getJoinedPromiseList(): Result<List<PromiseAlarmModel>> =
-        databaseDataSource.getAll()
 
     override suspend fun getMagneticInfoByCode(promiseCode: String): Result<MagneticInfoModel> =
         networkDataSource.getMagneticInfoByCode(promiseCode)
@@ -95,16 +89,16 @@ class DefaultPromiseRepository @Inject constructor(
     override suspend fun sendOutUser(gameCode: String, token: String): Result<Unit> =
         networkDataSource.sendOutUser(gameCode, token)
 
-    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Unit> =
+    override suspend fun setUserInitialHpData(gameCode: String, token: String): Result<Int> =
         networkDataSource.setUserInitialHpData(gameCode, token)
 
-    override suspend fun decreaseUserHp(gameCode: String, token: String): Result<Long> =
-        networkDataSource.decreaseUserHp(gameCode, token)
+    override suspend fun decreaseUserHp(gameCode: String, token: String, newHp: Int): Result<Int> =
+        networkDataSource.decreaseUserHp(gameCode, token, newHp)
 
     override suspend fun getUserHpAndListen(
         gameCode: String,
         token: String
-    ): Flow<Result<AddedUserHpModel>> =
+    ): Flow<Result<UserHpModel>> =
         networkDataSource.getUserHpAndListen(gameCode, token)
 
     override suspend fun setPlayerArrived(gameCode: String, token: String): Result<Unit> =
@@ -112,9 +106,6 @@ class DefaultPromiseRepository @Inject constructor(
 
     override suspend fun getPlayerArrived(gameCode: String, token: String): Flow<Result<Boolean>> =
         networkDataSource.getPlayerArrived(gameCode, token)
-
-    override suspend fun getGameRealtimeRanking(gameCode: String): Flow<Result<List<AddedUserHpModel>>> =
-        networkDataSource.getGameRealtimeRanking(gameCode)
 
     override suspend fun setIsFinishedPromise(gameCode: String): Result<Unit> =
         networkDataSource.setIsFinishedPromise(gameCode)
@@ -135,7 +126,7 @@ class DefaultPromiseRepository @Inject constructor(
                 it.userId to it.data
             }
 
-            val mapUserRankingModel = { addedUserHpModel: AddedUserHpModel, rankingNumber: Int ->
+            val mapUserRankingModel = { addedUserHpModel: UserHpModel, rankingNumber: Int ->
                 UserRankingModel(
                     addedUserHpModel.userId,
                     userProfiles[addedUserHpModel.userId]

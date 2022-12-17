@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woory.almostthere.data.repository.PromiseRepository
 import com.woory.almostthere.data.repository.RouteRepository
 import com.woory.almostthere.data.repository.UserRepository
-import com.woory.almostthere.presentation.model.AddedUserHp
+import com.woory.almostthere.presentation.model.UserHp
 import com.woory.almostthere.presentation.model.GeoPoint
 import com.woory.almostthere.presentation.model.MagneticInfo
 import com.woory.almostthere.presentation.model.Promise
@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,7 +54,7 @@ class GamingViewModel @Inject constructor(
     private val _isFinished: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFinished: StateFlow<Boolean> = _isFinished.asStateFlow()
 
-    val userHpMap: MutableMap<String, MutableStateFlow<AddedUserHp?>> = mutableMapOf()
+    val userHpMap: MutableMap<String, MutableStateFlow<UserHp?>> = mutableMapOf()
 
     private val userImageMap: MutableMap<String, MutableStateFlow<UserProfileImage>> =
         mutableMapOf()
@@ -139,8 +138,6 @@ class GamingViewModel @Inject constructor(
                     val uiLocationModel = userLocationModel.asUiModel()
 
                     requireNotNull(userLocationMap[user.userId]).emit(uiLocationModel)
-                }.onFailure {
-                    Timber.tag("123123").d(it)
                 }
             }
         }

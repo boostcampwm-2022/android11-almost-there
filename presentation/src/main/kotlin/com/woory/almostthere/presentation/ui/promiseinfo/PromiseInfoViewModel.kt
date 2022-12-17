@@ -12,14 +12,14 @@ import com.woory.almostthere.presentation.model.UserLocation
 import com.woory.almostthere.presentation.model.mapper.location.asDomain
 import com.woory.almostthere.presentation.model.mapper.promise.PromiseMapper
 import com.woory.almostthere.presentation.util.TimeConverter.asMillis
+import com.woory.almostthere.presentation.util.flow.EventFlow
+import com.woory.almostthere.presentation.util.flow.MutableEventFlow
+import com.woory.almostthere.presentation.util.flow.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -45,8 +45,8 @@ class PromiseInfoViewModel @Inject constructor(
         MutableStateFlow(PromiseUiState.Loading)
     val uiState: StateFlow<PromiseUiState> = _uiState.asStateFlow()
 
-    private val _errorState: MutableSharedFlow<Throwable> = MutableSharedFlow()
-    val errorState: SharedFlow<Throwable> = _errorState.asSharedFlow()
+    private val _errorState: MutableEventFlow<Throwable> = MutableEventFlow()
+    val errorState: EventFlow<Throwable> = _errorState.asEventFlow()
 
     private val _promiseModel: MutableStateFlow<Promise?> = MutableStateFlow(null)
     val promiseModel: StateFlow<Promise?> = _promiseModel.asStateFlow()
