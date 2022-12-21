@@ -24,6 +24,11 @@
 
 늦은 친구에게 패널티를 부과해보세요.
 
+
+[📺 시연 영상 보러 가기](https://www.youtube.com/watch?v=6ym1H6NaTMw)
+[🎬 발표 영상 보러 가기](https://www.youtube.com/watch?v=LU0xIpFrFIA)
+
+
 <br/>
 
 ## 👨‍👩‍👧‍👧 우리(Woory) 팀 소개
